@@ -3,7 +3,7 @@ _internal/
 .agent-tasks/
 .compactions/
 .opencode/
-data/
+/data/
 equation-discovery-findings/
 claude*
 
