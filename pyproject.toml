@@ -1,0 +1,23 @@
+[project]
+name = "sengupta-research"
+version = "0.1.0"
+description = "Agentic cyber-defense for sensor data attacks — Phase 1 (B0 data pipeline, B1 CUSUM baseline)"
+requires-python = ">=3.11"
+dependencies = [
+    "numpy>=2.4.6",
+    "scipy>=1.17.1",
+    "pandas>=3.0.5",
+    "matplotlib>=3.11.1",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]
+
+[build-system]
+requires = ["setuptools>=79"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
