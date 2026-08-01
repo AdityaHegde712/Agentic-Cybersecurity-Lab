@@ -1,0 +1,25 @@
+# Research artifacts (local-only, per owner)
+_internal/
+.agent-tasks/
+.compactions/
+.opencode/
+data/
+equation-discovery-findings/
+claude*
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Build
+dist/
+build/
