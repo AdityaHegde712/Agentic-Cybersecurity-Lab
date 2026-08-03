@@ -1,4 +1,4 @@
-# Sengupta Research Project
+# Agentic Cybersecurity Lab: Sensor Attack Detection in Time-Series Data
 
 ## Purpose
 This project implements data generation and loading utilities for anomaly detection research, specifically:
