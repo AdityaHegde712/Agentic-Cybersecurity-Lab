@@ -7,6 +7,9 @@ _internal/
 equation-discovery-findings/
 claude*
 
+# Generated experiment outputs (regenerable via src/evaluation)
+/results/
+
 # Python
 .venv/
 __pycache__/
