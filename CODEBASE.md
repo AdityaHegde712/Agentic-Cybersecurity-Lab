@@ -38,6 +38,8 @@
 
 | Path | Responsibility |
 |---|---|
+| `src/config.py` | Central configuration module resolving dataset paths, HPC parameters, and environment overrides. |
+| `configs/default.yaml` | Base YAML configuration for local and TACC Vista execution defaults. |
 | `src/data/synthetic.py` | `SensorDataGenerator` — deterministic sensor data with controllable attacks (step/ramp/periodic/coordinated) and correlated noise. |
 | `src/data/hai_loader.py` | `HAILoader` — raw HAI-20.07 CSV loader with temporal splits and z-score normalization. |
 | `src/data/registry.py` | Dataset registry dispatcher (`load_dataset`, `get_meta`) across SWaT, WADI, BATADAL, HAI. |

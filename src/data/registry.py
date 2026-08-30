@@ -1,11 +1,19 @@
 from pathlib import Path
 import hashlib
 import json
-from typing import Dict
+from typing import Dict, Union
 
 import pandas as pd
 
-PROCESSED_DIR = Path(__file__).resolve().parents[2] / "data" / "processed"
+from ..config import get_processed_dir
+
+PROCESSED_DIR = get_processed_dir()
+
+
+def set_processed_dir(path: Union[str, Path]) -> None:
+    """Dynamically override the processed store directory at runtime."""
+    global PROCESSED_DIR
+    PROCESSED_DIR = Path(path).resolve()
 
 
 def _sha256(path: Path) -> str:
