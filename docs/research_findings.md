@@ -2,8 +2,8 @@
 
 | Field    | Value                                      |
 | -------- | ------------------------------------------ |
-| Version  | 1.0                                        |
-| Date     | 2026-08-05                                 |
+| Version  | 1.1                                        |
+| Date     | 2026-08-06                                 |
 | Status   | Maintained (append per build phase)        |
 
 ---
@@ -84,13 +84,53 @@ System FPR <= 1% AND system TPR >= 0.90 on the HAI test split (sample-weighted).
 - The **synthetic results (3/3 PASS)** confirm the detector machinery is correct under controlled conditions; HAI exposes the distribution-shift reality of real OT data.
 - **Later-phase detectors** are the designed path: subsequent detector generations — BOCPD (drift-aware by construction) and an LSTM-AE ensemble. A segment-level (vs sample-weighted) TPR, or a two-tier target, may be a more meaningful operational metric.
 
-## 4. Open Questions for the Owner
+## 4. Metric and Target Refinement (Literature Review)
 
-1. Should the HAI metric be reformulated (e.g., segment-level detection vs sample-weighted TPR)?
-2. Is FPR <= 1% the right operating point for OT operations (cost of false alarms vs missed attacks)?
-3. Is it acceptable to carry HAI hardening as an open item into subsequent detector generations?
+### 4.1 Segment/event-level metrics are the community standard
 
-## 5. Artifacts & References
+The ICS anomaly-detection community has converged on segment/event-level metrics over sample-weighted point metrics. Bauer et al. (2022, ESORICS) show point-F1 is inadequate for ICS AD and range-F1 selects different hyperparameters [6]. Kim & Park (2023, Electronics) proposed TaPR (time-series-aware precision/recall) because attack start/end are hard to pinpoint [9]. Heydari & Nyarko (2026, IEEE Access) show alarm-budgeted event-level evaluation on SWaT/WADI can reverse rankings [10]. Sehili et al. (2023, TPCTC) show point-F1 vs event-F1 rankings differ drastically (SWaT PCA baseline point-F1 0.810 vs event-F1 0.555; WADI 0.374 vs 0.608) [11]. Wu & Keogh (2024, NeurIPS) show point-adjusted F1 can make random scores look state-of-the-art when anomalies are long [12].
+
+**Why it matters for HAI**: one 2,888-sample attack carries 16.5% of all attack samples. Under sample-weighted TPR, missing it costs 16.5% of TPR; under segment-level TPR it costs 1/38 = 2.6%.
+
+**Decision**: adopt segment-level recall as the primary metric; report sample-weighted TPR as supplementary.
+
+### 4.2 Operating points for safety-critical OT
+
+No single mandated point exists, but sources converge: safety-critical OT (nuclear, power) prioritizes recall > 0.95. NIST SP 800-82 Rev.3 (2023) requires OT monitoring to detect events to break the attack chain early [1]; IAEA coordinated research emphasizes near-perfect recall as the operational requirement [2]; IEC 62443 SL4 architecture guidance specifies a false-positive tolerance of < 0.1% for safety-critical zones (1 per 1000 normal operations) [3].
+
+Deployed SWaT/WADI results: TPR 0.75--0.95 at FPR 0.001--0.05 (Kim & Park 2023: all five tested models achieved FPR <= 1.2% but FNR > 27% except InterFusion ~10%; MADICS 2020: recall 0.750, precision 0.984 on SWaT) [4, 5]. tapAUC (Bougaham et al. 2025): TPR 92.52% at FPR 20.43% averaged over 6 critical-application datasets -- empirical evidence that high-TPR/higher-FPR operating points are realistic [8].
+
+**Refined aspirational target**: ~10% FPR / 98%+ TPR for safety-critical scenarios. Practically achievable: TPR 0.85--0.95 at FPR 0.05--0.15 for statistical methods; TPR 0.95+ at FPR 0.10--0.20 for deep-learning ensembles.
+
+### 4.3 Cost-sensitive operating-point selection
+
+Gaffney & Ulvila (NIST Journal of Research, 2003) established that the optimal operating point minimizes expected cost; it sits where the ROC slope equals `(C_FN/C_FP) * (P(attack)/P(normal))` [24]. Cardenas et al. (IEEE S&P, 2006) formalized that ROC alone is misleading at low base rates; precision (PPV) matters -- intrusion detection operating characteristic [25].
+
+For HAI: C_FN/C_FP ~ 100:1, P(attack) ~ 0.039 gives cost ratio r ~ 4, which typically lands at TPR 0.90--0.98, FPR 0.05--0.15.
+
+### 4.4 Adaptive/rolling sigma for CUSUM
+
+Adaptive sigma is viable with a gated robust estimator. Foundations: Hawkins & Olwell self-starting CUSUM (1987/1998) uses running mean/std for unknown parameters [14, 15]; DAS-CUSUM (arXiv 2022) estimates post-change parameters via sliding window [17].
+
+Robust estimators: MAD (50% breakdown, 36% Gaussian efficiency) and Qn (50% breakdown, 82% efficiency, online update available -- Schmid et al. 2024) [18].
+
+**Key failure mode**: masking -- attack samples inside the sigma window inflate sigma, raising h and delaying detection. Mitigation: gate both mu0 AND sigma updates to observations within g*sigma_current (the gated-EWMA already implemented extends naturally to sigma).
+
+**Drift is a known reality in real OT, not an anomaly**: NIST SP 800-82 requires handling operational modes (startup, ramp, shutdown, switching) [1]; IAEA notes operational transients that look like attacks [2]; INL (Brink) attributes excessive false positives to "oversensitive model settings due to very narrow normal operation bands" [23]. This corroborates the HAI finding in section 3.
+
+**Verdict**: implement gated rolling sigma in the next CUSUM iteration, but expect it to reduce false trips, not close the structural distribution-overlap gap -- that requires BOCPD / LSTM-AE.
+
+### 4.5 Sources (key)
+
+Full bibliographic entries for citations [1]--[30] used above. The complete 30-source bibliography lives in `.agent-tasks/research-analyst/STATUS.md`. Key references: NIST SP 800-82 Rev.3 (2023) [1]; IAEA Bulletin CRP (2023) [2]; IEC 62443 SL4 architecture guidance (2025, whitepaper -- secondary interpretation of the standard) [3]; Bauer et al. ESORICS 2022 [6]; Kim & Park Electronics 2023 (comparative study) [4]; Kim & Park Electronics 2022 (TaPR metrics) [9]; Heydari & Nyarko IEEE Access 2026 [10]; Sehili et al. TPCTC 2023 [11]; Wu & Keogh NeurIPS 2024 [12]; Bougaham et al. arXiv 2025 (tapAUC) [8]; Hawkins The Statistician 1987 [14]; Gaffney & Ulvila NIST Journal of Research 2003 [24]; Cardenas et al. IEEE S&P 2006 [25].
+
+## 5. Open Questions for the Owner
+
+1. Should the HAI metric be reformulated (e.g., segment-level detection vs sample-weighted TPR)? **RESOLVED** -- adopt segment-level recall as primary, sample-weighted supplementary (per section 4.1).
+2. Is FPR <= 1% the right operating point for OT operations (cost of false alarms vs missed attacks)? **REFINED** -- aspirational target ~10% FPR / 98%+ TPR for safety-critical; exact point via cost-ratio method (per sections 4.2--4.3).
+3. Is it acceptable to carry HAI hardening as an open item into subsequent detector generations? **STILL OPEN** -- pending cross-dataset validation and BOCPD/LSTM-AE results.
+
+## 6. Artifacts & References
 
 - `results/cusum_report.md` (full numeric detail, honest verdicts)
 - `results/cusum_evaluation_synthetic.csv`, `results/cusum_evaluation_hai.csv`, `results/cusum_hai_sensor_events.pkl`
@@ -103,4 +143,5 @@ System FPR <= 1% AND system TPR >= 0.90 on the HAI test split (sample-weighted).
 
 | Date       | Version | Description                                                                                           |
 | ---------- | ------- | ----------------------------------------------------------------------------------------------------- |
-| 2026-08-05 | 1.0     | Initial report — B1 synthetic 3/3 PASS, HAI feasibility analysis (target structurally out of reach for CUSUM+consensus), open questions. |
+| 2026-08-06 | 1.1     | Added literature review: segment-level metrics, safety-critical operating points (10% FPR / 98%+ TPR), cost-sensitive thresholding, gated rolling sigma viability. |
+| 2026-08-05 | 1.0     | Initial report -- synthetic evaluation 3/3 PASS, HAI feasibility analysis (target structurally out of reach for CUSUM+consensus), open questions. |

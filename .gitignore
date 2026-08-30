@@ -6,6 +6,7 @@ _internal/
 /data/
 equation-discovery-findings/
 claude*
+docs/archive/
 
 # Generated experiment outputs (regenerable via src/evaluation)
 /results/
