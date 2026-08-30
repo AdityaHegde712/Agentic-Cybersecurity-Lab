@@ -1,13 +1,12 @@
-Here is the user guide: https://docs.tacc.utexas.edu/hpc/vista/
+# TACC HPC Policy & Reference Links
 
-Getting started: https://tacc.utexas.edu/use-tacc/getting-started/
+> **Local Comprehensive Guide**: For concrete architecture specifications, queues, Slurm templates, and agent directives, refer to [docs/hpc-usage-guide.md](file:///c:/Users/hifia/Projects/Sengupta_Research/docs/hpc-usage-guide.md).
 
-Documentation: https://docs.tacc.utexas.edu/
-
-Training: https://tacc.utexas.edu/use-tacc/training/
-
-Allocations: https://tacc.utexas.edu/use-tacc/allocations/. [Review the Acceptable Use Policy]
-
-Cloud computing: https://tacc.utexas.edu/use-tacc/cloud-computing/. [May be useful]
-
-You may be able to run jupyter notebooks in TACC through TAP (TACC Analysis Portal). Check it out.
+## Official TACC Resources & Documentation
+1. **Vista User Guide**: https://docs.tacc.utexas.edu/hpc/vista/
+2. **Getting Started at TACC**: https://tacc.utexas.edu/use-tacc/getting-started/
+3. **General TACC Documentation**: https://docs.tacc.utexas.edu/
+4. **TACC Training**: https://tacc.utexas.edu/use-tacc/training/
+5. **Allocations & Acceptable Use Policy (AUP)**: https://tacc.utexas.edu/use-tacc/allocations/
+6. **Cloud Computing**: https://tacc.utexas.edu/use-tacc/cloud-computing/
+7. **TACC Analysis Portal (TAP) / Jupyter Notebooks**: https://tap.tacc.utexas.edu/
