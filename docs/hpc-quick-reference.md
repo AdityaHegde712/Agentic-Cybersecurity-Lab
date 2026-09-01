@@ -61,13 +61,23 @@ vistacopy --source configs/default.yaml --destination configs/
 
 ## 3. Environment & Python Activation
 
-```bash
-# 1. Load system modules (Lmod)
-module purge
-module load gcc cuda/13.1 python3/3.11.8
+> [!NOTE]
+> Packages are permanently installed in `$SCRATCH/venvs/sengupta_cyber`. However, each new shell, login, or `idev` compute node session starts with a clean environment and requires activating the environment.
 
-# 2. Activate virtual environment
+### Quick Manual Activation (Per Session)
+```bash
+module load gcc cuda/13.1 python3/3.11.8
 source $SCRATCH/venvs/sengupta_cyber/bin/activate
+```
+
+### Auto-Alias Setup on Vista (Run Once in Vista Shell)
+Add this alias to your remote `~/.bashrc` on Vista so you can activate with a single word (`loadenv`):
+```bash
+echo "alias loadenv='module load gcc cuda/13.1 python3/3.11.8 && source \$SCRATCH/venvs/sengupta_cyber/bin/activate'" >> ~/.bashrc
+source ~/.bashrc
+
+# Now simply run in any new idev or terminal session:
+loadenv
 ```
 
 ---
