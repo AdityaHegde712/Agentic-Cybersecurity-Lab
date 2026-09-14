@@ -71,3 +71,21 @@ def test_estimated_delta_is_the_observation_minus_normal_prediction() -> None:
     estimated_delta = estimate_additive_delta(observed, predicted)
 
     assert np.array_equal(estimated_delta, np.array([[0.5, -1.0], [-1.0, 2.0]]))
+
+
+def test_training_reports_epoch_metrics_to_an_optional_progress_callback(tmp_path: Path) -> None:
+    values = _smooth_series(40)
+    records: list[dict[str, float | int]] = []
+
+    train_forecaster(
+        values[:28],
+        values[28:],
+        config=ForecasterConfig(context_length=4, hidden_size=4, batch_size=8, max_epochs=1),
+        checkpoint_path=tmp_path / "progress.pt",
+        device="cpu",
+        progress_callback=records.append,
+    )
+
+    assert len(records) == 1
+    assert records[0]["epoch"] == 1
+    assert "train_loss" in records[0]

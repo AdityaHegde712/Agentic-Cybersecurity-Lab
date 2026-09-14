@@ -3,6 +3,7 @@
 from dataclasses import asdict, dataclass
 from pathlib import Path
 import random
+from typing import Callable
 
 import numpy as np
 import torch
@@ -103,7 +104,7 @@ class ResidualPrediction:
     residual: np.ndarray
 
 
-def train_forecaster(train_values: np.ndarray, validation_values: np.ndarray, *, config: ForecasterConfig, checkpoint_path: Path, device: str) -> TrainingResult:
+def train_forecaster(train_values: np.ndarray, validation_values: np.ndarray, *, config: ForecasterConfig, checkpoint_path: Path, device: str, progress_callback: Callable[[dict[str, float | int]], None] | None = None) -> TrainingResult:
     _validate(train_values, "train_values"); _validate(validation_values, "validation_values")
     if train_values.shape[1] != validation_values.shape[1]: raise ValueError("sensor counts must match")
     _seed(config.seed); normalizer = FeatureNormalizer.fit(train_values); target = torch.device(device)
@@ -113,7 +114,9 @@ def train_forecaster(train_values: np.ndarray, validation_values: np.ndarray, *,
     best, stale, history = float("inf"), 0, []
     for epoch in range(1, config.max_epochs + 1):
         train_loss = _epoch(model, train_loader, criterion, target, optimizer); validation_loss = _epoch(model, validation_loader, criterion, target)
-        history.append({"epoch": epoch, "train_loss": train_loss, "validation_loss": validation_loss})
+        record = {"epoch": epoch, "train_loss": train_loss, "validation_loss": validation_loss}
+        history.append(record)
+        if progress_callback is not None: progress_callback(record)
         if validation_loss < best:
             best, stale = validation_loss, 0; _save(checkpoint_path, model, normalizer, config, epoch, validation_loss)
         else:

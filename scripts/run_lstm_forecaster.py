@@ -37,7 +37,9 @@ def run(dataset: str, settings: argparse.Namespace, device: str) -> pd.DataFrame
     run_dir = settings.output_dir / dataset; checkpoint = run_dir / "checkpoints" / "best.pt"
     config = ForecasterConfig(context_length=settings.context_length, hidden_size=settings.hidden_size, batch_size=settings.batch_size, max_epochs=settings.epochs, patience=settings.patience)
     if settings.mode == "train-predict":
-        result = train_forecaster(train_values, validation_values, config=config, checkpoint_path=checkpoint, device=device)
+        def report(record: dict[str, float | int]) -> None:
+            print(f"[{dataset}] epoch {record['epoch']}/{config.max_epochs}: train_loss={record['train_loss']:.6f} validation_loss={record['validation_loss']:.6f}", flush=True)
+        result = train_forecaster(train_values, validation_values, config=config, checkpoint_path=checkpoint, device=device, progress_callback=report)
         pd.DataFrame(result.history).to_csv(run_dir / "training_metrics.csv", index=False)
     forecaster = load_forecaster_checkpoint(checkpoint, device=device)
     validation_prediction = predict_residuals(forecaster, validation_values, device=device); test_prediction = predict_residuals(forecaster, test_values, device=device)
