@@ -5,6 +5,20 @@ import pandas as pd
 
 
 SUMMARY_COLUMNS = {"dataset", "baseline", "point_fpr", "point_tpr", "event_recall"}
+DISTRIBUTION_COLUMNS = {
+    "dataset",
+    "baseline",
+    "validation_median",
+    "test_normal_median",
+    "test_normal_q99",
+}
+DISTRIBUTION_COLUMN_ORDER = (
+    "dataset",
+    "baseline",
+    "validation_median",
+    "test_normal_median",
+    "test_normal_q99",
+)
 
 
 def validate_summary(summary: pd.DataFrame) -> None:
@@ -12,6 +26,16 @@ def validate_summary(summary: pd.DataFrame) -> None:
     missing = SUMMARY_COLUMNS.difference(summary.columns)
     if missing:
         raise ValueError(f"summary is missing required columns: {', '.join(sorted(missing))}")
+
+
+def score_distribution_frame(summary: pd.DataFrame) -> pd.DataFrame:
+    """Return aggregate distribution-shift fields needed for visual inspection."""
+    missing = DISTRIBUTION_COLUMNS.difference(summary.columns)
+    if missing:
+        raise ValueError(
+            f"summary is missing distribution columns: {', '.join(sorted(missing))}"
+        )
+    return summary.loc[:, DISTRIBUTION_COLUMN_ORDER].copy()
 
 
 def downsample_trace(frame: pd.DataFrame, max_points: int) -> pd.DataFrame:

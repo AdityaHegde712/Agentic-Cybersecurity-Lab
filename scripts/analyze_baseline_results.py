@@ -16,7 +16,11 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from src.evaluation.result_analysis import downsample_trace, validate_summary
+from src.evaluation.result_analysis import (
+    downsample_trace,
+    score_distribution_frame,
+    validate_summary,
+)
 
 
 METRICS = ("point_fpr", "point_tpr", "event_recall")
@@ -104,6 +108,39 @@ def plot_dataset_trace(
     plt.close(figure)
 
 
+def plot_score_distribution_shift(summary: pd.DataFrame, output_path: Path) -> None:
+    """Save aggregate validation-versus-test-normal score comparison plots."""
+    diagnostics = score_distribution_frame(summary)
+    datasets = list(diagnostics["dataset"].unique())
+    figure, axes = plt.subplots(len(datasets), 1, figsize=(14, 3.5 * len(datasets)))
+    axes = np.atleast_1d(axes)
+
+    for axis, dataset in zip(axes, datasets):
+        rows = diagnostics.loc[diagnostics["dataset"] == dataset]
+        positions = np.arange(len(rows), dtype=float)
+        width = 0.35
+        axis.bar(
+            positions - width / 2,
+            np.log1p(rows["validation_median"]),
+            width,
+            label="log1p(validation median)",
+        )
+        axis.bar(
+            positions + width / 2,
+            np.log1p(rows["test_normal_median"]),
+            width,
+            label="log1p(test normal median)",
+        )
+        axis.set_title(f"{dataset}: score-distribution shift")
+        axis.set_xticks(positions, rows["baseline"], rotation=20, ha="right")
+        axis.grid(axis="y", alpha=0.25)
+        axis.legend(loc="upper right")
+
+    figure.tight_layout()
+    figure.savefig(output_path, dpi=180, bbox_inches="tight")
+    plt.close(figure)
+
+
 def write_report(summary: pd.DataFrame, output_path: Path) -> None:
     """Write a compact, aggregate-only inspection report."""
     rows = [
@@ -137,6 +174,7 @@ def main() -> None:
     validate_summary(summary)
     args.output_dir.mkdir(parents=True, exist_ok=True)
     plot_summary(summary, args.output_dir / "summary_metrics.png")
+    plot_score_distribution_shift(summary, args.output_dir / "score_distribution_shift.png")
     write_report(summary, args.output_dir / "INSPECTION.md")
 
     for dataset in summary["dataset"].unique():

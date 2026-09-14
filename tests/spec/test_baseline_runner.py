@@ -7,6 +7,7 @@ import pytest
 from src.evaluation.baseline_runner import (
     calibrate_blocked_threshold,
     prepare_feature_matrices,
+    score_distribution_summary,
     summarize_score_series,
 )
 
@@ -54,6 +55,18 @@ def test_summary_uses_blocked_validation_calibration() -> None:
 
     assert summary["threshold"] == pytest.approx(75.0)
     assert summary["point_fpr"] == pytest.approx(0.5)
+
+
+def test_score_distribution_summary_compares_validation_to_normal_test_rows_only() -> None:
+    distribution = score_distribution_summary(
+        np.array([1.0, 3.0, 5.0]),
+        np.array([2.0, 200.0, 4.0, 400.0]),
+        np.array([0, 1, 0, 1]),
+    )
+
+    assert distribution["validation_median"] == pytest.approx(3.0)
+    assert distribution["test_normal_median"] == pytest.approx(3.0)
+    assert distribution["test_normal_q99"] == pytest.approx(3.98)
 
 
 @pytest.mark.parametrize("quantile", [0.0, 1.0, -0.1, 1.1])

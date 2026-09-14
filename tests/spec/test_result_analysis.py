@@ -4,7 +4,11 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from src.evaluation.result_analysis import downsample_trace, validate_summary
+from src.evaluation.result_analysis import (
+    downsample_trace,
+    score_distribution_frame,
+    validate_summary,
+)
 
 
 def test_downsample_trace_preserves_every_attack_row_and_trace_boundaries() -> None:
@@ -45,3 +49,21 @@ def test_validate_summary_requires_baseline_evaluation_fields() -> None:
 
     with pytest.raises(ValueError, match="event_recall"):
         validate_summary(valid.drop(columns="event_recall"))
+
+
+def test_score_distribution_frame_requires_and_returns_aggregate_shift_fields() -> None:
+    summary = pd.DataFrame(
+        {
+            "dataset": ["hai"],
+            "baseline": ["residual_ewma"],
+            "validation_median": [1.0],
+            "test_normal_median": [1.5],
+            "test_normal_q99": [2.0],
+        }
+    )
+
+    diagnostics = score_distribution_frame(summary)
+
+    assert diagnostics.equals(summary)
+    with pytest.raises(ValueError, match="test_normal_q99"):
+        score_distribution_frame(summary.drop(columns="test_normal_q99"))

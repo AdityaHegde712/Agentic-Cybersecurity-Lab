@@ -35,6 +35,56 @@ def statistical_baseline_scores(
     }
 
 
+def persistence_residuals(
+    values: np.ndarray,
+    *,
+    preceding_values: np.ndarray | None = None,
+) -> np.ndarray:
+    """Return one-step residuals while preserving the input time alignment."""
+    if values.ndim != 2 or values.shape[0] == 0:
+        raise ValueError("values must be a non-empty two-dimensional [time, sensor] array")
+    if not np.isfinite(values).all():
+        raise ValueError("values must contain only finite values")
+
+    if preceding_values is None:
+        preceding_values = values[0]
+    if preceding_values.shape != (values.shape[1],):
+        raise ValueError("preceding_values must have one value per sensor")
+    if not np.isfinite(preceding_values).all():
+        raise ValueError("preceding_values must contain only finite values")
+
+    residuals = np.empty_like(values, dtype=np.float64)
+    residuals[0] = values[0] - preceding_values
+    residuals[1:] = values[1:] - values[:-1]
+    return residuals
+
+
+def temporal_residual_baseline_scores(
+    train: np.ndarray,
+    test: np.ndarray,
+    *,
+    preceding_values: np.ndarray | None = None,
+    ewma_alpha: float = 0.2,
+    pca_components: int = 1,
+    cusum_slack: float = 0.5,
+    cusum_reset_threshold: float | None = None,
+) -> dict[str, np.ndarray]:
+    """Score one-step persistence residuals with statistical baselines."""
+    train_residuals = persistence_residuals(train)
+    if preceding_values is None:
+        preceding_values = train[-1]
+    test_residuals = persistence_residuals(test, preceding_values=preceding_values)
+    scores = statistical_baseline_scores(
+        train_residuals,
+        test_residuals,
+        ewma_alpha=ewma_alpha,
+        pca_components=pca_components,
+        cusum_slack=cusum_slack,
+        cusum_reset_threshold=cusum_reset_threshold,
+    )
+    return {f"residual_{name}": score for name, score in scores.items()}
+
+
 def _validate_inputs(
     train: np.ndarray,
     test: np.ndarray,

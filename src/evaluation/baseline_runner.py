@@ -8,7 +8,10 @@ import pandas as pd
 from src.data.registry import get_meta, load_dataset
 from src.evaluation.event_metrics import event_detection_metrics
 from src.evaluation.metrics import false_positive_rate, true_positive_rate
-from src.evaluation.statistical_baselines import statistical_baseline_scores
+from src.evaluation.statistical_baselines import (
+    statistical_baseline_scores,
+    temporal_residual_baseline_scores,
+)
 
 
 @dataclass(frozen=True)
@@ -40,6 +43,30 @@ def calibrate_blocked_threshold(
     blocks = np.array_split(validation_scores, validation_blocks)
     block_thresholds = [np.quantile(block, threshold_quantile) for block in blocks]
     return float(max(block_thresholds))
+
+
+def score_distribution_summary(
+    validation_scores: np.ndarray,
+    test_scores: np.ndarray,
+    test_labels: np.ndarray,
+) -> dict[str, float]:
+    """Summarize score distributions without using test labels for calibration."""
+    if validation_scores.ndim != 1 or test_scores.ndim != 1 or test_labels.ndim != 1:
+        raise ValueError("scores and labels must be one-dimensional")
+    if test_scores.shape != test_labels.shape:
+        raise ValueError("test_scores and test_labels must have the same shape")
+    if not np.isfinite(validation_scores).all() or not np.isfinite(test_scores).all():
+        raise ValueError("scores must contain only finite values")
+
+    normal_test_scores = test_scores[test_labels == 0]
+    if len(normal_test_scores) == 0:
+        raise ValueError("test_labels must include at least one normal row")
+
+    return {
+        "validation_median": float(np.median(validation_scores)),
+        "test_normal_median": float(np.median(normal_test_scores)),
+        "test_normal_q99": float(np.quantile(normal_test_scores, 0.99)),
+    }
 
 
 def summarize_score_series(
@@ -106,8 +133,21 @@ def run_dataset_statistical_baselines(
         ewma_alpha=ewma_alpha,
         pca_components=usable_components,
     )
-    cusum_reset_threshold = calibrate_blocked_threshold(
+    validation_residual_scores = temporal_residual_baseline_scores(
+        train_values,
+        validation_values,
+        preceding_values=train_values[-1],
+        ewma_alpha=ewma_alpha,
+        pca_components=usable_components,
+    )
+    validation_scores = {**validation_scores, **validation_residual_scores}
+    raw_cusum_reset_threshold = calibrate_blocked_threshold(
         validation_scores["cusum"],
+        threshold_quantile=threshold_quantile,
+        validation_blocks=validation_blocks,
+    )
+    residual_cusum_reset_threshold = calibrate_blocked_threshold(
+        validation_scores["residual_cusum"],
         threshold_quantile=threshold_quantile,
         validation_blocks=validation_blocks,
     )
@@ -116,8 +156,17 @@ def run_dataset_statistical_baselines(
         test_values,
         ewma_alpha=ewma_alpha,
         pca_components=usable_components,
-        cusum_reset_threshold=cusum_reset_threshold,
+        cusum_reset_threshold=raw_cusum_reset_threshold,
     )
+    test_residual_scores = temporal_residual_baseline_scores(
+        train_values,
+        test_values,
+        preceding_values=validation_values[-1],
+        ewma_alpha=ewma_alpha,
+        pca_components=usable_components,
+        cusum_reset_threshold=residual_cusum_reset_threshold,
+    )
+    test_scores = {**test_scores, **test_residual_scores}
 
     score_frame = test.loc[:, ["timestamp", "label", "attack_id"]].copy()
     summaries: list[dict[str, object]] = []
@@ -130,7 +179,12 @@ def run_dataset_statistical_baselines(
             threshold_quantile=threshold_quantile,
             validation_blocks=validation_blocks,
         )
-        summaries.append({"dataset": dataset, "baseline": baseline, **metrics})
+        distribution = score_distribution_summary(
+            validation_scores[baseline],
+            test_score,
+            test_labels,
+        )
+        summaries.append({"dataset": dataset, "baseline": baseline, **metrics, **distribution})
 
     return BaselineRun(scores=score_frame, summary=pd.DataFrame(summaries))
 
