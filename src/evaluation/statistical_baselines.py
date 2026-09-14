@@ -10,6 +10,7 @@ def statistical_baseline_scores(
     ewma_alpha: float = 0.2,
     pca_components: int = 1,
     cusum_slack: float = 0.5,
+    cusum_reset_threshold: float | None = None,
 ) -> dict[str, np.ndarray]:
     """Return continuous per-timestep anomaly scores fit on normal train data.
 
@@ -17,11 +18,18 @@ def statistical_baseline_scores(
     later blocked-time validation phase, preventing test-label leakage during
     baseline generation.
     """
-    _validate_inputs(train, test, ewma_alpha, pca_components, cusum_slack)
+    _validate_inputs(
+        train,
+        test,
+        ewma_alpha,
+        pca_components,
+        cusum_slack,
+        cusum_reset_threshold,
+    )
     train_standardized, test_standardized = _standardize_from_train(train, test)
 
     return {
-        "cusum": _cusum_score(test_standardized, cusum_slack),
+        "cusum": _cusum_score(test_standardized, cusum_slack, cusum_reset_threshold),
         "ewma": _ewma_score(test_standardized, ewma_alpha),
         "pca_spe": _pca_spe_score(train_standardized, test_standardized, pca_components),
     }
@@ -33,6 +41,7 @@ def _validate_inputs(
     ewma_alpha: float,
     pca_components: int,
     cusum_slack: float,
+    cusum_reset_threshold: float | None,
 ) -> None:
     if train.ndim != 2 or test.ndim != 2:
         raise ValueError("train and test must be two-dimensional [time, sensor] arrays")
@@ -48,6 +57,10 @@ def _validate_inputs(
         raise ValueError("pca_components must be between 1 and the sensor count")
     if cusum_slack < 0.0:
         raise ValueError("cusum_slack must be non-negative")
+    if cusum_reset_threshold is not None and (
+        not np.isfinite(cusum_reset_threshold) or cusum_reset_threshold <= 0.0
+    ):
+        raise ValueError("cusum_reset_threshold must be finite and positive when provided")
 
 
 def _standardize_from_train(train: np.ndarray, test: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
@@ -57,7 +70,11 @@ def _standardize_from_train(train: np.ndarray, test: np.ndarray) -> tuple[np.nda
     return (train - mean) / stable_scale, (test - mean) / stable_scale
 
 
-def _cusum_score(values: np.ndarray, slack: float) -> np.ndarray:
+def _cusum_score(
+    values: np.ndarray,
+    slack: float,
+    reset_threshold: float | None,
+) -> np.ndarray:
     positive = np.zeros(values.shape[1], dtype=np.float64)
     negative = np.zeros(values.shape[1], dtype=np.float64)
     scores = np.empty(values.shape[0], dtype=np.float64)
@@ -65,7 +82,11 @@ def _cusum_score(values: np.ndarray, slack: float) -> np.ndarray:
     for index, row in enumerate(values):
         positive = np.maximum(0.0, positive + row - slack)
         negative = np.maximum(0.0, negative - row - slack)
-        scores[index] = float(np.maximum(positive, negative).max())
+        score = float(np.maximum(positive, negative).max())
+        scores[index] = score
+        if reset_threshold is not None and score > reset_threshold:
+            positive.fill(0.0)
+            negative.fill(0.0)
     return scores
 
 

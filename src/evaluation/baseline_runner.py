@@ -19,26 +19,50 @@ class BaselineRun:
     summary: pd.DataFrame
 
 
+def calibrate_blocked_threshold(
+    validation_scores: np.ndarray,
+    *,
+    threshold_quantile: float,
+    validation_blocks: int,
+) -> float:
+    """Return a conservative threshold across contiguous normal-time blocks."""
+    if validation_scores.ndim != 1:
+        raise ValueError("validation_scores must be one-dimensional")
+    if len(validation_scores) == 0:
+        raise ValueError("validation_scores must not be empty")
+    if not np.isfinite(validation_scores).all():
+        raise ValueError("validation_scores must contain only finite values")
+    if not 0.0 < threshold_quantile < 1.0:
+        raise ValueError("threshold_quantile must be in (0, 1)")
+    if not 1 <= validation_blocks <= len(validation_scores):
+        raise ValueError("validation_blocks must be between 1 and the validation length")
+
+    blocks = np.array_split(validation_scores, validation_blocks)
+    block_thresholds = [np.quantile(block, threshold_quantile) for block in blocks]
+    return float(max(block_thresholds))
+
+
 def summarize_score_series(
     validation_scores: np.ndarray,
     test_scores: np.ndarray,
     test_labels: np.ndarray,
     *,
     threshold_quantile: float,
+    validation_blocks: int = 1,
 ) -> dict[str, float | int | None]:
     """Calibrate on validation-normal scores, then evaluate held-out test data."""
-    if not 0.0 < threshold_quantile < 1.0:
-        raise ValueError("threshold_quantile must be in (0, 1)")
     if validation_scores.ndim != 1 or test_scores.ndim != 1 or test_labels.ndim != 1:
         raise ValueError("scores and labels must be one-dimensional")
     if test_scores.shape != test_labels.shape:
         raise ValueError("test_scores and test_labels must have the same shape")
-    if len(validation_scores) == 0:
-        raise ValueError("validation_scores must not be empty")
-    if not np.isfinite(validation_scores).all() or not np.isfinite(test_scores).all():
-        raise ValueError("scores must contain only finite values")
+    if not np.isfinite(test_scores).all():
+        raise ValueError("test_scores must contain only finite values")
 
-    threshold = float(np.quantile(validation_scores, threshold_quantile))
+    threshold = calibrate_blocked_threshold(
+        validation_scores,
+        threshold_quantile=threshold_quantile,
+        validation_blocks=validation_blocks,
+    )
     predictions = (test_scores > threshold).astype(np.int8)
     event_metrics = event_detection_metrics(test_labels.astype(np.int8), predictions)
     return {
@@ -54,6 +78,7 @@ def run_dataset_statistical_baselines(
     *,
     limit: int | None = None,
     threshold_quantile: float = 0.99,
+    validation_blocks: int = 5,
     ewma_alpha: float = 0.2,
     pca_components: int = 5,
 ) -> BaselineRun:
@@ -81,11 +106,17 @@ def run_dataset_statistical_baselines(
         ewma_alpha=ewma_alpha,
         pca_components=usable_components,
     )
+    cusum_reset_threshold = calibrate_blocked_threshold(
+        validation_scores["cusum"],
+        threshold_quantile=threshold_quantile,
+        validation_blocks=validation_blocks,
+    )
     test_scores = statistical_baseline_scores(
         train_values,
         test_values,
         ewma_alpha=ewma_alpha,
         pca_components=usable_components,
+        cusum_reset_threshold=cusum_reset_threshold,
     )
 
     score_frame = test.loc[:, ["timestamp", "label", "attack_id"]].copy()
@@ -97,6 +128,7 @@ def run_dataset_statistical_baselines(
             test_score,
             test_labels,
             threshold_quantile=threshold_quantile,
+            validation_blocks=validation_blocks,
         )
         summaries.append({"dataset": dataset, "baseline": baseline, **metrics})
 

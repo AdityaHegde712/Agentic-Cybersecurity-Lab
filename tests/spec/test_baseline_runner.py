@@ -4,7 +4,11 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from src.evaluation.baseline_runner import prepare_feature_matrices, summarize_score_series
+from src.evaluation.baseline_runner import (
+    calibrate_blocked_threshold,
+    prepare_feature_matrices,
+    summarize_score_series,
+)
 
 
 def test_summary_calibrates_threshold_from_validation_and_scores_test_events() -> None:
@@ -24,6 +28,32 @@ def test_summary_calibrates_threshold_from_validation_and_scores_test_events() -
     assert summary["point_tpr"] == pytest.approx(1.0)
     assert summary["event_recall"] == pytest.approx(1.0)
     assert summary["median_detection_delay"] == pytest.approx(0.0)
+
+
+def test_blocked_calibration_uses_the_most_conservative_contiguous_normal_block() -> None:
+    validation_scores = np.array([0.0, 100.0, 40.0, 40.0])
+
+    threshold = calibrate_blocked_threshold(
+        validation_scores,
+        threshold_quantile=0.75,
+        validation_blocks=2,
+    )
+
+    assert threshold == pytest.approx(75.0)
+    assert threshold > np.quantile(validation_scores, 0.75)
+
+
+def test_summary_uses_blocked_validation_calibration() -> None:
+    summary = summarize_score_series(
+        np.array([0.0, 100.0, 40.0, 40.0]),
+        np.array([60.0, 80.0]),
+        np.array([0, 0]),
+        threshold_quantile=0.75,
+        validation_blocks=2,
+    )
+
+    assert summary["threshold"] == pytest.approx(75.0)
+    assert summary["point_fpr"] == pytest.approx(0.5)
 
 
 @pytest.mark.parametrize("quantile", [0.0, 1.0, -0.1, 1.1])

@@ -41,6 +41,21 @@ def test_each_baseline_increases_on_a_large_additive_sensor_attack() -> None:
         assert attacked_mean > clean_mean * 5.0, name
 
 
+def test_cusum_resets_after_crossing_its_calibrated_reset_threshold() -> None:
+    train = np.array([[-1.0], [1.0]])
+    test = np.array([[2.0], [2.0], [0.0]])
+
+    scores = statistical_baseline_scores(
+        train,
+        test,
+        pca_components=1,
+        cusum_slack=0.0,
+        cusum_reset_threshold=3.0,
+    )
+
+    assert np.array_equal(scores["cusum"], np.array([2.0, 4.0, 0.0]))
+
+
 @pytest.mark.parametrize(
     ("train", "test", "alpha", "components"),
     [

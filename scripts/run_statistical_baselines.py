@@ -28,6 +28,12 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--limit", type=int, default=None, help="Optional rows per split for a smoke run.")
     parser.add_argument("--threshold-quantile", type=float, default=0.99)
+    parser.add_argument(
+        "--validation-blocks",
+        type=int,
+        default=5,
+        help="Contiguous normal-validation blocks used for conservative calibration.",
+    )
     parser.add_argument("--ewma-alpha", type=float, default=0.2)
     parser.add_argument("--pca-components", type=int, default=5)
     parser.add_argument("--output-dir", type=Path, default=Path("results") / "statistical_baselines")
@@ -47,6 +53,7 @@ def main() -> None:
             dataset,
             limit=args.limit,
             threshold_quantile=args.threshold_quantile,
+            validation_blocks=args.validation_blocks,
             ewma_alpha=args.ewma_alpha,
             pca_components=args.pca_components,
         )
