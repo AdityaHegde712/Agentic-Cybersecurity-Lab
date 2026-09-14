@@ -1,6 +1,6 @@
 # Temporal Additive Attack Modeling: Progress Report
 
-**Status:** active research prototype on `dev`  
+**Status:** active research prototype on `dev`
 **Scope of evidence:** reduced 10,000-row smoke runs on Vista; results are directional, not final cross-dataset claims.
 
 ## 1. Research objective and current boundary
