@@ -2,7 +2,7 @@
 
 **Status:** active long-horizon reference
 **Last updated:** 2026-09-15
-**Current position:** Sprint 1 complete; Sprint 2 runner and analysis implemented, GPU smoke pending
+**Current position:** Sprint 1 complete; Sprint 2 injected recovery runner ready, GPU smoke pending
 **Primary objective:** infer and statistically characterize observation-only additive attack error in multivariate physical sensor time series.
 
 ## 1. The Research Claim We Are Building Toward
@@ -69,13 +69,15 @@ The loop is intentionally ordered. Detection experiments establish whether resid
 
 ### Phase B: Stable Forecaster and Pilot Recovery — Sprint 2
 
-**State:** active. The repository-tracked BATADAL ablation configuration, grid runner, and aggregate-only inspection path are complete; the reduced `gh-dev` smoke is the next evidence gate.
+**State:** active. The reduced `gh-dev` ablation selected a stable BATADAL forecaster, and the known-delta injected recovery runner is implemented. The GPU smoke and artifact inspection are the next evidence gate.
 
 **Question:** can a bounded, reproducible BATADAL configuration produce a stable normal-state forecast residual that remains usable under controlled injections?
 
 **Work:** configuration contract tests; BATADAL context/hidden-size/epoch ablation; selection report; injected step, ramp, periodic, and multi-sensor pilot suite.
 
-**Advance gate:** validation loss decreases, normal-test FPR is at most 5% in the reduced smoke, a checkpoint and compact inspection artifacts exist, and the pilot returns all recovery metrics against known `delta_x`.
+**Forecaster gate met:** `context-32_hidden-128_epochs-10` produced 0.1326 best validation loss, 2.95% normal-test FPR, 54.3% point TPR, 100% event recall, and one-sample median delay in the 10,000-row smoke. Evidence: `results/lstm_forecaster/batadal_ablation/`.
+
+**Advance gate:** use the selected checkpoint to run the pilot and return all recovery metrics against known `delta_x`.
 
 **Stop/redesign gate:** no bounded BATADAL configuration meets the forecast-quality gate. Audit normal-regime split, sensor preprocessing, and threshold calibration before changing architecture or training longer.
 

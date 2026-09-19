@@ -6,7 +6,7 @@ Convert the Sprint 1 LSTM prototype into a defensible attack-modeling measuremen
 
 ## Current State
 
-Tasks 1 through 3 implementation are complete. `configs/experiments/batadal_lstm_ablation.json` defines the bounded, four-run BATADAL grid; `src/experiments/lstm_ablation_config.py` validates it; `scripts/run_lstm_forecaster.py --ablation-config` writes a manifest, isolated run directories, and a grid summary; and `scripts/analyze_lstm_ablation.py` produces aggregate-only plots and a selection report. The reduced `gh-dev` smoke is the next evidence gate.
+Tasks 1 through 4 are complete. The reduced `gh-dev` ablation selected `context-32_hidden-128_epochs-10`: 0.132595 best validation loss, 2.95% FPR, 54.3% point TPR, 100% event recall, and one-sample median delay. `scripts/run_injected_recovery.py` and `scripts/analyze_injected_recovery.py` now implement Task 5 against that checkpoint. The bounded `gh-dev` recovery smoke and its compact artifact inspection are next.
 
 ## Execution Sequence
 

@@ -2,13 +2,15 @@
 
 ## S2-D01: BATADAL Is the Neural De-Risking Dataset
 
-**Status:** proposed.
+**Status:** accepted.
 
 **Context:** In the five-epoch GPU smoke, BATADAL training and validation loss both decreased. It achieved 2.88% FPR, 51.6% point TPR, 100% event recall, and one-sample median delay. HAI, SWaT, and WADI had much larger validation losses or weak detection.
 
-**Proposed decision:** Use BATADAL first for controlled LSTM configuration ablations before changing architecture or training the other datasets longer.
+**Decision:** Use BATADAL first for controlled LSTM configuration ablations before changing architecture or training the other datasets longer.
 
 **Failure condition:** If no bounded BATADAL configuration reduces validation loss, stop and diagnose split/preprocessing assumptions before architectural expansion.
+
+**Evidence:** The 10,000-row `gh-dev` grid selected `context-32_hidden-128_epochs-10` with 0.132595 validation loss, 2.95% FPR, 54.3% point TPR, 100% event recall, and one-sample median delay. See `results/lstm_forecaster/batadal_ablation/analysis/INSPECTION.md`.
 
 ## S2-D02: Configuration Before Architecture Forks
 
@@ -17,6 +19,8 @@
 **Proposed decision:** Add per-dataset experiment configuration for normal-regime selection, sensor inclusion, context, hidden size, and training budget. Do not create separate neural architectures in Sprint 2.
 
 **Rationale:** The current evidence indicates distribution mismatch for HAI/SWaT/WADI; an architecture fork would confound that diagnosis.
+
+**Evidence update:** The BATADAL configuration grid established a stable shared-architecture forecaster, so no architecture fork is justified before injected recovery evidence.
 
 ## S2-D03: Synthetic Recovery Is the Research Claim Gate
 
@@ -47,3 +51,13 @@
 **Decision:** Select and inspect LSTM ablation runs from `summary.csv` and training histories only. `scripts/analyze_lstm_ablation.py` ranks best validation loss, point FPR, event recall, and median delay, then saves an `INSPECTION.md` report and `ranked_metrics.png`.
 
 **Consequence:** Do not load or manually inspect high-volume `scores.csv` files when choosing a configuration. Raw scores remain source artifacts for later repository scripts, not conversational context.
+
+## S2-D07: Standardized Known-Delta Recovery Pilot
+
+**Status:** accepted.
+
+**Decision:** Inject step, ramp, periodic, and multi-sensor observation attacks into held-out normal BATADAL validation data in train-derived sensor standard-deviation units. Convert the resulting observation and known delta back to original sensor units for forecast-residual recovery metrics.
+
+**Rationale:** Standardized magnitudes make scenario severity comparable across sensors while preserving an exact original-unit `delta_x` for magnitude, sign, support, onset, and duration scoring.
+
+**Boundary:** Thresholds are calibrated on a disjoint clean validation prefix. Real BATADAL labels are not used as delta ground truth.
