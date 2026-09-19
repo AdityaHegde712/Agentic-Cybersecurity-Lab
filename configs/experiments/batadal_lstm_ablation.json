@@ -1,0 +1,33 @@
+{
+  "experiment_name": "batadal_lstm_ablation",
+  "dataset": "batadal",
+  "seed": 7,
+  "limit": 10000,
+  "output_dir": "results/lstm_forecaster/batadal_ablation",
+  "runs": [
+    {
+      "name": "context-16_hidden-32_epochs-5",
+      "context_length": 16,
+      "hidden_size": 32,
+      "max_epochs": 5
+    },
+    {
+      "name": "context-32_hidden-64_epochs-5",
+      "context_length": 32,
+      "hidden_size": 64,
+      "max_epochs": 5
+    },
+    {
+      "name": "context-64_hidden-64_epochs-10",
+      "context_length": 64,
+      "hidden_size": 64,
+      "max_epochs": 10
+    },
+    {
+      "name": "context-32_hidden-128_epochs-10",
+      "context_length": 32,
+      "hidden_size": 128,
+      "max_epochs": 10
+    }
+  ]
+}

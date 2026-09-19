@@ -1,6 +1,12 @@
 # Research artifacts (local-only, per owner)
 _internal/
 .agent-tasks/
+!.agent-tasks/
+!.agent-tasks/TRAJECTORY.md
+!.agent-tasks/sprint-*/
+!.agent-tasks/sprint-*/PLAN.md
+!.agent-tasks/sprint-*/TASKS.md
+!.agent-tasks/sprint-*/DECISIONS.md
 .compactions/
 .opencode/
 /data/
