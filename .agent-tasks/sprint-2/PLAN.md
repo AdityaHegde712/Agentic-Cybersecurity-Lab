@@ -6,7 +6,7 @@ Convert the Sprint 1 LSTM prototype into a defensible attack-modeling measuremen
 
 ## Current State
 
-Tasks 1 through 4 are complete. The reduced `gh-dev` ablation selected `context-32_hidden-128_epochs-10`: 0.132595 best validation loss, 2.95% FPR, 54.3% point TPR, 100% event recall, and one-sample median delay. `scripts/run_injected_recovery.py` and `scripts/analyze_injected_recovery.py` now implement Task 5 against that checkpoint. The bounded `gh-dev` recovery smoke and its compact artifact inspection are next.
+Tasks 1 through 4 are complete. The reduced `gh-dev` ablation selected `context-32_hidden-128_epochs-10`: 0.132595 best validation loss, 2.95% FPR, 54.3% point TPR, 100% event recall, and one-sample median delay. `scripts/run_injected_recovery.py` and `scripts/analyze_injected_recovery.py` now implement Task 5 against that checkpoint. The current BATADAL source provides 1,440 contiguous validation rows, so this is a selection-validation pilot with 256 clean calibration rows, not a final held-out generalization result.
 
 ## Execution Sequence
 

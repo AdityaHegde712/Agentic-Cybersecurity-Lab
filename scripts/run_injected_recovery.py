@@ -42,7 +42,7 @@ def args() -> argparse.Namespace:
 
 
 def load_clean_validation_values(config: InjectedRecoveryConfig) -> np.ndarray:
-    """Load a held-out normal BATADAL sequence without using attack labels as truth."""
+    """Load the contiguous normal BATADAL validation sequence for this pilot."""
     if config.dataset != "batadal" or config.source_split != "val":
         raise ValueError("the current pilot supports BATADAL validation data only")
 

@@ -13,8 +13,8 @@ def test_versioned_injected_recovery_pilot_uses_selected_checkpoint_and_holdout_
 
     assert config.dataset == "batadal"
     assert config.source_split == "val"
-    assert config.limit == 10_000
-    assert config.calibration_length == 2_000
+    assert config.limit == 1_440
+    assert config.calibration_length == 256
     assert config.threshold_quantile == 0.99
     assert config.checkpoint_path == Path(
         "results/lstm_forecaster/batadal_ablation/"

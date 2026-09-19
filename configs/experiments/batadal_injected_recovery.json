@@ -3,40 +3,40 @@
   "source_split": "val",
   "checkpoint_path": "results/lstm_forecaster/batadal_ablation/context-32_hidden-128_epochs-10/batadal/checkpoints/best.pt",
   "output_dir": "results/lstm_forecaster/batadal_injected_recovery",
-  "limit": 10000,
-  "calibration_length": 2000,
+  "limit": 1440,
+  "calibration_length": 256,
   "threshold_quantile": 0.99,
   "scenarios": [
     {
       "attack_id": "step-single",
       "family": "step",
-      "start": 2600,
-      "duration": 400,
+      "start": 350,
+      "duration": 120,
       "magnitude_standard_deviations": 3.0,
       "sensors": [0]
     },
     {
       "attack_id": "ramp-single",
       "family": "ramp",
-      "start": 4000,
-      "duration": 500,
+      "start": 600,
+      "duration": 140,
       "magnitude_standard_deviations": 3.0,
       "sensors": [1]
     },
     {
       "attack_id": "periodic-single",
       "family": "periodic",
-      "start": 5800,
-      "duration": 800,
+      "start": 850,
+      "duration": 200,
       "magnitude_standard_deviations": 3.0,
       "sensors": [2],
-      "period": 64
+      "period": 32
     },
     {
       "attack_id": "step-multi-sensor",
       "family": "step",
-      "start": 7600,
-      "duration": 500,
+      "start": 1150,
+      "duration": 160,
       "magnitude_standard_deviations": 2.5,
       "sensors": [3, 4]
     }

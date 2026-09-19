@@ -14,7 +14,7 @@
 
 - [/] 5. Add an injected additive-attack forecaster evaluation runner and locked recovery assertions.
   **Implementation evidence:** `configs/experiments/batadal_injected_recovery.json`, `src/evaluation/injected_recovery.py`, `scripts/run_injected_recovery.py`, `scripts/analyze_injected_recovery.py`, and the locked `tests/spec/test_injected_recovery*.py` contracts.
-  **Remaining acceptance:** run the selected checkpoint on the known-delta pilot, then inspect only its `summary.csv`, `manifest.json`, `analysis/INSPECTION.md`, and `analysis/recovery_metrics.png`.
+  **Remaining acceptance:** run the selected checkpoint on the 1,440-row selection-validation pilot, then inspect only its `summary.csv`, `manifest.json`, `analysis/INSPECTION.md`, and `analysis/recovery_metrics.png`.
 
 ## Blockers and Owner Actions
 

@@ -77,7 +77,7 @@ The loop is intentionally ordered. Detection experiments establish whether resid
 
 **Forecaster gate met:** `context-32_hidden-128_epochs-10` produced 0.1326 best validation loss, 2.95% normal-test FPR, 54.3% point TPR, 100% event recall, and one-sample median delay in the 10,000-row smoke. Evidence: `results/lstm_forecaster/batadal_ablation/`.
 
-**Advance gate:** use the selected checkpoint to run the pilot and return all recovery metrics against known `delta_x`.
+**Advance gate:** use the selected checkpoint to run the 1,440-row selection-validation pilot and return all recovery metrics against known `delta_x`. This establishes implementation feasibility, not held-out recovery generalization.
 
 **Stop/redesign gate:** no bounded BATADAL configuration meets the forecast-quality gate. Audit normal-regime split, sensor preprocessing, and threshold calibration before changing architecture or training longer.
 

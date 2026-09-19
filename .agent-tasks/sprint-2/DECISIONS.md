@@ -56,8 +56,8 @@
 
 **Status:** accepted.
 
-**Decision:** Inject step, ramp, periodic, and multi-sensor observation attacks into held-out normal BATADAL validation data in train-derived sensor standard-deviation units. Convert the resulting observation and known delta back to original sensor units for forecast-residual recovery metrics.
+**Decision:** Inject step, ramp, periodic, and multi-sensor observation attacks into the 1,440-row normal BATADAL validation sequence in train-derived sensor standard-deviation units. Convert the resulting observation and known delta back to original sensor units for forecast-residual recovery metrics.
 
 **Rationale:** Standardized magnitudes make scenario severity comparable across sensors while preserving an exact original-unit `delta_x` for magnitude, sign, support, onset, and duration scoring.
 
-**Boundary:** Thresholds are calibrated on a disjoint clean validation prefix. Real BATADAL labels are not used as delta ground truth.
+**Boundary:** Thresholds are calibrated on a disjoint 256-row clean validation prefix. The same validation split selected the checkpoint, so this run is a recovery-mechanics pilot rather than a held-out generalization claim. Real BATADAL labels are not used as delta ground truth.
