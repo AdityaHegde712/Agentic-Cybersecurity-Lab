@@ -19,7 +19,7 @@
   **Evidence:** `results/lstm_forecaster/batadal_injected_recovery/diagnostic/INSPECTION.md`, `activation_drift_and_support.png`, and `attacked_sensor_traces.png`. Clean sensor activity remained 1.2-1.8% across all windows, while attack-phase activity on injected sensors was 71-100%. The failure mechanism is global pointwise support selection, not threshold drift or absent residual signal.
 
 - [/] 7. Implement and evaluate a normal-calibrated temporal-support estimator.
-  **Implementation evidence:** `src/evaluation/temporal_support.py`, `tests/spec/test_temporal_support.py`, `scripts/run_temporal_support_recovery.py`, and `scripts/analyze_temporal_support_recovery.py`; 9 focused recovery/support contracts pass locally. **Owner action remains:** run the comparison on Vista and copy back `results/lstm_forecaster/batadal_temporal_support_recovery/analysis/` plus `summary.csv`.
+  **Evidence:** `results/lstm_forecaster/batadal_temporal_support_recovery/analysis/INSPECTION.md` and `estimator_comparison.png`. Fixed q99/q95/three-sample support improved precision and magnitude error but reduced recall; F1 improved only for multi-sensor step (0.0922 to 0.1004) and worsened for the other three scenarios. **Next subtask:** select threshold/duration settings using clean normal data only, then evaluate the fixed choice on injections.
 
 - [ ] 8. Design the shared-architecture HAI/SWaT/WADI conditioning audit after Task 7 fixes or bounds the BATADAL support-selection mechanism.
   **Acceptance criteria:** one versioned multi-dataset configuration contract, normal-regime/split audit, compact per-dataset forecast diagnostics, and an explicit decision whether dataset-specific configuration suffices before considering any architecture variation.

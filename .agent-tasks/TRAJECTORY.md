@@ -83,6 +83,8 @@ The loop is intentionally ordered. Detection experiments establish whether resid
 
 **Redesign gate:** build and compare a label-free, normal-calibrated per-sensor temporal-support estimator before modifying neural architecture or claiming delta recovery. It must separate support segmentation from residual magnitude estimation and be scored without using injected-sensor identities at inference.
 
+**Support-control result:** a fixed q99/q95/three-sample hysteresis rule increased precision and reduced magnitude error, but reduced recall enough to lower F1 in three of four scenarios. It is therefore an informative negative control, not a solution. The next gate is a normal-only calibration sweep over threshold and segment-duration settings, followed by a frozen evaluation on the injected suite.
+
 **Stop/redesign gate:** no bounded BATADAL configuration meets the forecast-quality gate. Audit normal-regime split, sensor preprocessing, and threshold calibration before changing architecture or training longer.
 
 **Reference:** `.agent-tasks/sprint-2/PLAN.md`, `.agent-tasks/sprint-2/TASKS.md`, `.agent-tasks/sprint-2/DECISIONS.md`.

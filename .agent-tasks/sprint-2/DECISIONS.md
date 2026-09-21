@@ -83,3 +83,11 @@
 **Decision:** Do not redesign the LSTM or recalibrate thresholds first. Build a normal-calibrated, label-free per-sensor temporal-support estimator that rejects isolated spikes and retains sustained residual segments. Evaluate its support decision separately from the residual magnitude estimate.
 
 **Boundary:** Injected sensor identities are permitted only for scoring and diagnostic plots. The estimator must operate over every sensor with thresholds and duration settings chosen from clean calibration data.
+
+## S2-D10: Fixed Hysteresis Is an Inconclusive Support Control
+
+**Status:** accepted.
+
+**Evidence:** With q99 start, q95 continuation, and a three-sample minimum duration, precision increased for every scenario and magnitude MAE decreased materially. However, support F1 declined for step-single (0.0619 to 0.0481), ramp (0.0614 to 0.0491), and periodic (0.0805 to 0.0719), improving only for multi-sensor step (0.0922 to 0.1004). Onset error remained hundreds of samples because unrelated sustained residual segments still exist.
+
+**Decision:** Treat the fixed hysteresis rule as a negative control, not the final support estimator. The next experiment must choose its threshold and duration configuration using held-out clean normal behavior alone, with injection results reported only after that choice is fixed.
