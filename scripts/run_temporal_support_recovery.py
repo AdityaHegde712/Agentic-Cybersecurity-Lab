@@ -42,6 +42,14 @@ def args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def manifest_config(config: object) -> dict[str, object]:
+    """Convert the typed injection contract into JSON-safe manifest provenance."""
+    payload = asdict(config)
+    payload["checkpoint_path"] = Path(payload["checkpoint_path"]).as_posix()
+    payload["output_dir"] = Path(payload["output_dir"]).as_posix()
+    return payload
+
+
 def run(
     config_path: Path,
     output_dir: Path,
@@ -125,7 +133,7 @@ def run(
     (artifact_dir / "manifest.json").write_text(
         json.dumps(
             {
-                "injection_config": {**asdict(config), "checkpoint_path": str(config.checkpoint_path)},
+                "injection_config": manifest_config(config),
                 "continuation_quantile": continuation_quantile,
                 "minimum_duration": minimum_duration,
                 "start_threshold_standard_deviations": start_thresholds.tolist(),

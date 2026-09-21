@@ -1,7 +1,12 @@
 """LOCKED contract for label-free temporal support selection."""
 
 import numpy as np
+import json
+from pathlib import Path
 
+from scripts.run_temporal_support_recovery import manifest_config
+from src.evaluation.injected_recovery import InjectionScenario
+from src.experiments.injected_recovery_config import InjectedRecoveryConfig
 from src.evaluation.temporal_support import temporal_support_mask
 
 
@@ -45,3 +50,31 @@ def test_temporal_support_requires_a_high_threshold_seed() -> None:
     )
 
     assert not support.any()
+
+
+def test_manifest_config_converts_repository_paths_to_json_strings() -> None:
+    config = InjectedRecoveryConfig(
+        dataset="batadal",
+        source_split="val",
+        checkpoint_path=Path("results/checkpoint.pt"),
+        output_dir=Path("results/output"),
+        limit=100,
+        calibration_length=20,
+        threshold_quantile=0.99,
+        scenarios=(
+            InjectionScenario(
+                attack_id="step",
+                family="step",
+                start=30,
+                duration=10,
+                magnitude_standard_deviations=3.0,
+                sensors=(0,),
+            ),
+        ),
+    )
+
+    payload = manifest_config(config)
+
+    assert payload["checkpoint_path"] == "results/checkpoint.pt"
+    assert payload["output_dir"] == "results/output"
+    json.dumps(payload)
