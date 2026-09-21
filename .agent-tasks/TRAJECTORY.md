@@ -1,8 +1,8 @@
 # Research Trajectory: Temporal Additive Attack Inference
 
 **Status:** active long-horizon reference
-**Last updated:** 2026-09-15
-**Current position:** Sprint 1 complete; Sprint 2 injected recovery runner ready, GPU smoke pending
+**Last updated:** 2026-09-21
+**Current position:** Sprint 1 complete; Sprint 2 recovery pilot completed, calibration redesign required
 **Primary objective:** infer and statistically characterize observation-only additive attack error in multivariate physical sensor time series.
 
 ## 1. The Research Claim We Are Building Toward
@@ -69,7 +69,7 @@ The loop is intentionally ordered. Detection experiments establish whether resid
 
 ### Phase B: Stable Forecaster and Pilot Recovery — Sprint 2
 
-**State:** active. The reduced `gh-dev` ablation selected a stable BATADAL forecaster, and the known-delta injected recovery runner is implemented. The GPU smoke and artifact inspection are the next evidence gate.
+**State:** active. The reduced `gh-dev` ablation selected a stable BATADAL forecaster and the known-delta injection pilot completed. The residual thresholding failed to recover delta support, sign, or timing; calibration and temporal-support diagnosis are required before further recovery claims.
 
 **Question:** can a bounded, reproducible BATADAL configuration produce a stable normal-state forecast residual that remains usable under controlled injections?
 
@@ -77,7 +77,9 @@ The loop is intentionally ordered. Detection experiments establish whether resid
 
 **Forecaster gate met:** `context-32_hidden-128_epochs-10` produced 0.1326 best validation loss, 2.95% normal-test FPR, 54.3% point TPR, 100% event recall, and one-sample median delay in the 10,000-row smoke. Evidence: `results/lstm_forecaster/batadal_ablation/`.
 
-**Advance gate:** use the selected checkpoint to run the 1,440-row selection-validation pilot and return all recovery metrics against known `delta_x`. This establishes implementation feasibility, not held-out recovery generalization.
+**Pilot outcome:** all four injected scenarios produced recovery metrics, but support F1 was 0.061-0.092, sign accuracy was 0.021-0.042, and onset errors were 317-1,117 samples. The current thresholded residual is not a usable delta estimator. Evidence: `results/lstm_forecaster/batadal_injected_recovery/analysis/`.
+
+**Redesign gate:** diagnose normal-regime calibration and per-sensor temporal support before modifying neural architecture or claiming delta recovery. The locked diagnostic measures clean threshold activity over time, attacked-sensor activity before/during/after injection, and the residual-versus-known-delta trace. Its result selects the remediation class rather than tuning by intuition.
 
 **Stop/redesign gate:** no bounded BATADAL configuration meets the forecast-quality gate. Audit normal-regime split, sensor preprocessing, and threshold calibration before changing architecture or training longer.
 
@@ -115,7 +117,7 @@ The loop is intentionally ordered. Detection experiments establish whether resid
 
 **Question:** which parts of the attack-recovery method transfer across HAI, SWaT, WADI, and BATADAL when normal-regime configuration is explicit?
 
-**Work:** dataset-specific configuration, normal-regime audit, fixed protocol replication, and failure taxonomy. Architectures remain shared unless configuration evidence proves an architecture limitation.
+**Work:** dataset-specific configuration, normal-regime audit, fixed protocol replication, and failure taxonomy. HAI, SWaT, and WADI are not dropped because their initial shared LSTM smoke was weak: each receives a conditioning audit covering temporal split validity, sensor scaling, context length, batch size, and epoch budget. Architectures remain shared unless that audit provides evidence of an architecture limitation.
 
 **Advance gate:** every dataset has a documented outcome: successful recovery within the defined threat model, bounded partial recovery, or an evidence-backed failure mode.
 

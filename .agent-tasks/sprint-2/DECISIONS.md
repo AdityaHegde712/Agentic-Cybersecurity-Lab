@@ -61,3 +61,15 @@
 **Rationale:** Standardized magnitudes make scenario severity comparable across sensors while preserving an exact original-unit `delta_x` for magnitude, sign, support, onset, and duration scoring.
 
 **Boundary:** Thresholds are calibrated on a disjoint 256-row clean validation prefix. The same validation split selected the checkpoint, so this run is a recovery-mechanics pilot rather than a held-out generalization claim. Real BATADAL labels are not used as delta ground truth.
+
+**Outcome:** The pilot rejected the current thresholded residual as a delta estimator: it had support F1 of 0.061-0.092, sign accuracy of 0.021-0.042, and onset errors of 317-1,117 samples. The next change must diagnose calibration and temporal support, not add neural architecture complexity.
+
+## S2-D08: BATADAL Is a Controlled Testbed, Not a Dataset Scope Reduction
+
+**Status:** accepted.
+
+**Decision:** Use BATADAL alone to isolate the immediate recovery-mechanics failure because it is the only current dataset with a shared-architecture forecaster that learned bounded normal dynamics. Retain HAI, SWaT, and WADI as an explicit subsequent shared-architecture conditioning audit before claiming cross-dataset robustness or creating per-dataset architectures.
+
+**Rationale:** The failed recovery pilot is an estimator/calibration question independent of cross-dataset transfer. Training all datasets while the recovery score activates before synthetic attacks would multiply compute without distinguishing threshold drift from forecaster adaptation. A successful BATADAL correction becomes a fixed protocol to test fairly across all four datasets.
+
+**Required next evidence for HAI/SWaT/WADI:** normal-regime/split audit, train-derived normalization check, context/epoch/batch configuration sweep, compact loss and clean-residual diagnostics, and a documented architecture-fork decision. Poor shared-model loss alone is not evidence that each dataset needs a distinct architecture.
