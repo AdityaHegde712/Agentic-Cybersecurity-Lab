@@ -6,7 +6,7 @@ Convert the Sprint 1 LSTM prototype into a defensible attack-modeling measuremen
 
 ## Current State
 
-Tasks 1 through 5 are complete. The reduced `gh-dev` ablation selected `context-32_hidden-128_epochs-10`: 0.132595 best validation loss, 2.95% FPR, 54.3% point TPR, 100% event recall, and one-sample median delay. The 1,440-row selection-validation injection pilot then failed the recovery gate: support F1 was 0.061-0.092, sign accuracy 0.021-0.042, and onset error 317-1,117 samples. The next work is a calibration and temporal-support diagnosis, not an architecture change or recovery claim.
+Tasks 1 through 6 are complete. The reduced `gh-dev` ablation selected `context-32_hidden-128_epochs-10`: 0.132595 best validation loss, 2.95% FPR, 54.3% point TPR, 100% event recall, and one-sample median delay. The 1,440-row selection-validation pilot initially failed its global pointwise recovery score, but the diagnostic ruled out calibration drift: clean sensor activity stayed at 1.2-1.8% while attacked-sensor activity rose to 71-100% during injection. The next work is a label-free temporal-support estimator that converts residual evidence into sparse sensor/event segments, not an architecture change.
 
 ## Execution Sequence
 
@@ -17,6 +17,7 @@ Tasks 1 through 5 are complete. The reduced `gh-dev` ablation selected `context-
 5. Score recovered residuals against known delta with support, magnitude, sign, onset, duration, and uncertainty diagnostics.
 6. Diagnose clean residual-threshold drift and attacked-sensor temporal support before changing the forecaster or thresholding rule.
 7. After a BATADAL recovery mechanism passes its redesign gate, audit HAI, SWaT, and WADI normal splits, sensor conditioning, and shared-architecture configuration under the same protocol.
+8. Compare raw pointwise thresholding with normal-calibrated temporal support segments on the known-delta suite before changing magnitude estimation.
 
 ## Scope Boundaries
 

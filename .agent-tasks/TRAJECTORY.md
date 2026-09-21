@@ -2,7 +2,7 @@
 
 **Status:** active long-horizon reference
 **Last updated:** 2026-09-21
-**Current position:** Sprint 1 complete; Sprint 2 recovery pilot completed, calibration redesign required
+**Current position:** Sprint 1 complete; Sprint 2 diagnostic completed, temporal-support estimator required
 **Primary objective:** infer and statistically characterize observation-only additive attack error in multivariate physical sensor time series.
 
 ## 1. The Research Claim We Are Building Toward
@@ -79,7 +79,9 @@ The loop is intentionally ordered. Detection experiments establish whether resid
 
 **Pilot outcome:** all four injected scenarios produced recovery metrics, but support F1 was 0.061-0.092, sign accuracy was 0.021-0.042, and onset errors were 317-1,117 samples. The current thresholded residual is not a usable delta estimator. Evidence: `results/lstm_forecaster/batadal_injected_recovery/analysis/`.
 
-**Redesign gate:** diagnose normal-regime calibration and per-sensor temporal support before modifying neural architecture or claiming delta recovery. The locked diagnostic measures clean threshold activity over time, attacked-sensor activity before/during/after injection, and the residual-versus-known-delta trace. Its result selects the remediation class rather than tuning by intuition.
+**Diagnostic result:** calibration drift was rejected. Clean sensor activity remained 1.2-1.8% across windows, whereas attacked-sensor activation was 71-100% during each injection; residual traces tracked all injected shapes, though sustained offsets were attenuated. The original global support score was dominated by independent residual spikes on uninjected sensors.
+
+**Redesign gate:** build and compare a label-free, normal-calibrated per-sensor temporal-support estimator before modifying neural architecture or claiming delta recovery. It must separate support segmentation from residual magnitude estimation and be scored without using injected-sensor identities at inference.
 
 **Stop/redesign gate:** no bounded BATADAL configuration meets the forecast-quality gate. Audit normal-regime split, sensor preprocessing, and threshold calibration before changing architecture or training longer.
 

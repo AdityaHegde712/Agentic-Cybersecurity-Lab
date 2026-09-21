@@ -73,3 +73,13 @@
 **Rationale:** The failed recovery pilot is an estimator/calibration question independent of cross-dataset transfer. Training all datasets while the recovery score activates before synthetic attacks would multiply compute without distinguishing threshold drift from forecaster adaptation. A successful BATADAL correction becomes a fixed protocol to test fairly across all four datasets.
 
 **Required next evidence for HAI/SWaT/WADI:** normal-regime/split audit, train-derived normalization check, context/epoch/batch configuration sweep, compact loss and clean-residual diagnostics, and a documented architecture-fork decision. Poor shared-model loss alone is not evidence that each dataset needs a distinct architecture.
+
+## S2-D09: Residual Signal Exists; Global Pointwise Support Is the Failure
+
+**Status:** accepted.
+
+**Evidence:** Clean residual threshold activity stayed at 1.2-1.8% of sensor-time cells across the full 1,440-row validation sequence. On attacked sensors only, activation rose to 100% for step-single, 86.4% for ramp, 88.5% for periodic, and 71.3% for multi-sensor step attacks. The trace plot shows the residual follows all four injected temporal shapes, with amplitude attenuation on sustained step/ramp segments.
+
+**Decision:** Do not redesign the LSTM or recalibrate thresholds first. Build a normal-calibrated, label-free per-sensor temporal-support estimator that rejects isolated spikes and retains sustained residual segments. Evaluate its support decision separately from the residual magnitude estimate.
+
+**Boundary:** Injected sensor identities are permitted only for scoring and diagnostic plots. The estimator must operate over every sensor with thresholds and duration settings chosen from clean calibration data.

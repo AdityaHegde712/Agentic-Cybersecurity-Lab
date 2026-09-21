@@ -15,10 +15,13 @@
 - [x] 5. Add an injected additive-attack forecaster evaluation runner and locked recovery assertions.
   **Evidence:** `results/lstm_forecaster/batadal_injected_recovery/summary.csv` and `analysis/INSPECTION.md`; all four scenarios ran, but recovery failed (support F1 0.061-0.092, sign accuracy 0.021-0.042, onset error 317-1,117 samples).
 
-- [/] 6. Run the locked BATADAL calibration and temporal-support diagnostic.
-  **Implementation evidence:** `tests/spec/test_injected_recovery_diagnostic.py`, `tests/spec/test_injected_recovery_diagnostic_analysis.py`, `src/evaluation/injected_recovery_diagnostic.py`, `scripts/run_injected_recovery_diagnostic.py`, and `scripts/analyze_injected_recovery_diagnostic.py`; 10 focused contracts pass locally. **Owner action remains:** run the two Vista commands and copy back only `results/lstm_forecaster/batadal_injected_recovery/diagnostic/analysis/` plus the two diagnostic summary CSVs.
+- [x] 6. Run the locked BATADAL calibration and temporal-support diagnostic.
+  **Evidence:** `results/lstm_forecaster/batadal_injected_recovery/diagnostic/INSPECTION.md`, `activation_drift_and_support.png`, and `attacked_sensor_traces.png`. Clean sensor activity remained 1.2-1.8% across all windows, while attack-phase activity on injected sensors was 71-100%. The failure mechanism is global pointwise support selection, not threshold drift or absent residual signal.
 
-- [ ] 7. Design the shared-architecture HAI/SWaT/WADI conditioning audit after Task 6 identifies the BATADAL recovery failure mechanism.
+- [/] 7. Implement and evaluate a normal-calibrated temporal-support estimator.
+  **Implementation evidence:** `src/evaluation/temporal_support.py`, `tests/spec/test_temporal_support.py`, `scripts/run_temporal_support_recovery.py`, and `scripts/analyze_temporal_support_recovery.py`; 9 focused recovery/support contracts pass locally. **Owner action remains:** run the comparison on Vista and copy back `results/lstm_forecaster/batadal_temporal_support_recovery/analysis/` plus `summary.csv`.
+
+- [ ] 8. Design the shared-architecture HAI/SWaT/WADI conditioning audit after Task 7 fixes or bounds the BATADAL support-selection mechanism.
   **Acceptance criteria:** one versioned multi-dataset configuration contract, normal-regime/split audit, compact per-dataset forecast diagnostics, and an explicit decision whether dataset-specific configuration suffices before considering any architecture variation.
 
 ## Blockers and Owner Actions
@@ -28,4 +31,4 @@
 
 ## Immediate Next Action
 
-Run Task 6 on Vista, inspect its compact artifacts, then select either a calibration/support remediation or a forecaster/attack-dynamics remediation. Task 7 remains mandatory before any cross-dataset robustness claim.
+Build the Task 7 temporal-support estimator, then run its known-delta comparison on Vista. Task 8 remains mandatory before any cross-dataset robustness claim.
