@@ -28,6 +28,7 @@ class AdditiveAttackResult:
 
     observed: np.ndarray
     delta: np.ndarray
+    support: np.ndarray
     event: dict[str, object]
 
 
@@ -43,9 +44,11 @@ def inject_additive_attack(
     _validate_clean(clean)
     _validate_spec(spec, clean.shape)
 
-    delta = np.zeros_like(clean, dtype=np.float64)
+    support = np.zeros(clean.shape, dtype=bool)
     end = spec.start + spec.duration
     waveform = _waveform(spec)
+    support[spec.start:end, list(spec.sensors)] = True
+    delta = np.zeros_like(clean, dtype=np.float64)
     delta[spec.start:end, list(spec.sensors)] = waveform[:, np.newaxis]
     observed = clean.astype(np.float64, copy=True) + delta
 
@@ -56,7 +59,12 @@ def inject_additive_attack(
         "end": end,
         "sensors": list(spec.sensors),
     }
-    return AdditiveAttackResult(observed=observed, delta=delta, event=event)
+    return AdditiveAttackResult(
+        observed=observed,
+        delta=delta,
+        support=support,
+        event=event,
+    )
 
 
 def _validate_clean(clean: np.ndarray) -> None:

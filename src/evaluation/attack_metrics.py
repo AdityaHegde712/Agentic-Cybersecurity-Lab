@@ -6,6 +6,8 @@ import numpy as np
 def additive_recovery_metrics(
     estimated_delta: np.ndarray,
     true_delta: np.ndarray,
+    *,
+    true_support: np.ndarray | None = None,
 ) -> dict[str, float]:
     """Score support, magnitude, and sign without rewarding sparse zero guesses.
 
@@ -14,7 +16,10 @@ def additive_recovery_metrics(
     counterfactual measurement for every feature.
     """
     _validate_shapes(estimated_delta, true_delta)
-    true_support = true_delta != 0.0
+    if true_support is None:
+        true_support = true_delta != 0.0
+    else:
+        _validate_support(true_support, true_delta.shape)
     estimated_support = estimated_delta != 0.0
 
     true_positive = int(np.logical_and(true_support, estimated_support).sum())
@@ -52,6 +57,11 @@ def _validate_shapes(estimated_delta: np.ndarray, true_delta: np.ndarray) -> Non
         raise ValueError("delta arrays must be two-dimensional [time, sensor]")
     if not np.isfinite(estimated_delta).all() or not np.isfinite(true_delta).all():
         raise ValueError("delta arrays must contain only finite values")
+
+
+def _validate_support(support: np.ndarray, shape: tuple[int, ...]) -> None:
+    if support.shape != shape or support.dtype != np.bool_:
+        raise ValueError("true_support must be a Boolean array matching delta shape")
 
 
 def _safe_ratio(numerator: float, denominator: float) -> float:

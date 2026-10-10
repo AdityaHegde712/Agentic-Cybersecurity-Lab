@@ -10,6 +10,8 @@ import numpy as np
 import pandas as pd
 import torch
 
+# ruff: noqa: E402
+# The CLI makes the repository importable before package imports.
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
@@ -101,6 +103,7 @@ def run(config: InjectedRecoveryConfig, device: str) -> tuple[pd.DataFrame, np.n
         injected = inject_standardized_attack(clean_values, forecaster.normalizer, scenario)
         prediction = predict_residuals(forecaster, injected.observed, device=device)
         true_delta = injected.delta[prediction.target_indices]
+        true_support = injected.support[prediction.target_indices]
         thresholded_delta = threshold_estimated_delta(
             prediction.residual,
             forecaster.normalizer.scale,
@@ -112,6 +115,7 @@ def run(config: InjectedRecoveryConfig, device: str) -> tuple[pd.DataFrame, np.n
             target_indices=prediction.target_indices,
             event_start=scenario.start,
             event_end=scenario.start + scenario.duration,
+            true_support=true_support,
         )
         records.append(
             {

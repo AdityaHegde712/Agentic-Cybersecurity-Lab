@@ -49,13 +49,29 @@ def inject_standardized_attack(
         standardized_clean,
         scenario.to_attack_spec(),
     )
-    observed = normalizer.inverse(standardized_result.observed)
-    delta = observed.astype(np.float64) - clean.astype(np.float64)
+    delta = standardized_result.delta * normalizer.scale.astype(np.float64)
+    observed = clean.astype(np.float64, copy=True) + delta
     return AdditiveAttackResult(
         observed=observed,
         delta=delta,
+        support=standardized_result.support,
         event=standardized_result.event,
     )
+
+
+def declared_support_mask(
+    shape: tuple[int, int],
+    scenario: InjectionScenario,
+) -> np.ndarray:
+    """Return the intended support independently of floating-point values."""
+    support = np.zeros(shape, dtype=bool)
+    end = scenario.start + scenario.duration
+    if scenario.start < 0 or end > shape[0]:
+        raise ValueError("scenario interval must fit within support shape")
+    if not scenario.sensors or min(scenario.sensors) < 0 or max(scenario.sensors) >= shape[1]:
+        raise ValueError("scenario sensors must fit within support shape")
+    support[scenario.start:end, list(scenario.sensors)] = True
+    return support
 
 
 def threshold_estimated_delta(
@@ -86,6 +102,7 @@ def temporal_recovery_metrics(
     target_indices: np.ndarray,
     event_start: int,
     event_end: int,
+    true_support: np.ndarray | None = None,
 ) -> dict[str, float]:
     """Combine support recovery with attack-onset and duration error metrics."""
     _validate_delta_array(estimated_delta, "estimated_delta")
@@ -97,7 +114,11 @@ def temporal_recovery_metrics(
     if event_start < 0 or event_end <= event_start:
         raise ValueError("event bounds must be a non-empty interval")
 
-    metrics = additive_recovery_metrics(estimated_delta, true_delta)
+    metrics = additive_recovery_metrics(
+        estimated_delta,
+        true_delta,
+        true_support=true_support,
+    )
     active_timesteps = np.flatnonzero(np.any(estimated_delta != 0.0, axis=1))
     if not len(active_timesteps):
         return {
