@@ -91,3 +91,13 @@
 **Evidence:** With q99 start, q95 continuation, and a three-sample minimum duration, precision increased for every scenario and magnitude MAE decreased materially. However, support F1 declined for step-single (0.0619 to 0.0481), ramp (0.0614 to 0.0491), and periodic (0.0805 to 0.0719), improving only for multi-sensor step (0.0922 to 0.1004). Onset error remained hundreds of samples because unrelated sustained residual segments still exist.
 
 **Decision:** Treat the fixed hysteresis rule as a negative control, not the final support estimator. The next experiment must choose its threshold and duration configuration using held-out clean normal behavior alone, with injection results reported only after that choice is fixed.
+
+## S2-D11: Audit Recovery Ground Truth Before Further Estimator Selection
+
+**Status:** planned audit; numerical effect unverified as of October 3, 2026.
+
+**Evidence:** `inject_standardized_attack` derives delta after float32 normalization reconstruction, and recovery metrics define support by exact nonzero delta. This can introduce unintended true-support cells. `docs/archive/reports/narrative-report.md` records the discrepancy between strong attacked-sensor activation and very low global recall/sign scores.
+
+**Planning decision:** validate intended injection support and quantify reconstruction differences before interpreting S2-D09's support-only explanation or S2-D10's estimator trade-off as settled. Preserve the original results; if a defect is confirmed, correct the ground-truth contract and compare a separately identified rerun with unchanged estimator settings. This supersedes the immediate calibration-first sequence while retaining the requirement that eventual parameter selection use clean data only.
+
+**Boundary:** this documentation update does not establish a corrected result. Subspace and sequential internal-state inspection are planned mechanistic work, with the October 18 progress report and November 18 compute proposal tracked in `.agent-tasks/TRAJECTORY.md`, Section 9.

@@ -1,8 +1,8 @@
 # Research Trajectory: Temporal Additive Attack Inference
 
 **Status:** active long-horizon reference
-**Last updated:** 2026-09-21
-**Current position:** Sprint 1 complete; Sprint 2 diagnostic completed, temporal-support estimator required
+**Last updated:** 2026-10-03
+**Current position:** Sprint 2 comparisons completed; recovery-score validity audit is the immediate planned step
 **Primary objective:** infer and statistically characterize observation-only additive attack error in multivariate physical sensor time series.
 
 ## 1. The Research Claim We Are Building Toward
@@ -19,23 +19,23 @@ The completed inverse-problem artifact is not merely an alarm. Given `y` and a n
 
 ## 2. Evidence and Claim Boundaries
 
-| Evidence type | Permitted conclusion | Prohibited conclusion |
-|---|---|---|
-| Real HAI, SWaT, WADI, or BATADAL labels | Detection, event recall, delay, and qualitative attack alignment | Exact attack magnitude or true clean signal recovery |
-| Synthetic injection into known clean normal data | Support, sign, onset, duration, magnitude, and uncertainty recovery for known `delta_x` | General recovery on unobserved real attacks |
-| Held-out injected attack families and seeds | Generalization within the defined synthetic threat model | Universality beyond that threat model |
-| Cross-dataset replication | Robustness across the selected sensor datasets | Causal/process attack modeling |
+| Evidence type                                    | Permitted conclusion                                                                    | Prohibited conclusion                                |
+| ------------------------------------------------ | --------------------------------------------------------------------------------------- | ---------------------------------------------------- |
+| Real HAI, SWaT, WADI, or BATADAL labels          | Detection, event recall, delay, and qualitative attack alignment                        | Exact attack magnitude or true clean signal recovery |
+| Synthetic injection into known clean normal data | Support, sign, onset, duration, magnitude, and uncertainty recovery for known `delta_x` | General recovery on unobserved real attacks          |
+| Held-out injected attack families and seeds      | Generalization within the defined synthetic threat model                                | Universality beyond that threat model                |
+| Cross-dataset replication                        | Robustness across the selected sensor datasets                                          | Causal/process attack modeling                       |
 
 **Non-goal:** actuator manipulation, physical process simulation, and causal attack attribution are outside this observation-only formulation.
 
 ## 3. Current Evidence Base
 
-| Phase | Status | Result | Evidence |
-|---|---|---|---|
-| Common data and attack contract | complete | Canonical loaders and additive injection/recovery metric interfaces exist. | `src/data/registry.py`, `src/attacks/additive.py`, `src/evaluation/attack_metrics.py` |
-| Raw statistical detector controls | complete | Raw sensor-level scores conflate normal regime shifts with attacks; HAI/SWaT EWMA and PCA/SPE showed approximately 99-100% FPR in the smoke. | `results/statistical_baselines/calibrated_smoke_analysis/INSPECTION.md` |
-| Residual measurement layer | complete | Persistence residuals produced bounded FPR and attack-aligned transition evidence, but can lose a persistent offset after the signal settles. | `results/statistical_baselines/residual_smoke_analysis/INSPECTION.md` |
-| Normal-only neural forecaster | complete smoke | BATADAL showed decreasing validation loss and useful event evidence; HAI, SWaT, and WADI exposed normal-regime mismatch under the shared configuration. | `results/lstm_forecaster/gh_dev_smoke_analysis/INSPECTION.md` |
+| Phase                             | Status         | Result                                                                                                                                                  | Evidence                                                                              |
+| --------------------------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| Common data and attack contract   | complete       | Canonical loaders and additive injection/recovery metric interfaces exist.                                                                              | `src/data/registry.py`, `src/attacks/additive.py`, `src/evaluation/attack_metrics.py` |
+| Raw statistical detector controls | complete       | Raw sensor-level scores conflate normal regime shifts with attacks; HAI/SWaT EWMA and PCA/SPE showed approximately 99-100% FPR in the smoke.            | `results/statistical_baselines/calibrated_smoke_analysis/INSPECTION.md`               |
+| Residual measurement layer        | complete       | Persistence residuals produced bounded FPR and attack-aligned transition evidence, but can lose a persistent offset after the signal settles.           | `results/statistical_baselines/residual_smoke_analysis/INSPECTION.md`                 |
+| Normal-only neural forecaster     | complete smoke | BATADAL showed decreasing validation loss and useful event evidence; HAI, SWaT, and WADI exposed normal-regime mismatch under the shared configuration. | `results/lstm_forecaster/gh_dev_smoke_analysis/INSPECTION.md`                         |
 
 The evidence supports residual-based attack measurement as the correct next layer. It does not yet support a delta-recovery claim.
 
@@ -157,11 +157,41 @@ Numeric acceptance thresholds for the final held-out benchmark must be locked be
 
 ## 8. Authoritative Documents and Update Protocol
 
-| Document | Role | Update trigger |
-|---|---|---|
-| `.agent-tasks/TRAJECTORY.md` | Long-horizon objective, phase gates, and final completion definition | At a phase exit or when research scope changes |
-| `.agent-tasks/sprint-N/PLAN.md` | Current sprint execution plan and exit criteria | Before implementation and when scope is approved to change |
-| `.agent-tasks/sprint-N/TASKS.md` | Atomic progress ledger and immediate next task | After every completed task or blocker |
-| `.agent-tasks/sprint-N/DECISIONS.md` | Accepted/proposed decisions and rejected alternatives | Whenever evidence resolves a design choice |
+| Document                             | Role                                                                 | Update trigger                                             |
+| ------------------------------------ | -------------------------------------------------------------------- | ---------------------------------------------------------- |
+| `.agent-tasks/TRAJECTORY.md`         | Long-horizon objective, phase gates, and final completion definition | At a phase exit or when research scope changes             |
+| `.agent-tasks/sprint-N/PLAN.md`      | Current sprint execution plan and exit criteria                      | Before implementation and when scope is approved to change |
+| `.agent-tasks/sprint-N/TASKS.md`     | Atomic progress ledger and immediate next task                       | After every completed task or blocker                      |
+| `.agent-tasks/sprint-N/DECISIONS.md` | Accepted/proposed decisions and rejected alternatives                | Whenever evidence resolves a design choice                 |
 
 When a sprint ends, record its evidence in its own folder, update this trajectory's current position and phase status, then initialize the next sprint. Do not overwrite accepted historical decisions; supersede them explicitly.
+
+## 9. October 3 Planning Addendum: Expected Trajectory and Public Deliverables
+
+**Status:** proposed execution sequence. This addendum records the supervisor's priorities and the measurement concern identified in `docs/archive/reports/narrative-report.md`; it does not represent completed experiments or authorize remote compute. It supersedes the earlier immediate instruction to begin a calibration sweep before validating recovery ground truth. Earlier numerical outcomes remain historical pipeline outputs pending this audit.
+
+### First gate: Validate the inverse-estimation benchmark
+
+Audit `inject_standardized_attack` and exact-nonzero support scoring. Quantify whether normalization round trips create nonzero ground truth outside intended attack support. If confirmed, preserve intended waveform delta separately from reconstruction error and rerun the existing four scenarios with the same checkpoint and estimator settings. Produce compact original/corrected comparisons. Exit when no-attack and uninjected-support invariants hold and the metric definitions explain the localized plots. The concern is source-supported but its effect on real artifacts has not yet been measured.
+
+### Second gate: Localize where attack information appears and degrades
+
+Compare paired clean and attacked sequences at input/context, recurrent representation, predicted clean value, residual, and support decision. Inspect useful subspaces as well as pooled endpoint scores. Align observations to attack onset and locate the earliest time and processing stage at which the two sequences become distinguishable. Use matched perturbation controls to test whether attenuation originates from attacked history, normal forecasting bias, or sensor coupling. Exit with a reproducible explanation of at least one success or failure mechanism; attractive projections alone are insufficient causal evidence.
+
+### Third gate: Select and test an estimator with valid measurement
+
+Use clean normal data to select support thresholds and temporal settings under an explicit false-support budget, then freeze the choice before injection evaluation. Report magnitude/sign error separately from support quality and distinguish offline segment reconstruction from online alert delay. Build a temporal split reserved for evaluation rather than reusing checkpoint-selection data. Replicate across seeds, sensors, attack severities, durations, families, and overlaps, using persistence and pointwise controls. Lock acceptance criteria before examining final evaluation results.
+
+### Parallel track: Restore all four datasets to the evidence base
+
+Audit HAI, SWaT, and WADI normal-regime coverage, temporal continuity, sensor scaling, constant/missing sensors, and shared-model settings. Use bounded experiments to establish whether conditioning closes their forecast gaps. Carry validated recovery and internal diagnostics across datasets as they become usable. Record partial success and explained failures; architecture changes require evidence of a model limitation. This preparation can proceed alongside BATADAL mechanism studies rather than waiting for the entire uncertainty phase.
+
+### Long-term gate: Statistical attack modeling and uncertainty
+
+Evaluate recovered delta distributions and intervals conditional on sensor, regime, context, and declared attack structure. Demonstrate held-out recovery and calibrated uncertainty within explicit failure boundaries. Agentic multi-attack reasoning remains contingent on reliable estimates and confidence. The public contribution may include an explained limitation of inverse estimation; it must not imply that a failed estimator has solved the inverse problem.
+
+### Calendar checkpoints and useful compute
+
+**October 18, 2026:** progress-report deadline supporting further grant funding. Prepare a traceable experiment narrative, validated or explicitly qualified recovery metrics, reproducible evidence of where information is retained/lost, limitations, and a concrete next investigation. Include negative results when their mechanisms are established. This deadline is a reporting checkpoint, not a promise of completed inverse recovery.
+
+**November 18, 2026:** proposal deadline. Show completed workloads and their scientific value using job IDs, hardware, wall time, resource utilization, allocation consumption, dataset sizes, seeds/configurations, and linked output artifacts. Propose additional compute based on the unresolved evidence gates and measured costs. Larger sweeps and replications should answer defined questions; heavy usage alone is not evidence of good usage. No utilization or allocation totals have been verified for this addendum.

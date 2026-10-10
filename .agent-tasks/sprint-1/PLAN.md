@@ -21,7 +21,7 @@ Build the measurement layer needed before modeling temporal additive attacks. Th
 | Statistical inspection | `src/evaluation/result_analysis.py`, `scripts/analyze_baseline_results.py` |
 | LSTM forecaster | `src/models/lstm_forecaster.py`, `scripts/run_lstm_forecaster.py` |
 | LSTM inspection | `scripts/analyze_lstm_results.py` |
-| Supervisor summary | `RESEARCH_PROGRESS_REPORT.md` |
+| Supervisor summary | `docs/research/progress.md` |
 
 ## Evidence Gates Completed
 

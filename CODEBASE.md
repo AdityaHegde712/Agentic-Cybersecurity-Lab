@@ -2,7 +2,7 @@
 
 > Research codebase for agentic cyber-defense against sensor data attacks. Implements multi-dataset data pipeline (SWaT, WADI, BATADAL, HAI parquet stores + synthetic generator) and baseline detection architectures. Foundation for multi-agent detection and mitigation targeting cyber-physical sensor manipulation.
 
-**Last updated:** 2026-08-30
+**Last updated:** 2026-10-10
 **Primary language:** Python 3.11
 **Architecture style:** Modular library + HPC compute workflows (TACC Vista Grace-Grace / Grace-Hopper)
 
@@ -16,7 +16,7 @@
 | Numeric | NumPy 2.4+ | Core array operations; `np.random.default_rng` for reproducibility |
 | Data | pandas 3.0+, pyarrow 25.0+ | Fast Parquet data store loaders with schema & temporal validation |
 | ML / DL | PyTorch 2.13.0+cu132 | Single-node / Multi-node DDP acceleration via `torchrun` and `ibrun` |
-| Testing | pytest 9.1+ | 27 locked contract tests + 40 dataset contract tests (67 total) |
+| Testing | pytest 9.1+ | `tests/spec/` locked contracts plus processed-data contracts; current verified gates are 96 spec tests + 40 processed-data tests |
 | HPC | Slurm, Lmod, NVPL | TACC Vista (`gg` CPU and `gh` H200 GPU partitions) |
 
 ---
@@ -47,7 +47,14 @@
 | `src/detection/base.py` | `BaseDetector` ABC — two abstract methods: `update(y)` and `reset()`. |
 | `src/detection/cusum.py` | `CUSUMDetector(mu0, k, h, reset_after_detection=True)` — one-sided upper CUSUM. |
 | `src/evaluation/metrics.py` | `detection_delay`, `false_positive_rate`, `true_positive_rate`, `estimation_mse`, `estimation_bias`. |
-| `docs/hpc-usage-guide.md` | Comprehensive guide for running workloads on TACC Vista compute nodes (SLURM, queues, PyTorch, MPS, I/O). |
+| `src/attacks/additive.py` | Declared additive attack generators; returns observed values, exact delta, event metadata, and support mask. |
+| `src/evaluation/attack_metrics.py` | Support-aware additive recovery metrics; explicit support masks prevent float-rounding artifacts from redefining ground truth. |
+| `src/evaluation/injected_recovery.py` | Standardized BATADAL injection, original-unit delta reconstruction, declared-support projection, and temporal scoring. |
+| `src/experiments/batadal_constraint_audit.py` | Aggregate-only target-range and companion-correlation audit for the narrow inverse benchmark. |
+| `src/experiments/injection_ground_truth_audit.py` | Compares corrected analytical injection arithmetic with the legacy float32 round-trip path. |
+| `scripts/audit_batadal_constraints.py` | Writes compact BATADAL constraint evidence under `results/narrow_inverse_research/data_audit/`. |
+| `scripts/audit_injection_ground_truth.py` | Verifies configured injection scenarios without serializing raw data. |
+| `docs/operations/hpc-usage-guide.md` | Comprehensive guide for running workloads on TACC Vista compute nodes (SLURM, queues, PyTorch, MPS, I/O). |
 | `tests/spec/` | Locked contract tests (TDD immutable). **Do not modify.** |
 | `tests/test_processed_data.py` | Dataset store contract tests verifying schema, timestamps, monotonicity, and labels. |
 
@@ -86,6 +93,8 @@ python scripts/validate_processed.py
 
 - **67/67 contract tests PASS** (27 locked spec tests + 40 processed data store tests).
 - **44/44 processed store validation checks PASS**.
-- **HPC migration guide complete**: [docs/hpc-usage-guide.md](file:///c:/Users/hifia/Projects/Sengupta_Research/docs/hpc-usage-guide.md).
+- **HPC migration guide complete**: [docs/operations/hpc-usage-guide.md](file:///c:/Users/hifia/Projects/Sengupta_Research/docs/operations/hpc-usage-guide.md).
 - **Archiving complete**: Deprecated proposal drafts and early surveys moved to `docs/archive/`.
-
+- **Documentation index**: [docs/README.md](docs/README.md) maps current architecture, research, operations, and archive authorities.
+- **Current inverse benchmark**: BATADAL observation-only single-sensor bounded step attack; coupling and broader attack families remain deferred.
+- **Ground-truth audit**: Corrected analytical original-unit delta arithmetic and explicit declared support are covered by locked spec tests and aggregate audit scripts.

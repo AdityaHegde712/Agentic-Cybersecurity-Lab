@@ -34,6 +34,8 @@ Tasks 1 through 6 are complete. The reduced `gh-dev` ablation selected `context-
 
 ## Operational Constraints
 
+**October 3 planning update:** first audit whether standardized injection reconstruction introduces unintended nonzero delta outside intended support. Recovery comparisons already completed, but their scientific interpretation is provisional. This audit precedes further support calibration; internal/subspace and onset-localized mechanism studies follow validated measurement. The proposed sequence and reporting deadlines are in `.agent-tasks/TRAJECTORY.md`, Section 9. No new implementation or remote job has begun for this update.
+
 - Use `gh-dev` for every neural smoke; user must approve the allocation command before execution.
 - Estimate and state SU cost before any Vista allocation command.
 - Use the actual Vista venv name `agentic_cyber`, after loading the Python/CUDA module stack.

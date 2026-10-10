@@ -31,4 +31,4 @@
 
 ## Immediate Next Action
 
-Build the Task 7 temporal-support estimator, then run its known-delta comparison on Vista. Task 8 remains mandatory before any cross-dataset robustness claim.
+Audit injection ground-truth support and numerical reconstruction differences before further Task 7 calibration. The comparison has already run; its scores are provisional until this audit resolves the discrepancy with attacked-sensor diagnostics. See the final section of `docs/archive/reports/narrative-report.md` and Section 9 of `.agent-tasks/TRAJECTORY.md` for acceptance evidence and subsequent mechanism studies. Task 8 remains mandatory before any cross-dataset robustness claim.

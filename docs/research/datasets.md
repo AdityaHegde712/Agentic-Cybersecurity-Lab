@@ -19,7 +19,7 @@ On HAI real data, the system FPR <= 1% / TPR >= 0.90 target is structurally out 
 
 **Literature-backed direction**: the ICS anomaly-detection community has converged on segment-level recall as the primary metric (Bauer et al. 2022; Kim & Park 2023; Heydari & Nyarko 2026). For safety-critical OT, an aspirational target of ~10% FPR / 98%+ TPR is realistic, selected via cost-ratio thresholding (Gaffney & Ulvila 2003). Gated rolling sigma (MAD/Qn robust estimators) can reduce false trips but will not close the structural distribution-overlap gap; that requires BOCPD or LSTM-AE detectors.
 
-Full analysis: `docs/research_findings.md`.
+Full analysis: `docs/research/findings.md`.
 
 ---
 

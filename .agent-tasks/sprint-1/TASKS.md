@@ -13,7 +13,7 @@
 | Raw score failure diagnosed | `results/statistical_baselines/calibrated_smoke_analysis/INSPECTION.md` |
 | Residual baseline improvement | `results/statistical_baselines/residual_smoke_analysis/INSPECTION.md` and `score_distribution_shift.png` |
 | LSTM smoke outcome | `results/lstm_forecaster/gh_dev_smoke_analysis/INSPECTION.md` and `*_loss.png` |
-| Meeting-ready interpretation | `RESEARCH_PROGRESS_REPORT.md` |
+| Meeting-ready interpretation | `docs/research/progress.md` |
 
 ## Handoff
 
