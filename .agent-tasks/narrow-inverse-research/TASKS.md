@@ -31,14 +31,45 @@
   The artifact SHA-256 is
   `e20b7728cbf4d22ea6fd6dbd4f5eca0b26f65a9165108fa8f8d8d890ad0bd347`.
 
-- [/] 4. Freeze the identifiability and measurement-noise contract.
+- [x] 4. Freeze the identifiability and measurement-noise contract.
   **Acceptance:** document trusted inputs, normal-dynamics restrictions, synthetic
   versus real-data noise semantics, prohibited claims, and at least one competing
   feasible decomposition with ambiguity handling.
-  **Current step:** write the mathematical contract and a falsifying same-`y`
-  decomposition before implementing estimator interfaces.
+  **Evidence:** the proposed mathematical contract includes a BATADAL-scaled
+  same-`y` witness. Locked observation/ambiguity tests reproduce the expected
+  red-stage failure at the absent production module.
+  Adversarial review found six bounded claim/operational gaps; the contract now
+  separates `q`, `x`, and `y`, hard-set identifiability, posterior concentration,
+  and finite-search status. Four additive tests reproduce the expected red stage
+  for the missing exact-addition and certified-diameter API. The hardened API
+  passes all 11 focused tests and all 123 immutable specification tests; the
+  exact toy witness reports separation `0.5`, `ambiguous=true`, and
+  `certified=false`. A second adversarial review rejected caller-controlled
+  global certification and under-specified witness checks. The final additive
+  Red gate fails at the intentionally absent evidence-backed hard-set
+  certificate while preserving all prior assertions.
+  A third adversarial review found that one newly frozen test falsely permits
+  metadata-only structural certification. The immutable-test rule requires
+  owner permission to replace that assertion with a hash-resolved evidence
+  payload and certified global diameter bound.
+  **Owner decision:** permission granted to correct the flawed certificate test.
+  The corrected contract now passes 26 focused and 138 full specification tests:
+  canonical evidence JSON and its SHA-256 resolve, certificate fields match the
+  payload, uniqueness requires a global diameter bound at most `tau_delta`, and
+  contradictory witness/certificate evidence is rejected.
+  Final review found the certificate was not bound to the observation, benchmark
+  case, norm, or full hard-set seal. The owner-authorized tests now reproduce the
+  expected Red-stage missing-fingerprint failure for those exact bindings. The
+  implementation now passes 32 focused and 144 full specification tests and
+  rejects cross-observation, cross-norm, cross-case, and manifest reuse. A final
+  review required the hard-set seal to include the actual support, tolerance,
+  attack class, dynamics artifact, and numeric constraint parameters. That full
+  schema now passes 36 focused and 148 full specification tests.
+  Unverified candidate separation now remains diagnostic-only; 37 focused and
+  149 full specification tests pass. Final adversarial review accepted the claim
+  boundary.
 
-- [ ] 5. Implement and validate the chronological benchmark manifest.
+- [/] 5. Implement and validate the chronological benchmark manifest.
   **Acceptance:** fit, selection, calibration, development, and final blocks are
   disjoint; configs, generator, seeds, metrics, thresholds, and artifact hashes
   can be sealed deterministically.
@@ -77,5 +108,5 @@
 
 ## Immediate Next Action
 
-Write the identifiability and measurement-noise contract with an executable
-same-observation ambiguity example.
+Write locked chronological-split and deterministic benchmark-seal tests before
+implementing the Task 5 manifest.

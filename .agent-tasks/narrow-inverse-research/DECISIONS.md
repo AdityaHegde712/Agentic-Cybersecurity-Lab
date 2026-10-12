@@ -131,3 +131,22 @@ conversion. Prefix similarity is not sufficient provenance for a hard rule.
 **Consequence:** The manifest must separate candidate semantics, stored-unit
 verification, topology alignment, evidence scope, and benchmark threat-model
 assumptions. `declared_unaffected` does not mean independently trusted.
+
+## NIR-D12: Identifiability Requires a Sealed Hard-Set Certificate
+
+**Status:** accepted on 2026-10-11.
+
+**Decision:** Keep supplied-candidate ambiguity separate from structural claims.
+Structural uniqueness requires a global diameter upper bound no greater than the
+sealed `tau_delta`, with canonical hash-verified evidence bound to the exact
+observation, benchmark case, norm, support, identity tolerance, attack class,
+normal-dynamics artifact, and typed hard constraints. Unverified candidate
+separation remains a diagnostic and structural status remains `not_certified`.
+
+**Rationale:** The decomposition `y = x + delta` is many-to-many. Bounds, support,
+an optimizer solution, or a SHA-shaped metadata value cannot prove uniqueness or
+structural ambiguity without evidence over the same declared feasible set.
+
+**Consequence:** Real attack records have no trajectory-level recovery score
+without a clean counterfactual. Synthetic injections retain exact delta truth,
+while offline posterior concentration and causal recovery remain separate claims.

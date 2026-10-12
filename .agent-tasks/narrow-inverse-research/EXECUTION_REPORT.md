@@ -51,7 +51,59 @@ synchronization, or allocation-consuming command has been run in this sprint.
   `e20b7728cbf4d22ea6fd6dbd4f5eca0b26f65a9165108fa8f8d8d890ad0bd347`,
   deterministic round-trip, 43-channel coverage, and UTF-8/LF formatting.
 - [x] Passed all 112 immutable specification tests after artifact generation.
-- [/] Began Task 4: identifiability and measurement-noise contract.
+- [x] Drafted the mathematical identifiability/noise contract with a
+  BATADAL-scaled same-observation ambiguity witness.
+- [x] Added the locked Task 4 observation/ambiguity specification.
+- [x] Reproduced its expected red-stage failure at the absent production module.
+- [x] Implemented the first typed observation and ambiguity API; its seven
+  original focused tests pass.
+- [x] Completed adversarial mathematical review; it rejected six underspecified
+  claim, certificate, witness, leakage, and trust rules.
+- [x] Corrected the written contract without promoting any soft BATADAL rule to
+  hard evidence.
+- [x] Added four immutable adversarial tests and reproduced their expected red
+  failures for missing exact-addition and certified-diameter semantics.
+- [x] Implemented the sealed ambiguity tolerance, norm, and certificate status;
+  all 11 focused tests pass.
+- [x] Passed all 123 immutable specification tests after hardening.
+- [x] Reproduced the exact toy witness locally: `linf` separation `0.5`, maximum
+  clean step `0.5`, `ambiguous=true`, and `certified=false`.
+- [x] Second adversarial review rejected caller-controlled global certification
+  and loose witness constants.
+- [x] Tightened the written certificate contract and added immutable hard-set
+  certificate plus exact witness-constant assertions.
+- [x] Reproduced the final expected Red-stage import failure for the absent
+  `HardSetCertificate`.
+- [x] Implemented the first evidence-reference certificate and structural status;
+  20 focused and 132 full specification tests pass.
+- [x] Third adversarial review found the remaining false-uniqueness path: a
+  metadata-only SHA-shaped identifier is not resolved evidence and carries no
+  certified global diameter.
+- [x] Aligned the documented legacy scope literal with implementation.
+- [x] Added a true exact-constant witness regression; 21 focused tests pass.
+- [x] Owner authorized correction of the flawed metadata-only certificate test.
+- [x] Corrected only the owner-authorized certificate assertions; the Red stage
+  produced 11 expected failures for missing evidence/bound fields.
+- [x] Implemented canonical evidence JSON, SHA-256 verification, exact payload
+  matching, certified global-diameter semantics, and contradiction rejection.
+- [x] Passed 26 focused and 138 full immutable specification tests.
+- [x] Final review found cross-observation and cross-norm certificate reuse was
+  still possible because the certificate omitted exact benchmark bindings.
+- [x] Added owner-authorized tests for observation fingerprint, benchmark case,
+  delta norm, and canonical hard-set manifest bindings; reproduced the expected
+  missing-fingerprint Red failure.
+- [x] Implemented exact observation, benchmark-case, norm, hard-set-manifest, and
+  evidence-manifest certificate bindings.
+- [x] Passed 32 focused and 144 full immutable specification tests.
+- [x] Final review required the hard-set manifest to seal the actual support,
+  identity tolerance, attack class, dynamics artifact, and typed constraint
+  parameters rather than IDs alone.
+- [x] Reproduced 8 expected old-schema Red failures, implemented the complete
+  schema, and passed 36 focused plus 148 full immutable specification tests.
+- [x] Downgraded unverified supplied-candidate separation to a diagnostic while
+  keeping structural status `not_certified`; 37 focused and 149 full tests pass.
+- [x] Final adversarial review accepted the Task 4 mathematical claim boundary.
+- [/] Task 5 chronological benchmark manifest and seal are active.
 
 ## Experiment and Verification Ledger
 
@@ -69,6 +121,19 @@ synchronization, or allocation-consuming command has been run in this sprint.
 | 2026-10-11 | Manifest artifact writer red stage | Local CPU, focused pytest | Expected collection failure: writer script absent | Locally reproduced |
 | 2026-10-11 | Versioned manifest artifact | Local CPU, existing Conda environment | 43-channel artifact generated from 5,840 rows; SHA-256 verified | Locally reproduced |
 | 2026-10-11 | Task 3 completion gate | Local CPU, full pytest | 112 immutable specification tests passed | Locally reproduced |
+| 2026-10-11 | Task 4 observation/ambiguity red stage | Local CPU, focused pytest | Expected collection failure: identifiability module absent | Locally reproduced |
+| 2026-10-11 | Task 4 adversarial semantic red stage | Local CPU, focused pytest | 7 passed; 4 expected failures for missing certificate API | Locally reproduced |
+| 2026-10-11 | Task 4 hardened green gate | Local CPU, focused and full pytest | 11 focused and 123 full specification tests passed | Locally reproduced |
+| 2026-10-11 | Task 4 exact ambiguity witness | Local CPU, direct execution | `linf` separation 0.5; ambiguous and not uniqueness-certified | Locally reproduced |
+| 2026-10-11 | Task 4 hard-set certificate red stage | Local CPU, focused pytest | Expected import failure: `HardSetCertificate` absent | Locally reproduced |
+| 2026-10-11 | Task 4 first certificate green gate | Local CPU, focused and full pytest | 20 focused and 132 full tests passed; adversary still rejected global-certificate semantics | Locally reproduced, not accepted |
+| 2026-10-11 | Task 4 resolved-certificate red stage | Local CPU, focused pytest | 15 passed; 11 expected failures for missing resolved evidence/bound API | Locally reproduced |
+| 2026-10-11 | Task 4 resolved-certificate green gate | Local CPU, focused and full pytest | 26 focused and 138 full specification tests passed | Locally reproduced |
+| 2026-10-11 | Task 4 exact-binding red stage | Local CPU, focused pytest | Expected import failure: `fingerprint_observation` absent | Locally reproduced |
+| 2026-10-11 | Task 4 exact-binding green gate | Local CPU, focused and full pytest | 32 focused and 144 full specification tests passed | Locally reproduced |
+| 2026-10-11 | Task 4 complete-hard-set red stage | Local CPU, focused pytest | 28 passed; 8 expected old-schema failures | Locally reproduced |
+| 2026-10-11 | Task 4 complete-hard-set green gate | Local CPU, focused and full pytest | 36 focused and 148 full specification tests passed | Locally reproduced |
+| 2026-10-11 | Task 4 accepted completion gate | Local CPU, focused and full pytest plus adversarial review | 37 focused and 149 full tests passed; claim boundary accepted | Locally reproduced and reviewed |
 
 ## Git Ledger
 
@@ -93,5 +158,5 @@ synchronization, or allocation-consuming command has been run in this sprint.
 
 ## Immediate Next Action
 
-Write the identifiability and measurement-noise contract with an executable
-same-observation ambiguity example.
+Write locked chronological-split and deterministic benchmark-seal tests before
+implementing the Task 5 manifest.

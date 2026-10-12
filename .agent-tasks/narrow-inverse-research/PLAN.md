@@ -213,7 +213,7 @@ next pause or phase boundary.
 
 ## Immediate Next Action
 
-Freeze the identifiability and measurement-noise contract, including a concrete
-same-observation competing decomposition and the required ambiguity response.
-Keep checkpoint-dependent Task 2 paused until the exact artifact is restored or
+Implement the deterministic chronological benchmark manifest and seal for fit,
+selection, calibration, development-injection, and final-injection blocks. Keep
+checkpoint-dependent Task 2 paused until the exact artifact is restored or
 regenerated with recorded SHA-256 and provenance.
