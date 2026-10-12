@@ -140,6 +140,7 @@ synchronization, or allocation-consuming command has been run in this sprint.
 | Date | Commit | Push | Scope |
 | --- | --- | --- | --- |
 | 2026-10-11 | `a01d81d` | Confirmed on `origin/feature/narrow-additive-inverse-research` | Approved trajectory and completed Task 3 manifest milestone |
+| 2026-10-11 | `aee210d` | Pending | Accepted Task 4 identifiability and noise contract |
 
 ## Compute Ledger
 
