@@ -104,6 +104,24 @@ synchronization, or allocation-consuming command has been run in this sprint.
   keeping structural status `not_certified`; 37 focused and 149 full tests pass.
 - [x] Final adversarial review accepted the Task 4 mathematical claim boundary.
 - [/] Task 5 chronological benchmark manifest and seal are active.
+- [x] Verified the five chronological block sizes and boundary timestamps against
+  the processed BATADAL train/validation Parquet stores.
+- [x] Computed current SHA-256 values for train, validation, dataset metadata, and
+  the channel manifest.
+- [x] Added locked benchmark-definition and incomplete-seal tests; reproduced the
+  expected missing-module Red failure.
+- [x] Implemented the first typed deterministic manifest; four focused tests
+  passed.
+- [x] Schema and adversarial review found mutable mappings, discarded provenance,
+  semantic block drift, and incomplete generator/metric replay information.
+- [x] Added immutability, provenance, semantic-block, signed-grid, and replay-spec
+  tests; reproduced 11 expected failures.
+- [x] Implemented immutable mappings, serialized provenance, semantic chronology,
+  signed grids, full generator replay rules, readiness recomputation, and metric
+  formulas/units/bootstrap/constraint reporting.
+- [/] Focused verification is 23 passed and 1 failed; the sole failure is a
+  contradictory new exact-dictionary assertion that forbids an earlier required
+  NRMSE `aggregation=median` field.
 
 ## Experiment and Verification Ledger
 
@@ -134,6 +152,11 @@ synchronization, or allocation-consuming command has been run in this sprint.
 | 2026-10-11 | Task 4 complete-hard-set red stage | Local CPU, focused pytest | 28 passed; 8 expected old-schema failures | Locally reproduced |
 | 2026-10-11 | Task 4 complete-hard-set green gate | Local CPU, focused and full pytest | 36 focused and 148 full specification tests passed | Locally reproduced |
 | 2026-10-11 | Task 4 accepted completion gate | Local CPU, focused and full pytest plus adversarial review | 37 focused and 149 full tests passed; claim boundary accepted | Locally reproduced and reviewed |
+| 2026-10-12 | Task 5 split and artifact inspection | Local CPU, existing Conda environment | 5,840/1,481/480/480/480 chronological rows; four artifact hashes recorded | Locally reproduced |
+| 2026-10-12 | Task 5 benchmark manifest red stage | Local CPU, focused pytest | Expected collection failure: benchmark manifest module absent | Locally reproduced |
+| 2026-10-12 | Task 5 first manifest green gate | Local CPU, focused pytest | 4 focused tests passed; adversarial review rejected seal safety | Locally reproduced, not accepted |
+| 2026-10-12 | Task 5 hardening red gate | Local CPU, focused pytest | 10 passed; 11 expected schema/replay failures | Locally reproduced |
+| 2026-10-12 | Task 5 hardened partial green gate | Local CPU, focused pytest | 23 passed; 1 contradictory test-contract failure | Locally reproduced, not accepted |
 
 ## Git Ledger
 
@@ -159,5 +182,4 @@ synchronization, or allocation-consuming command has been run in this sprint.
 
 ## Immediate Next Action
 
-Write locked chronological-split and deterministic benchmark-seal tests before
-implementing the Task 5 manifest.
+Advance to the gated dynamics-model bake-off (Task 8) across state-space, NARX, discrete equation-discovery, and sequence models behind the inverse MAP objective.

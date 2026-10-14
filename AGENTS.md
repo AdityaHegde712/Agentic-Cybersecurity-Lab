@@ -11,3 +11,4 @@ Following any file creation, modification, or deletion, always append a concise 
 - Create or reuse repository-relative analysis scripts that read result files, emit compact aggregate reports, and save static plots under the corresponding `results/` directory.
 - Inspect rendered plot images to assess behavior; report conclusions only at the aggregate/visual level.
 - Treat raw result files as artifacts for scripts, not conversational context.
+- For empirical inverse modeling results, invoke the `inverse-benchmark-reporter` skill.
