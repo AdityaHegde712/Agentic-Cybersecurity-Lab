@@ -175,9 +175,9 @@
 - [ ] 12. Sprint 4B: Attack Family Generalization via Multi-Order TV / $\ell_1$ Trend Filtering.
   **Acceptance:** Formulate composite multi-order TV objective ($\lambda_0\|\boldsymbol{\delta}\|_1 + \lambda_1\|\mathbf{D}^1\boldsymbol{\delta}\|_1 + \lambda_2\|\mathbf{D}^2\boldsymbol{\delta}\|_1$); implement `MultiOrderTrendFilterEstimator` extending causal ADMM solver to higher-order banded Cholesky factorizations; test without retraining normal TCN surrogate across non-step synthetic attack families (ramps, linear drifts, transient pulses, sinusoids); verify zero future lookahead invariance; satisfy locked specification contracts.
 
-## Deferred Tasks
+## Completed Deferred Tasks
 
-- [ ] D1. Git branch cleanup & synchronization: Clean up obsolete artifacts across `main` and `dev` branches and synchronize them with `feature/narrow-additive-inverse-research` as the primary research baseline (to be executed after Sprint 4A).
+- [x] D1. Git branch cleanup & synchronization: Archived 9 legacy Phase 0/1 scripts to `scripts/archive/`, moved legacy sprint logs to `.agent-tasks/archived/`, verified 277/277 tests pass, committed `058fd7a` to `feature/narrow-additive-inverse-research`, fast-forwarded and pushed `dev` to `origin/dev`. `main` on GitHub preserves PR #2 squash commit `364ade9` and is staged for owner GitHub PR merge from `dev`.
 
 ## Owner Approval Gates
 
@@ -188,4 +188,4 @@
 
 ## Immediate Next Action
 
-Implement `scripts/analyze_delta_reconstruction_distributions.py` (Sprint 4A) to parse `results/narrow_inverse_research/sealed_final_benchmark/summary.json`, compute empirical error metrics ($e_t = \hat{\delta}_t - \delta_{\text{true}, t}$), fit parametric error models, evaluate the null clean distribution $p(\hat{\delta} \mid \delta=0)$, and generate distribution figures.
+Implement Sprint 4B (`src/inverse/estimators/multi_order_trend_filter.py`) for composite multi-order TV attack family generalization, or review/merge `dev` into `main` via PR on GitHub.
