@@ -24,6 +24,11 @@ results/surrogates
 
 # Rendered/document PDFs are local artifacts; keep source Markdown tracked instead
 *.pdf
+docs/*/*.aux
+docs/*/*.fdb_latexmk
+docs/*/*.fls
+docs/*/*.synctex.gz
+docs/*/*.out
 
 # Python
 .venv/
