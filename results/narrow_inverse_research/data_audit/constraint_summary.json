@@ -1,0 +1,42 @@
+{
+  "target_sensor": "L_T1",
+  "row_count": 7321,
+  "sensor_count": 43,
+  "constant_sensor_count": 7,
+  "target_range": {
+    "minimum": 0.32011184096336365,
+    "quantile_01": 0.5904155850410462,
+    "median": 2.773024082183838,
+    "quantile_99": 4.580006885528564,
+    "maximum": 4.871329307556152,
+    "standard_deviation": 1.2052100896835327,
+    "missing_count": 0
+  },
+  "companion_candidates": [
+    {
+      "sensor": "S_V2",
+      "correlation": -0.46282939340325857,
+      "absolute_correlation": 0.46282939340325857
+    },
+    {
+      "sensor": "P_J14",
+      "correlation": 0.4096796126898331,
+      "absolute_correlation": 0.4096796126898331
+    },
+    {
+      "sensor": "P_J422",
+      "correlation": -0.3549776013498539,
+      "absolute_correlation": 0.3549776013498539
+    },
+    {
+      "sensor": "P_J289",
+      "correlation": -0.33624496774608675,
+      "absolute_correlation": 0.33624496774608675
+    },
+    {
+      "sensor": "P_J280",
+      "correlation": 0.3326662362916967,
+      "absolute_correlation": 0.3326662362916967
+    }
+  ]
+}

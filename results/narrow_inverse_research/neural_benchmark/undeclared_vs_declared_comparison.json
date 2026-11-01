@@ -1,0 +1,93 @@
+{
+  "comparison_by_estimator": {
+    "CompanionRegressionEstimator": {
+      "median_delta_nrmse": {
+        "declared": 0.30869,
+        "undeclared": 0.30869
+      },
+      "median_support_f1": {
+        "declared": 1.0,
+        "undeclared": 0.098
+      },
+      "sign_accuracy_ge_1std": {
+        "declared": 1.0,
+        "undeclared": 1.0
+      }
+    },
+    "DilatedTCNSurrogate": {
+      "median_delta_nrmse": {
+        "declared": 0.04974,
+        "undeclared": 0.04974
+      },
+      "median_support_f1": {
+        "declared": 1.0,
+        "undeclared": 0.46171
+      },
+      "sign_accuracy_ge_1std": {
+        "declared": 1.0,
+        "undeclared": 1.0
+      }
+    },
+    "PersistenceEstimator": {
+      "median_delta_nrmse": {
+        "declared": 0.86162,
+        "undeclared": 0.99216
+      },
+      "median_support_f1": {
+        "declared": 1.0,
+        "undeclared": 0.07396
+      },
+      "sign_accuracy_ge_1std": {
+        "declared": 0.925,
+        "undeclared": 0.5125
+      }
+    },
+    "SeasonalNaiveEstimator": {
+      "median_delta_nrmse": {
+        "declared": 1.48018,
+        "undeclared": 1.54511
+      },
+      "median_support_f1": {
+        "declared": 1.0,
+        "undeclared": 0.0669
+      },
+      "sign_accuracy_ge_1std": {
+        "declared": 0.775,
+        "undeclared": 0.75
+      }
+    },
+    "StepMAP_Linear": {
+      "median_delta_nrmse": {
+        "declared": 0.20315,
+        "undeclared": 0.20315
+      },
+      "median_support_f1": {
+        "declared": 1.0,
+        "undeclared": 0.27287
+      },
+      "sign_accuracy_ge_1std": {
+        "declared": 1.0,
+        "undeclared": 1.0
+      }
+    },
+    "StepMAP_TCN": {
+      "median_delta_nrmse": {
+        "declared": 0.16054,
+        "undeclared": 0.16054
+      },
+      "median_support_f1": {
+        "declared": 1.0,
+        "undeclared": 0.85714
+      },
+      "sign_accuracy_ge_1std": {
+        "declared": 1.0,
+        "undeclared": 1.0
+      }
+    }
+  },
+  "metadata": {
+    "declared_checkpoint": "results\\surrogates\\vista_tcn_48h_150ep\\tcn.pt",
+    "target_channel": "L_T1",
+    "undeclared_checkpoint": "results\\surrogates\\vista_tcn_48h_150ep\\tcn.pt"
+  }
+}

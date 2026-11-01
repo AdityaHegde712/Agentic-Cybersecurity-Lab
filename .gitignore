@@ -1,15 +1,34 @@
 # Research artifacts (local-only, per owner)
 _internal/
 .agent-tasks/
+.agent-tasks/archived
+!.agent-tasks/
+!.agent-tasks/TRAJECTORY.md
+!.agent-tasks/sprint-*/
+!.agent-tasks/sprint-*/PLAN.md
+!.agent-tasks/sprint-*/TASKS.md
+!.agent-tasks/sprint-*/DECISIONS.md
 .compactions/
 .opencode/
 /data/
 equation-discovery-findings/
 claude*
 docs/archive/
+/emails/
 
 # Generated experiment outputs (regenerable via src/evaluation)
-/results/
+results/lstm_forecaster
+results/old
+results/statistical_baselines
+results/surrogates
+
+# Rendered/document PDFs are local artifacts; keep source Markdown tracked instead
+*.pdf
+docs/*/*.aux
+docs/*/*.fdb_latexmk
+docs/*/*.fls
+docs/*/*.synctex.gz
+docs/*/*.out
 
 # Python
 .venv/
@@ -19,6 +38,8 @@ __pycache__/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+*.log
+*tmp*
 
 # OS
 Thumbs.db
@@ -30,3 +51,4 @@ build/
 
 # Agents
 creation_summary.md
+HANDOFF.md

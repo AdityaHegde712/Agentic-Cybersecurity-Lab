@@ -1,6 +1,6 @@
 # TACC HPC Policy & Reference Links
 
-> **Local Comprehensive Guide**: For concrete architecture specifications, queues, Slurm templates, and agent directives, refer to [docs/hpc-usage-guide.md](file:///c:/Users/hifia/Projects/Sengupta_Research/docs/hpc-usage-guide.md).
+> **Local Comprehensive Guide**: For concrete architecture specifications, queues, Slurm templates, and agent directives, refer to [docs/operations/hpc-usage-guide.md](file:///c:/Users/hifia/Projects/Sengupta_Research/docs/operations/hpc-usage-guide.md).
 
 ## Official TACC Resources & Documentation
 1. **Vista User Guide**: https://docs.tacc.utexas.edu/hpc/vista/

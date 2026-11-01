@@ -1,0 +1,24 @@
+# Global configuration for Agentic Cybersecurity Lab
+# Precedence: CLI args > Environment variables > configs/default.yaml > Code defaults
+
+data:
+  # Path to processed Parquet data stores (SWaT, WADI, BATADAL, HAI)
+  processed_dir: "data/processed"
+  # Path to raw HAI-20.07 CSV files (for legacy B0/B1 loaders)
+  raw_hai_dir: "data/hai/raw/hai-20.07"
+
+hpc:
+  allocation_id: "TG-NAIRR260371"
+  system: "vista"
+  work_base: "/work/11784/adityahegde712/vista/Agentic-Cybersecurity-Lab"
+  scratch_base: "/scratch/11784/adityahegde712/vista"
+  queues:
+    gpu_prod: "gh"
+    gpu_dev: "gh-dev"
+    cpu_prod: "gg"
+
+training:
+  seed: 42
+  batch_size: 256
+  num_workers: 4
+  device: "auto"  # "auto" (cuda if available else cpu), "cuda", or "cpu"

@@ -1,7 +1,9 @@
 import pandas as pd
 import numpy as np
-from typing import Tuple, List
+from typing import Tuple, List, Optional
 from dataclasses import dataclass
+
+from ..config import get_raw_hai_dir
 
 @dataclass
 class Split:
@@ -10,8 +12,8 @@ class Split:
     timestamps: np.ndarray
 
 class HAILoader:
-    def __init__(self, data_dir: str = 'data/hai/raw/hai-20.07', val_fraction: float = 0.2):
-        self.data_dir = data_dir
+    def __init__(self, data_dir: Optional[str] = None, val_fraction: float = 0.2):
+        self.data_dir = str(data_dir) if data_dir is not None else str(get_raw_hai_dir())
         self.val_fraction = val_fraction
         
     def load(self) -> Tuple[Split, Split, Split]:

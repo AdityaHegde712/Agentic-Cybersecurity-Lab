@@ -12,7 +12,7 @@
 
 Maintained research findings log for the PoC. The initial evaluation (CUSUM baseline) comprises two analyses: (a) synthetic acceptance evaluation (controlled), (b) HAI real-ICS-data feasibility evaluation.
 
-Canonical attack model (per `docs/system-design.md`):
+Canonical attack model (per `docs/architecture/system-design.md`):
 
 ```
 y(t) = x(t) + delta_x(t)
@@ -136,7 +136,7 @@ Full bibliographic entries for citations [1]--[30] used above. The complete 30-s
 - `results/cusum_evaluation_synthetic.csv`, `results/cusum_evaluation_hai.csv`, `results/cusum_hai_sensor_events.pkl`
 - `src/evaluation/cusum_experiment.py` (evaluation harness)
 - `src/detection/cusum.py`, `src/data/synthetic.py`, `src/data/hai_loader.py`, `src/evaluation/metrics.py`
-- `docs/system-design.md` (attack model and development plan)
+- `docs/architecture/system-design.md` (attack model and development plan)
 - `tests/spec/` (locked contract; 27/27 PASS as of 2026-08-05)
 
 ## Changelog

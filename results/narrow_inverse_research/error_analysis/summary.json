@@ -1,0 +1,1371 @@
+{
+  "timestamp": "2026-11-01T00:42:00.750730+00:00",
+  "train_std_meters": 1.20852,
+  "target_channel": "L_T1",
+  "parametric_fits": {
+    "PersistenceEstimator": {
+      "overall": {
+        "fits": {
+          "gaussian": {
+            "distribution_name": "gaussian",
+            "params": {
+              "loc": 0.007433423630239138,
+              "scale": 1.250596354232961
+            },
+            "log_likelihood": -295.660629744688,
+            "aic": 595.321259489376,
+            "bic": 601.7071731911564,
+            "ks_stat": 0.050390486613148766,
+            "ks_pvalue": 0.7310931895980523,
+            "n_params": 2,
+            "n_samples": 180
+          },
+          "student_t": {
+            "distribution_name": "student_t",
+            "params": {
+              "df": 18145703406.016632,
+              "loc": 0.0074339538713710605,
+              "scale": 1.2505964919962467
+            },
+            "log_likelihood": -295.6606297458711,
+            "aic": 597.3212594917422,
+            "bic": 606.9001300444129,
+            "ks_stat": 0.05039035586583385,
+            "ks_pvalue": 0.7310960811165119,
+            "n_params": 3,
+            "n_samples": 180
+          },
+          "ged": {
+            "distribution_name": "ged",
+            "params": {
+              "beta": 2.7624207815874,
+              "loc": -0.04101430834826514,
+              "scale": 2.0140291212489467
+            },
+            "log_likelihood": -294.975958288648,
+            "aic": 595.951916577296,
+            "bic": 605.5307871299666,
+            "ks_stat": 0.08216338646902421,
+            "ks_pvalue": 0.16642536296973953,
+            "n_params": 3,
+            "n_samples": 180
+          }
+        },
+        "best_model_aic": "gaussian",
+        "best_model_bic": "gaussian"
+      },
+      "by_amplitude": {
+        "0.75": {
+          "fits": {
+            "gaussian": {
+              "distribution_name": "gaussian",
+              "params": {
+                "loc": 0.07153132106951314,
+                "scale": 1.2863102089813567
+              },
+              "log_likelihood": -100.24298099873603,
+              "aic": 204.48596199747206,
+              "bic": 208.67465112191627,
+              "ks_stat": 0.09548075002779943,
+              "ks_pvalue": 0.6104617782107887,
+              "n_params": 2,
+              "n_samples": 60
+            },
+            "student_t": {
+              "distribution_name": "student_t",
+              "params": {
+                "df": 2417802144021.033,
+                "loc": 0.07153127402744874,
+                "scale": 1.2863101364563914
+              },
+              "log_likelihood": -100.24298099873914,
+              "aic": 206.48596199747828,
+              "bic": 212.76899568414458,
+              "ks_stat": 0.09548076242413267,
+              "ks_pvalue": 0.6104616166024126,
+              "n_params": 3,
+              "n_samples": 60
+            },
+            "ged": {
+              "distribution_name": "ged",
+              "params": {
+                "beta": 3.3438314842909427,
+                "loc": -0.05773026844350714,
+                "scale": 2.1857889681349723
+              },
+              "log_likelihood": -99.970067958965,
+              "aic": 205.94013591793,
+              "bic": 212.2231696045963,
+              "ks_stat": 0.1357587406030772,
+              "ks_pvalue": 0.19966189943082913,
+              "n_params": 3,
+              "n_samples": 60
+            }
+          },
+          "best_model_aic": "gaussian",
+          "best_model_bic": "gaussian"
+        },
+        "1.5": {
+          "fits": {
+            "gaussian": {
+              "distribution_name": "gaussian",
+              "params": {
+                "loc": 0.15294614034219167,
+                "scale": 1.138123276989573
+              },
+              "log_likelihood": -92.89915144803813,
+              "aic": 189.79830289607625,
+              "bic": 193.98699202052046,
+              "ks_stat": 0.07049902976265388,
+              "ks_pvalue": 0.9061335914402344,
+              "n_params": 2,
+              "n_samples": 60
+            },
+            "student_t": {
+              "distribution_name": "student_t",
+              "params": {
+                "df": 136694582211.62943,
+                "loc": 0.15294643225817417,
+                "scale": 1.1381233549163237
+              },
+              "log_likelihood": -92.89915144810617,
+              "aic": 191.79830289621233,
+              "bic": 198.08133658287863,
+              "ks_stat": 0.0704991318197914,
+              "ks_pvalue": 0.9061327079294046,
+              "n_params": 3,
+              "n_samples": 60
+            },
+            "ged": {
+              "distribution_name": "ged",
+              "params": {
+                "beta": 3.0781138293759644,
+                "loc": 0.1728887393368141,
+                "scale": 1.877177446017941
+              },
+              "log_likelihood": -92.14537968203433,
+              "aic": 190.29075936406866,
+              "bic": 196.57379305073496,
+              "ks_stat": 0.07745318229486442,
+              "ks_pvalue": 0.8369993260585491,
+              "n_params": 3,
+              "n_samples": 60
+            }
+          },
+          "best_model_aic": "gaussian",
+          "best_model_bic": "gaussian"
+        },
+        "3.0": {
+          "fits": {
+            "gaussian": {
+              "distribution_name": "gaussian",
+              "params": {
+                "loc": -0.20217719052098734,
+                "scale": 1.2933816434298473
+              },
+              "log_likelihood": -100.57192503849245,
+              "aic": 205.1438500769849,
+              "bic": 209.3325392014291,
+              "ks_stat": 0.07556672919629263,
+              "ks_pvalue": 0.8573820898548201,
+              "n_params": 2,
+              "n_samples": 60
+            },
+            "student_t": {
+              "distribution_name": "student_t",
+              "params": {
+                "df": 158655100328.73132,
+                "loc": -0.20217730350603233,
+                "scale": 1.2933816164208671
+              },
+              "log_likelihood": -100.57192503855518,
+              "aic": 207.14385007711036,
+              "bic": 213.42688376377666,
+              "ks_stat": 0.07556672289448048,
+              "ks_pvalue": 0.8573821561025543,
+              "n_params": 3,
+              "n_samples": 60
+            },
+            "ged": {
+              "distribution_name": "ged",
+              "params": {
+                "beta": 11321363.486030612,
+                "loc": -0.4540178797660479,
+                "scale": 2.429777077419013
+              },
+              "log_likelihood": -94.85680507829773,
+              "aic": 195.71361015659545,
+              "bic": 201.99664384326175,
+              "ks_stat": 0.48333333333333334,
+              "ks_pvalue": 2.002696588541398e-13,
+              "n_params": 3,
+              "n_samples": 60
+            }
+          },
+          "best_model_aic": "ged",
+          "best_model_bic": "ged"
+        }
+      }
+    },
+    "CompanionRegressionEstimator": {
+      "overall": {
+        "fits": {
+          "gaussian": {
+            "distribution_name": "gaussian",
+            "params": {
+              "loc": 0.01999863530594453,
+              "scale": 0.17187903232697904
+            },
+            "log_likelihood": 61.56464702765666,
+            "aic": -119.12929405531332,
+            "bic": -112.7433803535329,
+            "ks_stat": 0.0892746570168475,
+            "ks_pvalue": 0.10674037219305477,
+            "n_params": 2,
+            "n_samples": 180
+          },
+          "student_t": {
+            "distribution_name": "student_t",
+            "params": {
+              "df": 7.841741227701425,
+              "loc": 0.020971367087150458,
+              "scale": 0.1496065362978723
+            },
+            "log_likelihood": 62.925815094212524,
+            "aic": -119.85163018842505,
+            "bic": -110.27275963575441,
+            "ks_stat": 0.07285449217232226,
+            "ks_pvalue": 0.2811395619627971,
+            "n_params": 3,
+            "n_samples": 180
+          },
+          "ged": {
+            "distribution_name": "ged",
+            "params": {
+              "beta": 1.3163197906588797,
+              "loc": 0.016465344056701026,
+              "scale": 0.17739876838639101
+            },
+            "log_likelihood": 64.52972741389058,
+            "aic": -123.05945482778117,
+            "bic": -113.48058427511053,
+            "ks_stat": 0.06819079878025963,
+            "ks_pvalue": 0.3564099593263991,
+            "n_params": 3,
+            "n_samples": 180
+          }
+        },
+        "best_model_aic": "ged",
+        "best_model_bic": "ged"
+      },
+      "by_amplitude": {
+        "0.75": {
+          "fits": {
+            "gaussian": {
+              "distribution_name": "gaussian",
+              "params": {
+                "loc": 0.029940869505833714,
+                "scale": 0.1996440055184646
+              },
+              "log_likelihood": 11.536856260220027,
+              "aic": -19.073712520440054,
+              "bic": -14.885023395995853,
+              "ks_stat": 0.0946413568903281,
+              "ks_pvalue": 0.6214193317212474,
+              "n_params": 2,
+              "n_samples": 60
+            },
+            "student_t": {
+              "distribution_name": "student_t",
+              "params": {
+                "df": 11.207197780480774,
+                "loc": 0.03545548760125432,
+                "scale": 0.18180890276119677
+              },
+              "log_likelihood": 11.68595515630985,
+              "aic": -17.3719103126197,
+              "bic": -11.0888766259534,
+              "ks_stat": 0.07450388747427411,
+              "ks_pvalue": 0.86836954756362,
+              "n_params": 3,
+              "n_samples": 60
+            },
+            "ged": {
+              "distribution_name": "ged",
+              "params": {
+                "beta": 1.4461434155917656,
+                "loc": 0.0324937976712629,
+                "scale": 0.22555672111459246
+              },
+              "log_likelihood": 12.12563032172002,
+              "aic": -18.25126064344004,
+              "bic": -11.96822695677374,
+              "ks_stat": 0.07367104361201726,
+              "ks_pvalue": 0.8767106745181965,
+              "n_params": 3,
+              "n_samples": 60
+            }
+          },
+          "best_model_aic": "gaussian",
+          "best_model_bic": "gaussian"
+        },
+        "1.5": {
+          "fits": {
+            "gaussian": {
+              "distribution_name": "gaussian",
+              "params": {
+                "loc": 0.026269969308283216,
+                "scale": 0.14441852063838187
+              },
+              "log_likelihood": 30.966076096480965,
+              "aic": -57.93215219296193,
+              "bic": -53.74346306851773,
+              "ks_stat": 0.1202228644431168,
+              "ks_pvalue": 0.3247027271354721,
+              "n_params": 2,
+              "n_samples": 60
+            },
+            "student_t": {
+              "distribution_name": "student_t",
+              "params": {
+                "df": 6.34872077878797,
+                "loc": 0.015224848786716117,
+                "scale": 0.12107059308628926
+              },
+              "log_likelihood": 31.765620014472358,
+              "aic": -57.531240028944715,
+              "bic": -51.248206342278415,
+              "ks_stat": 0.09580691592666346,
+              "ks_pvalue": 0.6062120955765989,
+              "n_params": 3,
+              "n_samples": 60
+            },
+            "ged": {
+              "distribution_name": "ged",
+              "params": {
+                "beta": 1.2160804796679556,
+                "loc": 0.007382537423781675,
+                "scale": 0.13702949152171673
+              },
+              "log_likelihood": 32.19839372254195,
+              "aic": -58.3967874450839,
+              "bic": -52.1137537584176,
+              "ks_stat": 0.10049556970033041,
+              "ks_pvalue": 0.545909949565468,
+              "n_params": 3,
+              "n_samples": 60
+            }
+          },
+          "best_model_aic": "ged",
+          "best_model_bic": "gaussian"
+        },
+        "3.0": {
+          "fits": {
+            "gaussian": {
+              "distribution_name": "gaussian",
+              "params": {
+                "loc": 0.003785067103716678,
+                "scale": 0.1658665420548642
+              },
+              "log_likelihood": 22.657994657869846,
+              "aic": -41.31598931573969,
+              "bic": -37.12730019129549,
+              "ks_stat": 0.07986917465152521,
+              "ks_pvalue": 0.8094323527060225,
+              "n_params": 2,
+              "n_samples": 60
+            },
+            "student_t": {
+              "distribution_name": "student_t",
+              "params": {
+                "df": 24.732221158158893,
+                "loc": 0.00524129768184944,
+                "scale": 0.15912470578328053
+              },
+              "log_likelihood": 22.697885869084313,
+              "aic": -39.39577173816863,
+              "bic": -33.112738051502326,
+              "ks_stat": 0.07329843520303442,
+              "ks_pvalue": 0.880362966132002,
+              "n_params": 3,
+              "n_samples": 60
+            },
+            "ged": {
+              "distribution_name": "ged",
+              "params": {
+                "beta": 1.430981798672371,
+                "loc": 0.005225206244303683,
+                "scale": 0.18610460598845635
+              },
+              "log_likelihood": 23.13094401304893,
+              "aic": -40.26188802609786,
+              "bic": -33.97885433943156,
+              "ks_stat": 0.05895528941445166,
+              "ks_pvalue": 0.9772914315103659,
+              "n_params": 3,
+              "n_samples": 60
+            }
+          },
+          "best_model_aic": "gaussian",
+          "best_model_bic": "gaussian"
+        }
+      }
+    },
+    "StepMAP_TCN_Declared": {
+      "overall": {
+        "fits": {
+          "gaussian": {
+            "distribution_name": "gaussian",
+            "params": {
+              "loc": 0.0026104004780821088,
+              "scale": 0.2002420076401066
+            },
+            "log_likelihood": 34.072213056313906,
+            "aic": -64.14442611262781,
+            "bic": -57.75851241084739,
+            "ks_stat": 0.13674866635918026,
+            "ks_pvalue": 0.0021325686082304712,
+            "n_params": 2,
+            "n_samples": 180
+          },
+          "student_t": {
+            "distribution_name": "student_t",
+            "params": {
+              "df": 9329393264.196949,
+              "loc": 0.002610454057809685,
+              "scale": 0.20024249394187277
+            },
+            "log_likelihood": 34.072213049249456,
+            "aic": -62.14442609849891,
+            "bic": -52.56555554582828,
+            "ks_stat": 0.13674836472934254,
+            "ks_pvalue": 0.0021326328332070634,
+            "n_params": 3,
+            "n_samples": 180
+          },
+          "ged": {
+            "distribution_name": "ged",
+            "params": {
+              "beta": 9.376373860226348,
+              "loc": 0.0036532400263822287,
+              "scale": 0.35192934987319324
+            },
+            "log_likelihood": 53.493519460391695,
+            "aic": -100.98703892078339,
+            "bic": -91.40816836811275,
+            "ks_stat": 0.09927583563972286,
+            "ks_pvalue": 0.053682512087534495,
+            "n_params": 3,
+            "n_samples": 180
+          }
+        },
+        "best_model_aic": "ged",
+        "best_model_bic": "ged"
+      },
+      "by_amplitude": {
+        "0.75": {
+          "fits": {
+            "gaussian": {
+              "distribution_name": "gaussian",
+              "params": {
+                "loc": 0.00644398240450253,
+                "scale": 0.2058510875812372
+              },
+              "log_likelihood": 9.699822852469573,
+              "aic": -15.399645704939147,
+              "bic": -11.210956580494946,
+              "ks_stat": 0.15311302503477325,
+              "ks_pvalue": 0.1078371860212185,
+              "n_params": 2,
+              "n_samples": 60
+            },
+            "student_t": {
+              "distribution_name": "student_t",
+              "params": {
+                "df": 1091100868.3763993,
+                "loc": 0.00644694429314107,
+                "scale": 0.2058520397565642
+              },
+              "log_likelihood": 9.699822827733433,
+              "aic": -13.399645655466866,
+              "bic": -7.116611968800566,
+              "ks_stat": 0.15311715028452727,
+              "ks_pvalue": 0.1078204328130884,
+              "n_params": 3,
+              "n_samples": 60
+            },
+            "ged": {
+              "distribution_name": "ged",
+              "params": {
+                "beta": 24086455.645800386,
+                "loc": 0.01391329905385117,
+                "scale": 0.3681516448910966
+              },
+              "log_likelihood": 18.36678342735354,
+              "aic": -30.733566854707078,
+              "bic": -24.450533168040778,
+              "ks_stat": 0.48333333333333334,
+              "ks_pvalue": 2.002696588541398e-13,
+              "n_params": 3,
+              "n_samples": 60
+            }
+          },
+          "best_model_aic": "ged",
+          "best_model_bic": "ged"
+        },
+        "1.5": {
+          "fits": {
+            "gaussian": {
+              "distribution_name": "gaussian",
+              "params": {
+                "loc": 0.0015676631086198186,
+                "scale": 0.19581836367354402
+              },
+              "log_likelihood": 12.69775392989721,
+              "aic": -21.39550785979442,
+              "bic": -17.206818735350218,
+              "ks_stat": 0.17409979861746228,
+              "ks_pvalue": 0.046314376094585,
+              "n_params": 2,
+              "n_samples": 60
+            },
+            "student_t": {
+              "distribution_name": "student_t",
+              "params": {
+                "df": 14588236251.680883,
+                "loc": 0.0015680101438893521,
+                "scale": 0.19581832037606034
+              },
+              "log_likelihood": 12.697753928442136,
+              "aic": -19.395507856884272,
+              "bic": -13.112474170217972,
+              "ks_stat": 0.1740991959927718,
+              "ks_pvalue": 0.04631557300816591,
+              "n_params": 3,
+              "n_samples": 60
+            },
+            "ged": {
+              "distribution_name": "ged",
+              "params": {
+                "beta": 10.625010431661215,
+                "loc": -0.014063586520860948,
+                "scale": 0.3406550501662242
+              },
+              "log_likelihood": 20.21851294879739,
+              "aic": -34.43702589759478,
+              "bic": -28.15399221092848,
+              "ks_stat": 0.1600444674270498,
+              "ks_pvalue": 0.08256589585013252,
+              "n_params": 3,
+              "n_samples": 60
+            }
+          },
+          "best_model_aic": "ged",
+          "best_model_bic": "ged"
+        },
+        "3.0": {
+          "fits": {
+            "gaussian": {
+              "distribution_name": "gaussian",
+              "params": {
+                "loc": -0.00018044407887603576,
+                "scale": 0.19886555909988446
+              },
+              "log_likelihood": 11.771263906454664,
+              "aic": -19.542527812909327,
+              "bic": -15.353838688465126,
+              "ks_stat": 0.13027054162989904,
+              "ks_pvalue": 0.23879598379603095,
+              "n_params": 2,
+              "n_samples": 60
+            },
+            "student_t": {
+              "distribution_name": "student_t",
+              "params": {
+                "df": 18714880922.90113,
+                "loc": -0.0001800801425588277,
+                "scale": 0.19886536716956527
+              },
+              "log_likelihood": 11.771263905352322,
+              "aic": -17.542527810704645,
+              "bic": -11.259494124038344,
+              "ks_stat": 0.1302699968558817,
+              "ks_pvalue": 0.23880013458406102,
+              "n_params": 3,
+              "n_samples": 60
+            },
+            "ged": {
+              "distribution_name": "ged",
+              "params": {
+                "beta": 6050333.564315092,
+                "loc": 0.003994252148112773,
+                "scale": 0.3550985463572254
+              },
+              "log_likelihood": 20.53276764273064,
+              "aic": -35.06553528546128,
+              "bic": -28.78250159879498,
+              "ks_stat": 0.48333333333333334,
+              "ks_pvalue": 2.002696588541398e-13,
+              "n_params": 3,
+              "n_samples": 60
+            }
+          },
+          "best_model_aic": "ged",
+          "best_model_bic": "ged"
+        }
+      }
+    },
+    "StepMAP_TCN_Undeclared": {
+      "overall": {
+        "fits": {
+          "gaussian": {
+            "distribution_name": "gaussian",
+            "params": {
+              "loc": 0.002538189358859423,
+              "scale": 0.20019959664144635
+            },
+            "log_likelihood": 34.11034086174555,
+            "aic": -64.2206817234911,
+            "bic": -57.83476802171067,
+            "ks_stat": 0.13664369951015265,
+            "ks_pvalue": 0.0021550272868746307,
+            "n_params": 2,
+            "n_samples": 180
+          },
+          "student_t": {
+            "distribution_name": "student_t",
+            "params": {
+              "df": 200366603418.65698,
+              "loc": 0.0025381674490985036,
+              "scale": 0.20019963914389893
+            },
+            "log_likelihood": 34.11034086145732,
+            "aic": -62.220681722914634,
+            "bic": -52.641811170244004,
+            "ks_stat": 0.13664362538582642,
+            "ks_pvalue": 0.0021550432235854806,
+            "n_params": 3,
+            "n_samples": 180
+          },
+          "ged": {
+            "distribution_name": "ged",
+            "params": {
+              "beta": 9.375840064637408,
+              "loc": 0.00365268170845086,
+              "scale": 0.35192760721073757
+            },
+            "log_likelihood": 53.49368430600998,
+            "aic": -100.98736861201996,
+            "bic": -91.40849805934933,
+            "ks_stat": 0.0992677366243469,
+            "ks_pvalue": 0.0537139859684187,
+            "n_params": 3,
+            "n_samples": 180
+          }
+        },
+        "best_model_aic": "ged",
+        "best_model_bic": "ged"
+      },
+      "by_amplitude": {
+        "0.75": {
+          "fits": {
+            "gaussian": {
+              "distribution_name": "gaussian",
+              "params": {
+                "loc": 0.006227337997488352,
+                "scale": 0.2057320881547431
+              },
+              "log_likelihood": 9.73451798195747,
+              "aic": -15.46903596391494,
+              "bic": -11.28034683947074,
+              "ks_stat": 0.15285399386759285,
+              "ks_pvalue": 0.10889345452870303,
+              "n_params": 2,
+              "n_samples": 60
+            },
+            "student_t": {
+              "distribution_name": "student_t",
+              "params": {
+                "df": 44671302.69505584,
+                "loc": 0.0062299823248288914,
+                "scale": 0.20573114305224327
+              },
+              "log_likelihood": 9.73451755588014,
+              "aic": -13.469035111760281,
+              "bic": -7.1860014250939805,
+              "ks_stat": 0.1528592891868905,
+              "ks_pvalue": 0.10887177639858192,
+              "n_params": 3,
+              "n_samples": 60
+            },
+            "ged": {
+              "distribution_name": "ged",
+              "params": {
+                "beta": 4644573.461808615,
+                "loc": 0.01391334489467383,
+                "scale": 0.36815226558565395
+              },
+              "log_likelihood": 18.36666832383382,
+              "aic": -30.73333664766764,
+              "bic": -24.45030296100134,
+              "ks_stat": 0.48333333333333334,
+              "ks_pvalue": 2.002696588541398e-13,
+              "n_params": 3,
+              "n_samples": 60
+            }
+          },
+          "best_model_aic": "ged",
+          "best_model_bic": "ged"
+        },
+        "1.5": {
+          "fits": {
+            "gaussian": {
+              "distribution_name": "gaussian",
+              "params": {
+                "loc": 0.001567639032332004,
+                "scale": 0.19581784563019497
+              },
+              "log_likelihood": 12.697912661905146,
+              "aic": -21.395825323810293,
+              "bic": -17.20713619936609,
+              "ks_stat": 0.17410027262672967,
+              "ks_pvalue": 0.04631343465156401,
+              "n_params": 2,
+              "n_samples": 60
+            },
+            "student_t": {
+              "distribution_name": "student_t",
+              "params": {
+                "df": 43174808588.27419,
+                "loc": 0.00156771793274984,
+                "scale": 0.19581790154119927
+              },
+              "log_likelihood": 12.697912661436579,
+              "aic": -19.395825322873158,
+              "bic": -13.112791636206858,
+              "ks_stat": 0.17410008101556662,
+              "ks_pvalue": 0.0463138152138477,
+              "n_params": 3,
+              "n_samples": 60
+            },
+            "ged": {
+              "distribution_name": "ged",
+              "params": {
+                "beta": 10.624901433658344,
+                "loc": -0.014063662542227452,
+                "scale": 0.3406544058433715
+              },
+              "log_likelihood": 20.218577774579252,
+              "aic": -34.437155549158504,
+              "bic": -28.154121862492204,
+              "ks_stat": 0.16004495353175452,
+              "ks_pvalue": 0.08256431511078577,
+              "n_params": 3,
+              "n_samples": 60
+            }
+          },
+          "best_model_aic": "ged",
+          "best_model_bic": "ged"
+        },
+        "3.0": {
+          "fits": {
+            "gaussian": {
+              "distribution_name": "gaussian",
+              "params": {
+                "loc": -0.000180408953242091,
+                "scale": 0.19886521103509988
+              },
+              "log_likelihood": 11.771368921649065,
+              "aic": -19.54273784329813,
+              "bic": -15.35404871885393,
+              "ks_stat": 0.13027072121868288,
+              "ks_pvalue": 0.23879461546984837,
+              "n_params": 2,
+              "n_samples": 60
+            },
+            "student_t": {
+              "distribution_name": "student_t",
+              "params": {
+                "df": 51145669508.6557,
+                "loc": -0.0001805637420346282,
+                "scale": 0.19886535156933582
+              },
+              "log_likelihood": 11.77136892125477,
+              "aic": -17.54273784250954,
+              "bic": -11.259704155843238,
+              "ks_stat": 0.1302709114209939,
+              "ks_pvalue": 0.2387931662832592,
+              "n_params": 3,
+              "n_samples": 60
+            },
+            "ged": {
+              "distribution_name": "ged",
+              "params": {
+                "beta": 23075176.678695947,
+                "loc": 0.003994269792769192,
+                "scale": 0.3550977155819085
+              },
+              "log_likelihood": 20.53290366889413,
+              "aic": -35.06580733778826,
+              "bic": -28.782773651121957,
+              "ks_stat": 0.48333333333333334,
+              "ks_pvalue": 2.002696588541398e-13,
+              "n_params": 3,
+              "n_samples": 60
+            }
+          },
+          "best_model_aic": "ged",
+          "best_model_bic": "ged"
+        }
+      }
+    },
+    "CausalStepMAP_TCN_Declared": {
+      "overall": {
+        "fits": {
+          "gaussian": {
+            "distribution_name": "gaussian",
+            "params": {
+              "loc": 0.0063661184690676845,
+              "scale": 0.19423072799508856
+            },
+            "log_likelihood": 39.558595289774004,
+            "aic": -75.11719057954801,
+            "bic": -68.73127687776758,
+            "ks_stat": 0.13983592264781963,
+            "ks_pvalue": 0.0015613760550842349,
+            "n_params": 2,
+            "n_samples": 180
+          },
+          "student_t": {
+            "distribution_name": "student_t",
+            "params": {
+              "df": 239767715103.5864,
+              "loc": 0.006366193989697154,
+              "scale": 0.19423075681906546
+            },
+            "log_likelihood": 39.558595289510876,
+            "aic": -73.11719057902175,
+            "bic": -63.53832002635112,
+            "ks_stat": 0.1398360452238696,
+            "ks_pvalue": 0.0015613565102898226,
+            "n_params": 3,
+            "n_samples": 180
+          },
+          "ged": {
+            "distribution_name": "ged",
+            "params": {
+              "beta": 6.879409151743779,
+              "loc": 0.010376076802139032,
+              "scale": 0.3311438031299038
+            },
+            "log_likelihood": 60.181631209922465,
+            "aic": -114.36326241984493,
+            "bic": -104.78439186717429,
+            "ks_stat": 0.11708208020054339,
+            "ks_pvalue": 0.013178663412057354,
+            "n_params": 3,
+            "n_samples": 180
+          }
+        },
+        "best_model_aic": "ged",
+        "best_model_bic": "ged"
+      },
+      "by_amplitude": {
+        "0.75": {
+          "fits": {
+            "gaussian": {
+              "distribution_name": "gaussian",
+              "params": {
+                "loc": 0.011750594458666042,
+                "scale": 0.1982545473200192
+              },
+              "log_likelihood": 11.955896893444747,
+              "aic": -19.911793786889493,
+              "bic": -15.723104662445293,
+              "ks_stat": 0.1632301134098213,
+              "ks_pvalue": 0.0727383000812094,
+              "n_params": 2,
+              "n_samples": 60
+            },
+            "student_t": {
+              "distribution_name": "student_t",
+              "params": {
+                "df": 112409489425.91803,
+                "loc": 0.011750432797020878,
+                "scale": 0.19825447223605952
+              },
+              "log_likelihood": 11.955896893247989,
+              "aic": -17.911793786495977,
+              "bic": -11.628760099829677,
+              "ks_stat": 0.16322989653910713,
+              "ks_pvalue": 0.07273893387003239,
+              "n_params": 3,
+              "n_samples": 60
+            },
+            "ged": {
+              "distribution_name": "ged",
+              "params": {
+                "beta": 6.105384493517036,
+                "loc": 0.021996747756766716,
+                "scale": 0.3383356964785521
+              },
+              "log_likelihood": 18.05060563544757,
+              "aic": -30.101211270895142,
+              "bic": -23.81817758422884,
+              "ks_stat": 0.14528537903880445,
+              "ks_pvalue": 0.14371067392802483,
+              "n_params": 3,
+              "n_samples": 60
+            }
+          },
+          "best_model_aic": "ged",
+          "best_model_bic": "ged"
+        },
+        "1.5": {
+          "fits": {
+            "gaussian": {
+              "distribution_name": "gaussian",
+              "params": {
+                "loc": 0.003054880329050867,
+                "scale": 0.19237329087917804
+              },
+              "log_likelihood": 13.762742278598981,
+              "aic": -23.525484557197963,
+              "bic": -19.33679543275376,
+              "ks_stat": 0.15538456000987427,
+              "ks_pvalue": 0.09893170873155399,
+              "n_params": 2,
+              "n_samples": 60
+            },
+            "student_t": {
+              "distribution_name": "student_t",
+              "params": {
+                "df": 5964599502.510271,
+                "loc": 0.003054728883786082,
+                "scale": 0.19237266541628661
+              },
+              "log_likelihood": 13.762742274315839,
+              "aic": -21.525484548631677,
+              "bic": -15.242450861965377,
+              "ks_stat": 0.15538474891293247,
+              "ks_pvalue": 0.09893099432696328,
+              "n_params": 3,
+              "n_samples": 60
+            },
+            "ged": {
+              "distribution_name": "ged",
+              "params": {
+                "beta": 10.509419664218639,
+                "loc": 0.00608386593643331,
+                "scale": 0.32386210133842286
+              },
+              "log_likelihood": 23.216356989304227,
+              "aic": -40.432713978608454,
+              "bic": -34.149680291942154,
+              "ks_stat": 0.12949007852110261,
+              "ks_pvalue": 0.24479784903802737,
+              "n_params": 3,
+              "n_samples": 60
+            }
+          },
+          "best_model_aic": "ged",
+          "best_model_bic": "ged"
+        },
+        "3.0": {
+          "fits": {
+            "gaussian": {
+              "distribution_name": "gaussian",
+              "params": {
+                "loc": 0.004292880619486153,
+                "scale": 0.19188570379492126
+              },
+              "log_likelihood": 13.915010624492272,
+              "aic": -23.830021248984544,
+              "bic": -19.64133212454034,
+              "ks_stat": 0.12798086729157343,
+              "ks_pvalue": 0.2567197426954221,
+              "n_params": 2,
+              "n_samples": 60
+            },
+            "student_t": {
+              "distribution_name": "student_t",
+              "params": {
+                "df": 397518518.25190115,
+                "loc": 0.004293605198871871,
+                "scale": 0.19188510241698553
+              },
+              "log_likelihood": 13.91501057659806,
+              "aic": -21.83002115319612,
+              "bic": -15.54698746652982,
+              "ks_stat": 0.12798010291701667,
+              "ks_pvalue": 0.2567258869227278,
+              "n_params": 3,
+              "n_samples": 60
+            },
+            "ged": {
+              "distribution_name": "ged",
+              "params": {
+                "beta": 9.650090155729728,
+                "loc": -0.00040610971869181573,
+                "scale": 0.3353450080701108
+              },
+              "log_likelihood": 20.833279324041726,
+              "aic": -35.66655864808345,
+              "bic": -29.38352496141715,
+              "ks_stat": 0.09403591750227436,
+              "ks_pvalue": 0.6293380353083238,
+              "n_params": 3,
+              "n_samples": 60
+            }
+          },
+          "best_model_aic": "ged",
+          "best_model_bic": "ged"
+        }
+      }
+    },
+    "CausalStepMAP_TCN_Undeclared": {
+      "overall": {
+        "fits": {
+          "gaussian": {
+            "distribution_name": "gaussian",
+            "params": {
+              "loc": 0.006365881351601309,
+              "scale": 0.19424160196547371
+            },
+            "log_likelihood": 39.54851830606689,
+            "aic": -75.09703661213378,
+            "bic": -68.71112291035335,
+            "ks_stat": 0.13987312396517698,
+            "ks_pvalue": 0.001555454715981225,
+            "n_params": 2,
+            "n_samples": 180
+          },
+          "student_t": {
+            "distribution_name": "student_t",
+            "params": {
+              "df": 6493986495.708563,
+              "loc": 0.006366439546577448,
+              "scale": 0.19424184427375973
+            },
+            "log_likelihood": 39.54851829598466,
+            "aic": -73.09703659196931,
+            "bic": -63.518166039298684,
+            "ks_stat": 0.13987400820045215,
+            "ks_pvalue": 0.0015553142263416899,
+            "n_params": 3,
+            "n_samples": 180
+          },
+          "ged": {
+            "distribution_name": "ged",
+            "params": {
+              "beta": 6.880067393902139,
+              "loc": 0.010374993595072438,
+              "scale": 0.3311594090834057
+            },
+            "log_likelihood": 60.17493345878505,
+            "aic": -114.3498669175701,
+            "bic": -104.77099636489946,
+            "ks_stat": 0.11711239091189041,
+            "ks_pvalue": 0.013144594611711788,
+            "n_params": 3,
+            "n_samples": 180
+          }
+        },
+        "best_model_aic": "ged",
+        "best_model_bic": "ged"
+      },
+      "by_amplitude": {
+        "0.75": {
+          "fits": {
+            "gaussian": {
+              "distribution_name": "gaussian",
+              "params": {
+                "loc": 0.011750918814025839,
+                "scale": 0.19826314695775696
+              },
+              "log_likelihood": 11.953294344949198,
+              "aic": -19.906588689898395,
+              "bic": -15.717899565454195,
+              "ks_stat": 0.16322416160456082,
+              "ks_pvalue": 0.07275569549275429,
+              "n_params": 2,
+              "n_samples": 60
+            },
+            "student_t": {
+              "distribution_name": "student_t",
+              "params": {
+                "df": 6608271211.195324,
+                "loc": 0.01175098602962115,
+                "scale": 0.1982631528111949
+              },
+              "log_likelihood": 11.953294342083863,
+              "aic": -17.906588684167726,
+              "bic": -11.623554997501426,
+              "ks_stat": 0.16322427476885842,
+              "ks_pvalue": 0.07275536471330446,
+              "n_params": 3,
+              "n_samples": 60
+            },
+            "ged": {
+              "distribution_name": "ged",
+              "params": {
+                "beta": 6.105754570113277,
+                "loc": 0.021996080776448372,
+                "scale": 0.33834979367076223
+              },
+              "log_likelihood": 18.048537019217,
+              "aic": -30.097074038434002,
+              "bic": -23.8140403517677,
+              "ks_stat": 0.1452774532600405,
+              "ks_pvalue": 0.14375135499414127,
+              "n_params": 3,
+              "n_samples": 60
+            }
+          },
+          "best_model_aic": "ged",
+          "best_model_bic": "ged"
+        },
+        "1.5": {
+          "fits": {
+            "gaussian": {
+              "distribution_name": "gaussian",
+              "params": {
+                "loc": 0.0030549936688611373,
+                "scale": 0.19238564756336235
+              },
+              "log_likelihood": 13.758888431541829,
+              "aic": -23.517776863083657,
+              "bic": -19.32908773863946,
+              "ks_stat": 0.1554400569937796,
+              "ks_pvalue": 0.09872201105882905,
+              "n_params": 2,
+              "n_samples": 60
+            },
+            "student_t": {
+              "distribution_name": "student_t",
+              "params": {
+                "df": 21954294738.91237,
+                "loc": 0.0030546123494501927,
+                "scale": 0.1923854603271148
+              },
+              "log_likelihood": 13.758888430380741,
+              "aic": -21.517776860761483,
+              "bic": -15.234743174095183,
+              "ks_stat": 0.15543947045319,
+              "ks_pvalue": 0.09872422539647374,
+              "n_params": 3,
+              "n_samples": 60
+            },
+            "ged": {
+              "distribution_name": "ged",
+              "params": {
+                "beta": 10.51219545796767,
+                "loc": 0.006083742995715508,
+                "scale": 0.32387563981554046
+              },
+              "log_likelihood": 23.21470580431361,
+              "aic": -40.42941160862722,
+              "bic": -34.14637792196092,
+              "ks_stat": 0.12953783177699746,
+              "ks_pvalue": 0.2444274351193012,
+              "n_params": 3,
+              "n_samples": 60
+            }
+          },
+          "best_model_aic": "ged",
+          "best_model_bic": "ged"
+        },
+        "3.0": {
+          "fits": {
+            "gaussian": {
+              "distribution_name": "gaussian",
+              "params": {
+                "loc": 0.004291731571916961,
+                "scale": 0.19189743163821954
+              },
+              "log_likelihood": 13.911343602504353,
+              "aic": -23.822687205008705,
+              "bic": -19.633998080564503,
+              "ks_stat": 0.1279959084710136,
+              "ks_pvalue": 0.25659885999588017,
+              "n_params": 2,
+              "n_samples": 60
+            },
+            "student_t": {
+              "distribution_name": "student_t",
+              "params": {
+                "df": 138598214.98414063,
+                "loc": 0.0042881750305944055,
+                "scale": 0.19189703166319877
+              },
+              "log_likelihood": 13.911343457478214,
+              "aic": -21.822686914956428,
+              "bic": -15.539653228290128,
+              "ks_stat": 0.12800277502250934,
+              "ks_pvalue": 0.25654368888779655,
+              "n_params": 3,
+              "n_samples": 60
+            },
+            "ged": {
+              "distribution_name": "ged",
+              "params": {
+                "beta": 9.650236342590347,
+                "loc": -0.0004051342818951484,
+                "scale": 0.3353609438742584
+              },
+              "log_likelihood": 20.830530348409734,
+              "aic": -35.66106069681947,
+              "bic": -29.37802701015317,
+              "ks_stat": 0.09404713874154402,
+              "ks_pvalue": 0.6291911758232264,
+              "n_params": 3,
+              "n_samples": 60
+            }
+          },
+          "best_model_aic": "ged",
+          "best_model_bic": "ged"
+        }
+      }
+    }
+  },
+  "null_distribution": {
+    "StepMAP_TCN_Undeclared": {
+      "estimator_name": "StepMAP_TCN_Undeclared",
+      "n_points": 480,
+      "n_zero": 480,
+      "sparsity_rate": 1.0,
+      "mean_abs_nonzero": 0.0,
+      "max_abs": 9.621261665537919e-06,
+      "std_null": 1.6653203295270382e-06,
+      "empirical_far_at_thresholds": {
+        "0.005": 0.0,
+        "0.01": 0.0,
+        "0.02": 0.0,
+        "0.05": 0.0,
+        "0.08": 0.0,
+        "0.1": 0.0,
+        "0.1254": 0.0,
+        "0.15": 0.0,
+        "0.2": 0.0,
+        "0.25": 0.0
+      },
+      "percentiles": {
+        "p50": 4.227089345270303e-19,
+        "p75": 1.8176712085581123e-18,
+        "p90": 4.9989687145621864e-11,
+        "p95": 2.6367746878431693e-06,
+        "p99": 9.311101148131774e-06,
+        "p99_9": 9.621261665533774e-06
+      }
+    },
+    "CausalStepMAP_TCN_Undeclared": {
+      "estimator_name": "CausalStepMAP_TCN_Undeclared",
+      "n_points": 480,
+      "n_zero": 463,
+      "sparsity_rate": 0.9645833333333333,
+      "mean_abs_nonzero": 0.00524218950893452,
+      "max_abs": 0.04992932081222534,
+      "std_null": 0.002342044892092535,
+      "empirical_far_at_thresholds": {
+        "0.005": 0.00625,
+        "0.01": 0.0020833333333333333,
+        "0.02": 0.0020833333333333333,
+        "0.05": 0.0,
+        "0.08": 0.0,
+        "0.1": 0.0,
+        "0.1254": 0.0,
+        "0.15": 0.0,
+        "0.2": 0.0,
+        "0.25": 0.0
+      },
+      "percentiles": {
+        "p50": 1.3101665366284056e-06,
+        "p75": 4.34588576853177e-06,
+        "p90": 8.85384932384694e-06,
+        "p95": 7.516878996334296e-05,
+        "p99": 0.004356020566792435,
+        "p99_9": 0.02856946346984793
+      }
+    }
+  },
+  "operational_detection": {
+    "CausalStepMAP_TCN_Undeclared": {
+      "overall": {
+        "auc": 0.9989583333333334,
+        "tau_for_far": {
+          "0.001": 0.04992932081222534,
+          "0.01": 0.004565450569757523,
+          "0.05": 7.516878996334296e-05
+        }
+      },
+      "by_amplitude": {
+        "0.75": {
+          "auc": 1.0,
+          "tau_for_far": {
+            "0.001": 0.04992932081222534,
+            "0.01": 0.004565450569757523,
+            "0.05": 7.516878996334296e-05
+          },
+          "tpr_at_nominal_3sigma": 1.0
+        },
+        "1.5": {
+          "auc": 0.9989583333333334,
+          "tau_for_far": {
+            "0.001": 0.04992932081222534,
+            "0.01": 0.004565450569757523,
+            "0.05": 7.516878996334296e-05
+          },
+          "tpr_at_nominal_3sigma": 1.0
+        },
+        "3.0": {
+          "auc": 0.9989583333333334,
+          "tau_for_far": {
+            "0.001": 0.04992932081222534,
+            "0.01": 0.004565450569757523,
+            "0.05": 7.516878996334296e-05
+          },
+          "tpr_at_nominal_3sigma": 1.0
+        }
+      }
+    },
+    "StepMAP_TCN_Undeclared": {
+      "overall": {
+        "auc": 0.5,
+        "tau_for_far": {
+          "0.001": 9.621261665537919e-06,
+          "0.01": 9.311101148146161e-06,
+          "0.05": 2.6367746878431693e-06
+        }
+      },
+      "by_amplitude": {
+        "0.75": {
+          "auc": 0.5,
+          "tau_for_far": {
+            "0.001": 9.621261665537919e-06,
+            "0.01": 9.311101148146161e-06,
+            "0.05": 2.6367746878431693e-06
+          },
+          "tpr_at_nominal_3sigma": 1.0
+        },
+        "1.5": {
+          "auc": 0.5,
+          "tau_for_far": {
+            "0.001": 9.621261665537919e-06,
+            "0.01": 9.311101148146161e-06,
+            "0.05": 2.6367746878431693e-06
+          },
+          "tpr_at_nominal_3sigma": 1.0
+        },
+        "3.0": {
+          "auc": 0.5,
+          "tau_for_far": {
+            "0.001": 9.621261665537919e-06,
+            "0.01": 9.311101148146161e-06,
+            "0.05": 2.6367746878431693e-06
+          },
+          "tpr_at_nominal_3sigma": 1.0
+        }
+      }
+    }
+  }
+}

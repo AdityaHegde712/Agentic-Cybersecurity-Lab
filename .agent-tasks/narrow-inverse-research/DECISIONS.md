@@ -1,0 +1,162 @@
+# Narrow Additive Inverse Research Decisions
+
+## NIR-D01: Single-Sensor Step Attack Is the First Inverse Benchmark
+
+**Status:** accepted on 2026-10-10.
+
+**Decision:** Start with one bounded, finite-duration, signed step attack on
+one sensor. Sensor coupling is deferred until this setting has traceable
+recovery behavior.
+
+**Rationale:** This reduces a free time-by-sensor reconstruction to four
+parameters: sensor, onset, duration, and amplitude. It makes failure modes and
+identifiability limits inspectable.
+
+## NIR-D02: Benchmark Validity Precedes New Estimators
+
+**Status:** accepted.
+
+**Decision:** Complete the existing injection ground-truth audit before
+optimizing, differentiating through, or assigning a posterior to the LSTM.
+
+**Rationale:** Exact-nonzero support after float32 normalization reconstruction
+may not represent the intended attack support.
+
+## NIR-D03: Optimization Before RL or World Models
+
+**Status:** accepted on 2026-10-11.
+
+**Decision:** Use a constrained optimization/MAP baseline first. Treat LSTM
+gradients as diagnostics. Defer RL and world-model approaches until there is a
+valid passive-reconstruction baseline.
+
+**Rationale:** The current task has no intervention/action loop. RL becomes
+relevant later for active sensing or experimental design, not first-pass
+observation-only reconstruction.
+
+## NIR-D04: Conditional Claim Only
+
+**Status:** accepted on 2026-10-10.
+
+**Decision:** Do not claim general recovery of an unknown observation-only
+attack from `y` alone. Report only conditional recovery under an explicit
+normal-dynamics and attack-generator contract.
+
+**Rationale:** A bounded step can be moved between the unobserved clean signal
+and delta without changing `y` unless the benchmark introduces independent
+constraints such as trusted companion sensors, known inputs, or a justified
+restricted clean-dynamics class.
+
+## NIR-D05: Known Window and Sensor Define the First Conditional Inverse
+
+**Status:** accepted on 2026-10-11.
+
+**Decision:** Supply the attacked sensor and interval to the first benchmark.
+Estimate the clean measurement, signed step amplitude/trajectory, and uncertainty.
+
+**Consequence:** Support localization is not a primary success metric for the
+first benchmark. Blind localization is a separately sealed later problem.
+
+## NIR-D06: Offline Discovery and Causal Estimation Are Separate Gates
+
+**Status:** accepted on 2026-10-11.
+
+**Decision:** Permit future clean context in an offline smoother for method
+discovery, but require a matched past-only filter that recursively uses
+reconstructed clean history.
+
+**Rationale:** The existing LSTM residual feeds attacked observations into later
+contexts and can attenuate sustained offsets. Offline evidence cannot substitute
+for causal recovery evidence.
+
+## NIR-D07: Physics and Dataset Constraints Require Provenance
+
+**Status:** accepted on 2026-10-11.
+
+**Decision:** Use recorded actuator/status channels, public C-Town physics and
+topology, and clean-data operating limits through a typed channel/constraint
+manifest. Treat public physics as hard only after dataset alignment is validated;
+otherwise use and ablate it as a soft prior.
+
+**Rejected alternative:** Correlation-ranked companion sensors are not promoted
+to trusted constraints without independent physical evidence.
+
+## NIR-D08: Bayesian/MAP Is the Core; Method Families Compete as Dynamics Priors
+
+**Status:** accepted on 2026-10-11.
+
+**Decision:** Center the first estimator on constrained Bayesian/MAP inference.
+Compare state-space, NARX/NARMAX, discrete sparse-equation, LSTM, and compact
+probabilistic neural dynamics under the same inverse and evaluation contract.
+
+**Consequence:** SINDy is one candidate rather than the default. LSTM gradients
+remain diagnostic. World models are contingent; RL requires an action loop.
+
+## NIR-D09: Local-First Preparation Before Vista Execution
+
+**Status:** accepted on 2026-10-11.
+
+**Decision:** Build and verify manifests, tests, estimators, runners, analysis,
+and a reduced final-artifact smoke locally before pulling a reviewed commit on
+Vista.
+
+**Consequence:** No remote pull or allocation use is implied by local completion.
+Every remote command, queue, and SU estimate remains an owner approval gate.
+
+## NIR-D10: Sealed Chronological Evaluation
+
+**Status:** accepted on 2026-10-11.
+
+**Decision:** Use five chronological fit/select/calibration/development/final
+blocks and hash all benchmark inputs and thresholds before the one-time final
+evaluation. Measurement-defect corrections create a new seal rather than
+overwriting prior evidence.
+
+**Rationale:** Repeated inspection of the historical four-scenario validation
+sequence cannot support a held-out reconstruction claim.
+
+## NIR-D11: Public-Model Semantics Remain Candidate Until Aligned
+
+**Status:** accepted on 2026-10-11.
+
+**Decision:** Record C-Town element names and EPANET units as candidate public-
+model semantics, while keeping BATADAL stored units unknown and topology
+alignment false until the exact dataset-generator relationship is validated.
+All current physics and empirical constraints remain soft.
+
+**Rationale:** A public model's `LPS` setting establishes that model's unit
+convention, but does not prove that released BATADAL columns were stored without
+conversion. Prefix similarity is not sufficient provenance for a hard rule.
+
+**Consequence:** The manifest must separate candidate semantics, stored-unit
+verification, topology alignment, evidence scope, and benchmark threat-model
+assumptions. `declared_unaffected` does not mean independently trusted.
+
+## NIR-D12: Identifiability Requires a Sealed Hard-Set Certificate
+
+**Status:** accepted on 2026-10-11.
+
+**Decision:** Keep supplied-candidate ambiguity separate from structural claims.
+Structural uniqueness requires a global diameter upper bound no greater than the
+sealed `tau_delta`, with canonical hash-verified evidence bound to the exact
+observation, benchmark case, norm, support, identity tolerance, attack class,
+normal-dynamics artifact, and typed hard constraints. Unverified candidate
+separation remains a diagnostic and structural status remains `not_certified`.
+
+**Rationale:** The decomposition `y = x + delta` is many-to-many. Bounds, support,
+an optimizer solution, or a SHA-shaped metadata value cannot prove uniqueness or
+structural ambiguity without evidence over the same declared feasible set.
+
+**Consequence:** Real attack records have no trajectory-level recovery score
+without a clean counterfactual. Synthetic injections retain exact delta truth,
+while offline posterior concentration and causal recovery remain separate claims.
+
+## NIR-D13: Phase 4 Expansion Workstreams: Error Modeling (4A) and Multi-Order TV (4B)
+
+**Status:** accepted on 2026-10-31.
+
+**Decision:** Execute two advisor-approved follow-ups on the sealed benchmark foundation:
+1. **Sprint 4A:** Statistical distribution and error modeling of $\hat{\delta} - \delta_{\text{true}}$ and null clean distribution $p(\hat{\delta} \mid \delta=0)$ using existing evaluated benchmark artifacts (zero retraining needed).
+2. **Sprint 4B:** Attack family generalization across non-step additive attacks (ramps, linear drifts, pulses, sinusoids) using Composite Multi-Order Total Variation / $\ell_1$ Trend Filtering ($\lambda_0\|\boldsymbol{\delta}\|_1 + \lambda_1\|\mathbf{D}^1\boldsymbol{\delta}\|_1 + \lambda_2\|\mathbf{D}^2\boldsymbol{\delta}\|_1$) without retraining the normal TCN surrogate.
+
+**Rationale:** The Stage 1 normal TCN surrogate is invariant to attack shapes because it models normal plant dynamics purely from uncorrupted companion sensors. Re-architecting Stage 2's convex prior with higher-order difference operators ($\mathbf{D}^1, \mathbf{D}^2$) enables recovery of linear drifts, continuous ramps, and transient pulses while preserving sub-millisecond ADMM solver efficiency.
