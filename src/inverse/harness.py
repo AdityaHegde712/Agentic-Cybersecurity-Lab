@@ -180,6 +180,79 @@ def generate_development_grid_scenarios(
     return scenarios
 
 
+def generate_final_grid_scenarios(
+    manifest: BenchmarkManifest,
+    final_series: np.ndarray,
+    prev_val: float,
+    train_std: float,
+    cutoffs: tuple[float, float],
+) -> list[BenchmarkScenario]:
+    """Generate 180 deterministic regime-stratified step scenarios from sealed final grid."""
+    final_arr = np.asarray(final_series, dtype=np.float64)
+    n = len(final_arr)
+    grid = manifest.final_injections
+    seed = int(manifest.seeds["injection"])
+    regime_labels = grid.regime_labels
+
+    classified_regimes = classify_series_regimes(final_arr, prev_val, cutoffs, regime_labels)
+
+    # Pre-index candidates by (duration, regime)
+    eligible_by_dur_regime: dict[tuple[int, str], list[int]] = {}
+    for dur in grid.durations_hours:
+        for reg in regime_labels:
+            eligible = [
+                t for t in range(n)
+                if classified_regimes[t] == reg and (t + dur <= n)
+            ]
+            eligible_by_dur_regime[(dur, reg)] = eligible
+
+    scenarios: list[BenchmarkScenario] = []
+    combos = list(itertools.product(grid.amplitudes_train_std, grid.durations_hours, grid.signs))
+
+    for combo_idx, (amp_std, dur, sign) in enumerate(combos):
+        injected_amp = sign * amp_std * train_std
+        picked_onsets_in_combo: set[int] = set()
+
+        for rep in range(grid.regime_stratified_onset_count):
+            reg_idx = (combo_idx + rep) % len(regime_labels)
+            target_regime = regime_labels[reg_idx]
+
+            candidates = eligible_by_dur_regime[(dur, target_regime)]
+            context = f"{amp_std:.2f}_{dur}_{sign}_{target_regime}"
+            ranked = sha256_seeded_rank(seed, candidates, context=context)
+
+            chosen_onset: int | None = None
+            for cand in ranked:
+                if cand not in picked_onsets_in_combo:
+                    chosen_onset = cand
+                    picked_onsets_in_combo.add(cand)
+                    break
+
+            if chosen_onset is None:
+                raise RuntimeError(
+                    f"Exhausted candidates for combo amp={amp_std}, dur={dur}, sign={sign}, regime={target_regime}"
+                )
+
+            scenario_id = (
+                f"final_amp{amp_std:.2f}_dur{dur:02d}_sign{sign:+d}_{target_regime}_rep{rep}"
+            )
+            scenario = BenchmarkScenario(
+                scenario_id=scenario_id,
+                target_channel=manifest.target_sensor,
+                amplitude_train_std=float(amp_std),
+                sign=int(sign),
+                duration_hours=int(dur),
+                onset_index=int(chosen_onset),
+                offset_index=int(chosen_onset + dur),
+                regime=target_regime,
+                injected_amplitude=float(injected_amp),
+                block_name="sealed_final_injection",
+            )
+            scenarios.append(scenario)
+
+    return scenarios
+
+
 def compute_scenario_metrics(
     *,
     delta_hat: np.ndarray,
@@ -190,6 +263,7 @@ def compute_scenario_metrics(
     offset: int,
     injected_amplitude: float,
     train_std: float,
+    pointwise_uncertainty: np.ndarray | None = None,
     scenario: BenchmarkScenario | None = None,
     estimator_name: str = "",
 ) -> dict[str, Any]:
@@ -229,6 +303,21 @@ def compute_scenario_metrics(
     # 5. Sign accuracy
     sign_accuracy = 1.0 if np.sign(med_delta) == np.sign(injected_amplitude) else 0.0
 
+    # 6. Calibrated Uncertainty Metrics (90% Confidence Interval)
+    z_90 = 1.645
+    if pointwise_uncertainty is not None and len(pointwise_uncertainty) == len(xh) and np.any(pointwise_uncertainty > 0):
+        unc = np.asarray(pointwise_uncertainty, dtype=np.float64)
+        lower_band = xh - z_90 * unc
+        upper_band = xh + z_90 * unc
+        covered = (xt >= lower_band) & (xt <= upper_band)
+        coverage_90 = float(np.mean(covered))
+        interval_sharpness = float(np.mean(2.0 * z_90 * unc))
+        interval_coverage_90 = float(np.mean(covered[interval])) if (offset > onset) else coverage_90
+    else:
+        coverage_90 = 0.0
+        interval_sharpness = 0.0
+        interval_coverage_90 = 0.0
+
     result: dict[str, Any] = {
         "estimator": estimator_name,
         "delta_nrmse": delta_nrmse,
@@ -238,6 +327,9 @@ def compute_scenario_metrics(
         "signed_amplitude_error_train_std": signed_amplitude_error_std,
         "clean_x_nrmse": clean_x_nrmse,
         "sign_accuracy": sign_accuracy,
+        "coverage_90": coverage_90,
+        "interval_sharpness": interval_sharpness,
+        "interval_coverage_90": interval_coverage_90,
     }
 
     if scenario is not None:
@@ -267,8 +359,10 @@ def run_benchmark_suite(
     lambda_tv: float = 1.0,
     lambda_l1: float = 0.05,
     alpha_ridge: float = 1.0,
+    declared_support: bool = True,
+    estimators: Mapping[str, BaseDeltaEstimator] | None = None,
 ) -> tuple[pd.DataFrame, dict[str, Any]]:
-    """Execute all 4 inverse estimators on the scenarios and aggregate results."""
+    """Execute inverse estimators on the scenarios and aggregate results."""
     if train_std is None:
         train_std = float(fit_df[target_channel].std())
 
@@ -276,28 +370,31 @@ def run_benchmark_suite(
     clean_x_dev = dev_df[target_channel].to_numpy(dtype=np.float64)
     n_dev = len(clean_x_dev)
 
-    # 1. Instantiate and fit estimators
-    p_est = PersistenceEstimator(lag=1).fit_normal(calib_series)
-    s_est = SeasonalNaiveEstimator(period=24).fit_normal(calib_series)
-    reg_est = CompanionRegressionEstimator(
-        target_channel=target_channel,
-        channel_manifest_path=channel_manifest_path,
-        alpha=alpha_ridge,
-    ).fit_normal(fit_df)
-    map_est = StepMAPEstimator(
-        lambda_tv=lambda_tv,
-        lambda_l1=lambda_l1,
-        target_channel=target_channel,
-        channel_manifest_path=channel_manifest_path,
-        surrogate_estimator=reg_est,
-    )
+    # 1. Instantiate and fit estimators if not supplied
+    if estimators is None:
+        p_est = PersistenceEstimator(lag=1).fit_normal(calib_series)
+        s_est = SeasonalNaiveEstimator(period=24).fit_normal(calib_series)
+        reg_est = CompanionRegressionEstimator(
+            target_channel=target_channel,
+            channel_manifest_path=channel_manifest_path,
+            alpha=alpha_ridge,
+        ).fit_normal(fit_df)
+        map_est = StepMAPEstimator(
+            lambda_tv=lambda_tv,
+            lambda_l1=lambda_l1,
+            target_channel=target_channel,
+            channel_manifest_path=channel_manifest_path,
+            surrogate_estimator=reg_est,
+        )
 
-    estimators: dict[str, BaseDeltaEstimator] = {
-        "PersistenceEstimator": p_est,
-        "SeasonalNaiveEstimator": s_est,
-        "CompanionRegressionEstimator": reg_est,
-        "StepMAPEstimator": map_est,
-    }
+        active_estimators: Mapping[str, BaseDeltaEstimator] = {
+            "PersistenceEstimator": p_est,
+            "SeasonalNaiveEstimator": s_est,
+            "CompanionRegressionEstimator": reg_est,
+            "StepMAPEstimator": map_est,
+        }
+    else:
+        active_estimators = estimators
 
     records: list[dict[str, Any]] = []
 
@@ -309,9 +406,9 @@ def run_benchmark_suite(
 
         attacked_df = dev_df.copy()
         attacked_df[target_channel] = clean_x_dev + delta_true
-        attack_interval = (sc.onset_index, sc.offset_index)
+        attack_interval = (sc.onset_index, sc.offset_index) if declared_support else None
 
-        for est_name, est in estimators.items():
+        for est_name, est in active_estimators.items():
             if isinstance(est, (PersistenceEstimator, SeasonalNaiveEstimator)):
                 res = est.reconstruct(
                     attacked_df,
@@ -334,6 +431,7 @@ def run_benchmark_suite(
                 offset=sc.offset_index,
                 injected_amplitude=sc.injected_amplitude,
                 train_std=train_std,
+                pointwise_uncertainty=res.pointwise_uncertainty,
                 scenario=sc,
                 estimator_name=est_name,
             )
@@ -350,6 +448,37 @@ def run_benchmark_suite(
     )
 
     return results_df, summary_dict
+
+
+def evaluate_inverse_benchmark(
+    scenarios: list[BenchmarkScenario],
+    fit_df: pd.DataFrame,
+    calib_df: pd.DataFrame,
+    dev_df: pd.DataFrame,
+    target_channel: str = "L_T1",
+    channel_manifest_path: str | Path | None = None,
+    train_std: float | None = None,
+    lambda_tv: float = 1.0,
+    lambda_l1: float = 0.05,
+    alpha_ridge: float = 1.0,
+    declared_support: bool = True,
+    estimators: Mapping[str, BaseDeltaEstimator] | None = None,
+) -> tuple[pd.DataFrame, dict[str, Any]]:
+    """Evaluate inverse benchmark scenarios under declared or undeclared attack intervals."""
+    return run_benchmark_suite(
+        scenarios=scenarios,
+        fit_df=fit_df,
+        calib_df=calib_df,
+        dev_df=dev_df,
+        target_channel=target_channel,
+        channel_manifest_path=channel_manifest_path,
+        train_std=train_std,
+        lambda_tv=lambda_tv,
+        lambda_l1=lambda_l1,
+        alpha_ridge=alpha_ridge,
+        declared_support=declared_support,
+        estimators=estimators,
+    )
 
 
 def _build_summary_dict(
@@ -375,6 +504,8 @@ def _build_summary_dict(
             ),
             "mean_clean_x_nrmse": float(group["clean_x_nrmse"].mean()),
             "sign_accuracy_ge_1std": sign_acc,
+            "mean_coverage_90": float(group["coverage_90"].mean()) if "coverage_90" in group else 0.0,
+            "mean_interval_sharpness": float(group["interval_sharpness"].mean()) if "interval_sharpness" in group else 0.0,
             "by_amplitude": {},
             "by_duration": {},
             "by_regime": {},

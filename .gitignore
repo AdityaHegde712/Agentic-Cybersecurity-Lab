@@ -14,9 +14,13 @@ _internal/
 equation-discovery-findings/
 claude*
 docs/archive/
+/emails/
 
 # Generated experiment outputs (regenerable via src/evaluation)
-/results/
+results/lstm_forecaster
+results/old
+results/statistical_baselines
+results/surrogates
 
 # Rendered/document PDFs are local artifacts; keep source Markdown tracked instead
 *.pdf

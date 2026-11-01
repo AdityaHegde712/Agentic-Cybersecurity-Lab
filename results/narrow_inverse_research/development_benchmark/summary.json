@@ -1,0 +1,257 @@
+{
+  "acceptance_checks": {
+    "best_causal_baseline": "PersistenceEstimator",
+    "best_causal_median_delta_nrmse": 0.8616228824865169,
+    "nrmse_improvement_ge_20pct": true,
+    "overall_development_acceptance_met": true,
+    "sign_accuracy_ge_95pct": true,
+    "signed_amplitude_error_le_0.25_std": true,
+    "step_map_median_delta_nrmse_improvement": 0.7642254970405734
+  },
+  "estimators": {
+    "CompanionRegressionEstimator": {
+      "by_amplitude": {
+        "0.5": {
+          "median_delta_nrmse": 0.6406398411632273,
+          "median_signed_amplitude_error": 0.10296160624813747,
+          "median_support_f1": 1.0
+        },
+        "1.0": {
+          "median_delta_nrmse": 0.3112282570157344,
+          "median_signed_amplitude_error": 0.0791040124081468,
+          "median_support_f1": 1.0
+        },
+        "2.0": {
+          "median_delta_nrmse": 0.16339663226938417,
+          "median_signed_amplitude_error": 0.08491924545344696,
+          "median_support_f1": 1.0
+        }
+      },
+      "by_duration": {
+        "12": {
+          "median_delta_nrmse": 0.3127115109289501,
+          "median_support_f1": 1.0
+        },
+        "24": {
+          "median_delta_nrmse": 0.30055661273240153,
+          "median_support_f1": 1.0
+        },
+        "48": {
+          "median_delta_nrmse": 0.3167593321203071,
+          "median_support_f1": 1.0
+        },
+        "6": {
+          "median_delta_nrmse": 0.28095101283899504,
+          "median_support_f1": 1.0
+        }
+      },
+      "by_regime": {
+        "high_dynamics": {
+          "median_delta_nrmse": 0.28764277319377074,
+          "median_support_f1": 1.0
+        },
+        "low_dynamics": {
+          "median_delta_nrmse": 0.3061065325886664,
+          "median_support_f1": 1.0
+        },
+        "medium_dynamics": {
+          "median_delta_nrmse": 0.32089283351568415,
+          "median_support_f1": 1.0
+        }
+      },
+      "mean_clean_x_nrmse": 0.3140805972726729,
+      "mean_delta_nrmse": 0.3650160524102449,
+      "mean_support_f1": 0.9933868592840353,
+      "median_delta_nrmse": 0.30868791932759954,
+      "median_signed_amplitude_error_train_std": 0.08834952426401765,
+      "median_support_f1": 1.0,
+      "sign_accuracy_ge_1std": 1.0
+    },
+    "PersistenceEstimator": {
+      "by_amplitude": {
+        "0.5": {
+          "median_delta_nrmse": 1.9814521542833754,
+          "median_signed_amplitude_error": 0.7774430331625275,
+          "median_support_f1": 1.0
+        },
+        "1.0": {
+          "median_delta_nrmse": 1.0818795539092347,
+          "median_signed_amplitude_error": 0.6255021785731618,
+          "median_support_f1": 1.0
+        },
+        "2.0": {
+          "median_delta_nrmse": 0.42730086385933086,
+          "median_signed_amplitude_error": 0.4973695548987416,
+          "median_support_f1": 1.0
+        }
+      },
+      "by_duration": {
+        "12": {
+          "median_delta_nrmse": 0.7123623435724923,
+          "median_support_f1": 1.0
+        },
+        "24": {
+          "median_delta_nrmse": 1.312656589812346,
+          "median_support_f1": 1.0
+        },
+        "48": {
+          "median_delta_nrmse": 1.2577421836533804,
+          "median_support_f1": 0.9787234042553191
+        },
+        "6": {
+          "median_delta_nrmse": 0.4649912623292769,
+          "median_support_f1": 1.0
+        }
+      },
+      "by_regime": {
+        "high_dynamics": {
+          "median_delta_nrmse": 1.1406852727052261,
+          "median_support_f1": 1.0
+        },
+        "low_dynamics": {
+          "median_delta_nrmse": 0.7504681403339644,
+          "median_support_f1": 1.0
+        },
+        "medium_dynamics": {
+          "median_delta_nrmse": 0.8434075235279526,
+          "median_support_f1": 1.0
+        }
+      },
+      "mean_clean_x_nrmse": 0.9780477659182395,
+      "mean_delta_nrmse": 1.167216053233364,
+      "mean_support_f1": 0.985541995746034,
+      "median_delta_nrmse": 0.8616228824865169,
+      "median_signed_amplitude_error_train_std": 0.6254169902073698,
+      "median_support_f1": 1.0,
+      "sign_accuracy_ge_1std": 0.925
+    },
+    "SeasonalNaiveEstimator": {
+      "by_amplitude": {
+        "0.5": {
+          "median_delta_nrmse": 2.7333287188997,
+          "median_signed_amplitude_error": 0.9258610670845866,
+          "median_support_f1": 1.0
+        },
+        "1.0": {
+          "median_delta_nrmse": 1.5117598157284025,
+          "median_signed_amplitude_error": 1.3399330951363546,
+          "median_support_f1": 1.0
+        },
+        "2.0": {
+          "median_delta_nrmse": 0.71001394356518,
+          "median_signed_amplitude_error": 1.3558881399447693,
+          "median_support_f1": 1.0
+        }
+      },
+      "by_duration": {
+        "12": {
+          "median_delta_nrmse": 1.4676272266454347,
+          "median_support_f1": 1.0
+        },
+        "24": {
+          "median_delta_nrmse": 1.4883710867739,
+          "median_support_f1": 0.9893617021276595
+        },
+        "48": {
+          "median_delta_nrmse": 1.4120209799350878,
+          "median_support_f1": 0.9894736842105264
+        },
+        "6": {
+          "median_delta_nrmse": 1.5606093412138684,
+          "median_support_f1": 1.0
+        }
+      },
+      "by_regime": {
+        "high_dynamics": {
+          "median_delta_nrmse": 1.4872874583338258,
+          "median_support_f1": 1.0
+        },
+        "low_dynamics": {
+          "median_delta_nrmse": 1.5228958637311076,
+          "median_support_f1": 1.0
+        },
+        "medium_dynamics": {
+          "median_delta_nrmse": 1.416030071237494,
+          "median_support_f1": 1.0
+        }
+      },
+      "mean_clean_x_nrmse": 1.4807619034260355,
+      "mean_delta_nrmse": 1.7063112206650435,
+      "mean_support_f1": 0.9787223117390146,
+      "median_delta_nrmse": 1.4801767551002172,
+      "median_signed_amplitude_error_train_std": 1.2846888406471288,
+      "median_support_f1": 1.0,
+      "sign_accuracy_ge_1std": 0.775
+    },
+    "StepMAPEstimator": {
+      "by_amplitude": {
+        "0.5": {
+          "median_delta_nrmse": 0.38322947832635923,
+          "median_signed_amplitude_error": 0.14288780034355586,
+          "median_support_f1": 1.0
+        },
+        "1.0": {
+          "median_delta_nrmse": 0.20222097178405476,
+          "median_signed_amplitude_error": 0.19408196514386056,
+          "median_support_f1": 1.0
+        },
+        "2.0": {
+          "median_delta_nrmse": 0.0824399872665735,
+          "median_signed_amplitude_error": 0.1164508427166067,
+          "median_support_f1": 1.0
+        }
+      },
+      "by_duration": {
+        "12": {
+          "median_delta_nrmse": 0.18381058097514713,
+          "median_support_f1": 1.0
+        },
+        "24": {
+          "median_delta_nrmse": 0.17288250947475306,
+          "median_support_f1": 1.0
+        },
+        "48": {
+          "median_delta_nrmse": 0.16886058133950146,
+          "median_support_f1": 1.0
+        },
+        "6": {
+          "median_delta_nrmse": 0.3776685653704688,
+          "median_support_f1": 1.0
+        }
+      },
+      "by_regime": {
+        "high_dynamics": {
+          "median_delta_nrmse": 0.2076042837634969,
+          "median_support_f1": 1.0
+        },
+        "low_dynamics": {
+          "median_delta_nrmse": 0.20314870685672692,
+          "median_support_f1": 1.0
+        },
+        "medium_dynamics": {
+          "median_delta_nrmse": 0.1941774086843091,
+          "median_support_f1": 1.0
+        }
+      },
+      "mean_clean_x_nrmse": 0.22262753038928215,
+      "mean_delta_nrmse": 0.2575190113642607,
+      "mean_support_f1": 0.971698341554571,
+      "median_delta_nrmse": 0.20314870685672692,
+      "median_signed_amplitude_error_train_std": 0.1441256752471663,
+      "median_support_f1": 1.0,
+      "sign_accuracy_ge_1std": 1.0
+    }
+  },
+  "improvements_over_best_causal": {
+    "CompanionRegressionEstimator": 0.6417366279354471,
+    "PersistenceEstimator": 0.0,
+    "SeasonalNaiveEstimator": -0.7178939710011472,
+    "StepMAPEstimator": 0.7642254970405734
+  },
+  "metadata": {
+    "n_evaluations": 480,
+    "n_scenarios": 120,
+    "target_channel": "L_T1",
+    "train_std": 1.2085232734680176
+  }
+}

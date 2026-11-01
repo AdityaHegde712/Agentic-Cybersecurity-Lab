@@ -150,3 +150,13 @@ structural ambiguity without evidence over the same declared feasible set.
 **Consequence:** Real attack records have no trajectory-level recovery score
 without a clean counterfactual. Synthetic injections retain exact delta truth,
 while offline posterior concentration and causal recovery remain separate claims.
+
+## NIR-D13: Phase 4 Expansion Workstreams: Error Modeling (4A) and Multi-Order TV (4B)
+
+**Status:** accepted on 2026-10-31.
+
+**Decision:** Execute two advisor-approved follow-ups on the sealed benchmark foundation:
+1. **Sprint 4A:** Statistical distribution and error modeling of $\hat{\delta} - \delta_{\text{true}}$ and null clean distribution $p(\hat{\delta} \mid \delta=0)$ using existing evaluated benchmark artifacts (zero retraining needed).
+2. **Sprint 4B:** Attack family generalization across non-step additive attacks (ramps, linear drifts, pulses, sinusoids) using Composite Multi-Order Total Variation / $\ell_1$ Trend Filtering ($\lambda_0\|\boldsymbol{\delta}\|_1 + \lambda_1\|\mathbf{D}^1\boldsymbol{\delta}\|_1 + \lambda_2\|\mathbf{D}^2\boldsymbol{\delta}\|_1$) without retraining the normal TCN surrogate.
+
+**Rationale:** The Stage 1 normal TCN surrogate is invariant to attack shapes because it models normal plant dynamics purely from uncorrupted companion sensors. Re-architecting Stage 2's convex prior with higher-order difference operators ($\mathbf{D}^1, \mathbf{D}^2$) enables recovery of linear drifts, continuous ramps, and transient pulses while preserving sub-millisecond ADMM solver efficiency.

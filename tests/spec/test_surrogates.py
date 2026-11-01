@@ -378,3 +378,66 @@ def test_surrogate_polymorphic_contract(mock_manifest_and_df: tuple[Path, pd.Dat
         assert "rmse" in pred.metrics
         assert "mae" in pred.metrics
         assert "r2" in pred.metrics
+
+
+def test_surrogate_reconstruct_polymorphic_interface(mock_manifest_and_df: tuple[Path, pd.DataFrame]) -> None:
+    """BasePlantSurrogate.reconstruct produces valid ReconstructionResult and clamps to interval."""
+    manifest_path, df = mock_manifest_and_df
+    channels = ["L_T2", "F_PU1", "F_PU2", "P_J280", "S_PU1", "S_PU2"]
+    train_df = df.iloc[:60]
+    test_df = df.iloc[60:].copy()
+
+    model = RidgeCompanionSurrogate(companion_channels=channels)
+    model.fit(train_df)
+
+    # 1. Unbounded reconstruction
+    res_full = model.reconstruct(test_df)
+    assert len(res_full.x_hat) == len(test_df)
+    assert len(res_full.delta_hat) == len(test_df)
+    np.testing.assert_allclose(res_full.x_hat + res_full.delta_hat, test_df["L_T1"].to_numpy(), rtol=1e-5)
+    assert res_full.pointwise_uncertainty is not None
+    assert len(res_full.pointwise_uncertainty) == len(test_df)
+
+    # 2. Bounded reconstruction with attack_interval
+    interval = (10, 25)
+    res_interval = model.reconstruct(test_df, attack_interval=interval)
+    np.testing.assert_allclose(res_interval.delta_hat[:10], 0.0)
+    np.testing.assert_allclose(res_interval.delta_hat[25:], 0.0)
+    np.testing.assert_allclose(res_interval.x_hat[:10], test_df["L_T1"].iloc[:10].to_numpy())
+    np.testing.assert_allclose(res_interval.x_hat[25:], test_df["L_T1"].iloc[25:].to_numpy())
+
+
+def test_step_map_estimator_with_surrogate_compatibility(mock_manifest_and_df: tuple[Path, pd.DataFrame]) -> None:
+    """StepMAPEstimator accepts BasePlantSurrogate as surrogate_estimator and reconstructs correctly."""
+    from src.inverse.estimators import StepMAPEstimator
+
+    manifest_path, df = mock_manifest_and_df
+    channels = ["L_T2", "F_PU1", "F_PU2", "P_J280", "S_PU1", "S_PU2"]
+    train_df = df.iloc[:60]
+    eval_df = df.iloc[60:].copy()
+
+    surrogate = RidgeCompanionSurrogate(companion_channels=channels)
+    surrogate.fit(train_df)
+
+    map_est = StepMAPEstimator(
+        lambda_tv=1.0,
+        lambda_l1=0.05,
+        target_channel="L_T1",
+        surrogate_estimator=surrogate,
+    )
+
+    # Inject synthetic step
+    attacked_df = eval_df.copy()
+    y_true = attacked_df["L_T1"].to_numpy().copy()
+    attacked_df["L_T1"] = y_true + 2.0
+    interval = (5, 20)
+
+    res = map_est.reconstruct(attacked_df, attack_interval=interval)
+    assert len(res.x_hat) == len(eval_df)
+    assert len(res.delta_hat) == len(eval_df)
+    # Off interval delta must be exactly 0
+    np.testing.assert_allclose(res.delta_hat[:5], 0.0)
+    np.testing.assert_allclose(res.delta_hat[20:], 0.0)
+    # Inside interval, delta must be positive
+    assert np.all(res.delta_hat[5:20] > 0.0)
+

@@ -1,7 +1,6 @@
 # Narrow Additive Inverse Research Plan
 
-**Status:** Phase 0 local-first execution started on 2026-10-11 on
-`feature/narrow-additive-inverse-research`; no new HPC compute has started.
+**Status:** Phase 3 Sealed Final Test Benchmark Complete on 2026-10-26 (all 6 precommitted gates passed on rows 960–1440 of `val.parquet`). Active Phase: Phase 4 Contingent Expansion (Sprint 4A: Error Distribution Modeling; Sprint 4B: Multi-Order TV Attack Generalization).
 
 ## Objective and Claim Boundary
 
@@ -167,15 +166,26 @@ job/SU/artifact ledger for the November 18 proposal. Success requires:
 **Exit:** defensible positive result or a publishable bounded failure explaining
 non-identifiability, model contamination, posterior ambiguity, or physics mismatch.
 
-### Phase 4: Contingent Expansion - After November 18
+### Phase 4: Contingent Expansion - Authorized Sprints 4A & 4B
 
-Expand first across BATADAL tank sensors, then ramps, periodic attacks, and
-piecewise-constant trajectories. HAI, SWaT, and WADI enter only after their own
-channel-role, topology/physics, split, and benchmark seals. Real attack windows
-remain qualitative case studies because their counterfactual `delta` is unknown.
+Following completion of Phase 3 and all 6 precommitted acceptance gates on the sealed test block, two follow-up workstreams are authorized:
 
-**Exit:** every dataset receives either validated conditional recovery, bounded
-partial recovery, or an evidence-backed failure classification.
+#### Sprint 4A: Statistical Distribution & Error Modeling of Reconstructed $\hat{\delta}$
+- Characterize the empirical distribution of reconstruction error $e_t = \hat{\delta}_t - \delta_{\text{true}, t}$ across all 180 test scenarios ($N=1080$ evaluations).
+- Quantify normality, skewness, kurtosis, and tail risk; fit parametric models (Gaussian, Student-$t$, Generalized Error Distribution).
+- Characterize the null clean false-alarm distribution $p(\hat{\delta}_t \mid \delta=0)$ across unattacked intervals to establish operational detection thresholds ($\tau_{\text{alarm}}$).
+- Zero GPU retraining needed: consumes existing sealed benchmark artifacts (`results/narrow_inverse_research/sealed_final_benchmark/summary.json`).
+
+#### Sprint 4B: Attack Family Generalization via Multi-Order Total Variation / $\ell_1$ Trend Filtering
+- Generalize Stage 2 optimization beyond piecewise-constant steps to continuous ramps, linear sensor drifts, transient pulses, and sinusoidal attacks.
+- Reformulate the objective with Composite Multi-Order Total Variation / $\ell_1$ Trend Filtering:
+  $$\min_{\boldsymbol{\delta}} \frac{1}{2} \|\mathbf{y} - \hat{\mathbf{x}}_{\text{surr}} - \boldsymbol{\delta}\|_2^2 + \lambda_0 \|\boldsymbol{\delta}\|_1 + \lambda_1 \|\mathbf{D}^1 \boldsymbol{\delta}\|_1 + \lambda_2 \|\mathbf{D}^2 \boldsymbol{\delta}\|_1$$
+  subject to hydraulic box constraints $y_t - x_{\max} \le \delta_t \le y_t - x_{\min}$.
+- First difference $\mathbf{D}^1$ enforces piecewise constancy (steps, square pulses); second difference $\mathbf{D}^2$ enforces piecewise linearity (ramps, linear drifts).
+- Preserves the trained normal TCN surrogate (`results/surrogates/vista_tcn_48h_150ep/tcn.pt`) with zero retraining because normal plant physics from uncorrupted companions is invariant to the attack profile.
+- Extends the banded Cholesky ADMM solver to higher-order banded systems $[(1 + 2\rho_1 + 2\rho_2)\mathbf{I} + \rho_1 \mathbf{D}^{1T} \mathbf{D}^1 + \rho_2 \mathbf{D}^{2T} \mathbf{D}^2]$.
+
+**Exit:** empirical error distribution parameterized; multi-order ADMM solver implemented, unit tested, and benchmarked across non-step attack families.
 
 ## Vista Compute Envelope
 
@@ -213,7 +223,4 @@ next pause or phase boundary.
 
 ## Immediate Next Action
 
-Implement the deterministic chronological benchmark manifest and seal for fit,
-selection, calibration, development-injection, and final-injection blocks. Keep
-checkpoint-dependent Task 2 paused until the exact artifact is restored or
-regenerated with recorded SHA-256 and provenance.
+Implement `scripts/analyze_delta_reconstruction_distributions.py` (Sprint 4A) to parse `results/narrow_inverse_research/sealed_final_benchmark/summary.json`, compute empirical error metrics ($e_t = \hat{\delta}_t - \delta_{\text{true}, t}$), fit parametric error models, evaluate the null clean distribution $p(\hat{\delta} \mid \delta=0)$, and generate distribution figures in `results/narrow_inverse_research/error_analysis/`.

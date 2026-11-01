@@ -12,3 +12,10 @@ Following any file creation, modification, or deletion, always append a concise 
 - Inspect rendered plot images to assess behavior; report conclusions only at the aggregate/visual level.
 - Treat raw result files as artifacts for scripts, not conversational context.
 - For empirical inverse modeling results, invoke the `inverse-benchmark-reporter` skill.
+
+## Project-Level Specialized Agents
+
+| Agent Name | Definition Path | Primary Role & Capabilities |
+| :--- | :--- | :--- |
+| `technical-report-writer` | `.agents/agents/technical-report-writer/agent.md` | Synthesizes empirical research benchmarks using 5-section framework, visual plot interpretations, and dual mathematical/intuitive explanations. |
+| `email-writer` | `.agents/agents/email-writer/agent.md` | Generates concise, intuitive research update emails with subject lines, attachment directives, and saves `.md` drafts to `emails/`. |

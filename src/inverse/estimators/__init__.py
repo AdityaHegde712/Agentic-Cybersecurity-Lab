@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from src.inverse.estimators.base import BaseDeltaEstimator, ReconstructionResult
+from src.inverse.estimators.causal_step_map import CausalStepMAPEstimator
 from src.inverse.estimators.statistical import (
     CompanionRegressionEstimator,
     PersistenceEstimator,
@@ -12,6 +13,7 @@ from src.inverse.estimators.step_map import StepMAPEstimator
 
 __all__ = [
     "BaseDeltaEstimator",
+    "CausalStepMAPEstimator",
     "CompanionRegressionEstimator",
     "PersistenceEstimator",
     "ReconstructionResult",

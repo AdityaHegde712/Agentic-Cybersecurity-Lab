@@ -1,0 +1,41 @@
+{
+  "normalizer_source": "train",
+  "records": [
+    {
+      "attack_id": "step-single",
+      "declared_support_count": 120,
+      "delta_nonzero_outside_declared_support": 0,
+      "observed_equals_clean_plus_delta": true,
+      "declared_delta_matches_expected": true,
+      "legacy_round_trip_nonzero_outside_declared_support": 11412,
+      "legacy_round_trip_max_abs_outside_declared_support": 1.478695594414603e-06
+    },
+    {
+      "attack_id": "ramp-single",
+      "declared_support_count": 140,
+      "delta_nonzero_outside_declared_support": 0,
+      "observed_equals_clean_plus_delta": true,
+      "declared_delta_matches_expected": true,
+      "legacy_round_trip_nonzero_outside_declared_support": 11403,
+      "legacy_round_trip_max_abs_outside_declared_support": 1.478695594414603e-06
+    },
+    {
+      "attack_id": "periodic-single",
+      "declared_support_count": 200,
+      "delta_nonzero_outside_declared_support": 0,
+      "observed_equals_clean_plus_delta": true,
+      "declared_delta_matches_expected": true,
+      "legacy_round_trip_nonzero_outside_declared_support": 11416,
+      "legacy_round_trip_max_abs_outside_declared_support": 1.478695594414603e-06
+    },
+    {
+      "attack_id": "step-multi-sensor",
+      "declared_support_count": 320,
+      "delta_nonzero_outside_declared_support": 0,
+      "observed_equals_clean_plus_delta": true,
+      "declared_delta_matches_expected": true,
+      "legacy_round_trip_nonzero_outside_declared_support": 11416,
+      "legacy_round_trip_max_abs_outside_declared_support": 1.478695594414603e-06
+    }
+  ]
+}

@@ -14,6 +14,8 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
+from src.inverse.estimators.base import ReconstructionResult
+
 
 @dataclass(frozen=True)
 class SurrogatePrediction:
@@ -101,3 +103,95 @@ class BasePlantSurrogate(ABC):
         res_ss = float(np.sum(residuals**2))
         r2 = float(1.0 - (res_ss / total_ss)) if total_ss > 1e-12 else 0.0
         return {"rmse": rmse, "mae": mae, "r2": r2}
+
+    def reconstruct(
+        self,
+        observed: np.ndarray | pd.Series | pd.DataFrame,
+        attack_interval: tuple[int, int] | None = None,
+        target_channel: str | None = None,
+        **kwargs: Any,
+    ) -> ReconstructionResult:
+        """Reconstruct clean measurement signal and additive attack trajectory.
+
+        Polymorphic interface enabling plant dynamics surrogates to act directly as
+        inverse attack estimators and surrogate estimators for MAP solvers.
+
+        Args:
+            observed: Observed telemetry (DataFrame with companion channels, or Series/Array).
+            attack_interval: Optional tuple (onset, offset) declaring known attack bounds.
+            target_channel: Target sensor name (defaults to self.target_channel).
+            **kwargs: Extra parameters (e.g. 'companion_data' or 'df' if observed is an array).
+
+        Returns:
+            ReconstructionResult containing clean x_hat, delta_hat, and uncertainty bounds.
+        """
+        ch = target_channel or self.target_channel
+
+        if isinstance(observed, pd.DataFrame):
+            pred = self.predict(observed)
+            y_hat = pred.y_hat
+            if ch in observed.columns:
+                y = observed[ch].to_numpy(dtype=np.float64)
+            else:
+                y = y_hat.copy()
+        elif isinstance(observed, pd.Series):
+            y = observed.to_numpy(dtype=np.float64)
+            df = kwargs.get("df") or kwargs.get("companion_data")
+            if isinstance(df, pd.DataFrame):
+                pred = self.predict(df)
+                y_hat = pred.y_hat
+            else:
+                raise ValueError(
+                    f"{self.__class__.__name__}.reconstruct requires a DataFrame with companion channels, "
+                    "or 'df' passed in kwargs."
+                )
+        else:
+            y = np.asarray(observed, dtype=np.float64)
+            df = kwargs.get("df") or kwargs.get("companion_data")
+            if isinstance(df, pd.DataFrame):
+                pred = self.predict(df)
+                y_hat = pred.y_hat
+            else:
+                raise ValueError(
+                    f"{self.__class__.__name__}.reconstruct requires a DataFrame with companion channels, "
+                    "or 'df' passed in kwargs."
+                )
+
+        n = len(y)
+        if len(y_hat) != n:
+            raise ValueError(
+                f"Predicted y_hat length ({len(y_hat)}) does not match observed length ({n})"
+            )
+
+        # Compute delta_hat = y - x_hat (where surrogate predicted clean x_hat = y_hat)
+        delta_hat = y - y_hat
+
+        # If attack_interval is provided, clamp delta_hat = 0 outside [onset, offset]
+        if attack_interval is not None:
+            onset, offset = attack_interval
+            if not (0 <= onset <= offset <= n):
+                raise ValueError(f"Invalid attack_interval {attack_interval} for length {n}")
+            delta_hat = delta_hat.copy()
+            delta_hat[:onset] = 0.0
+            delta_hat[offset:] = 0.0
+
+        # Set x_hat = y - delta_hat
+        x_hat = y - delta_hat
+
+        unc = np.full(n, float(pred.residual_std), dtype=np.float64)
+        var = unc ** 2
+
+        return ReconstructionResult(
+            x_hat=x_hat,
+            delta_hat=delta_hat,
+            pointwise_uncertainty=unc,
+            pointwise_variance=var,
+            objective_loss=float(pred.residual_std),
+            ambiguity_flag=False,
+            provenance={
+                "estimator": self.__class__.__name__,
+                "residual_std": float(pred.residual_std),
+                "metrics": pred.metrics,
+                "attack_interval": attack_interval,
+            },
+        )

@@ -180,6 +180,7 @@ class CompanionRegressionEstimator(BaseDeltaEstimator):
         self.intercept_: float = 0.0
         self.fit_r2: float = 0.0
         self.residual_variance: float = 0.0
+        self.residual_std_: float = 0.0
         self.is_fitted: bool = False
 
         if companion_channels is not None:
@@ -258,6 +259,7 @@ class CompanionRegressionEstimator(BaseDeltaEstimator):
         y_pred = X @ self.weights_ + self.intercept_
         residuals = y - y_pred
         self.residual_variance = float(np.var(residuals))
+        self.residual_std_ = float(np.sqrt(self.residual_variance))
         total_var = float(np.var(y))
         self.fit_r2 = 1.0 - (self.residual_variance / total_var) if total_var > 0 else 0.0
         self.is_fitted = True

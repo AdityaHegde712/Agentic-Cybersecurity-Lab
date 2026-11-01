@@ -42,7 +42,8 @@ class StepMAPEstimator(BaseDeltaEstimator):
         target_channel: str = "L_T1",
         bounds: tuple[float, float] | None = None,
         channel_manifest_path: str | Path | None = None,
-        surrogate_estimator: BaseDeltaEstimator | None = None,
+        surrogate_estimator: BaseDeltaEstimator | Any | None = None,
+        residual_std: float | None = None,
         solver: SolverType = "admm",
         max_iter: int = 1000,
         tol: float = 1e-6,
@@ -58,6 +59,7 @@ class StepMAPEstimator(BaseDeltaEstimator):
         self.lambda_l1 = float(lambda_l1)
         self.target_channel = target_channel
         self.surrogate_estimator = surrogate_estimator
+        self._residual_std = float(residual_std) if residual_std is not None else None
         self.solver: SolverType = solver
         self.max_iter = max_iter
         self.tol = float(tol)
@@ -87,14 +89,43 @@ class StepMAPEstimator(BaseDeltaEstimator):
             else:
                 self.bounds = (-np.inf, np.inf)
 
+    @property
+    def residual_std_(self) -> float:
+        """Calibrated surrogate residual standard deviation."""
+        if self._residual_std is not None and self._residual_std > 0.0:
+            return self._residual_std
+        if self.surrogate_estimator is not None:
+            if hasattr(self.surrogate_estimator, "residual_std_") and self.surrogate_estimator.residual_std_ > 0.0:
+                return float(self.surrogate_estimator.residual_std_)
+            if hasattr(self.surrogate_estimator, "residual_variance") and self.surrogate_estimator.residual_variance > 0.0:
+                return float(np.sqrt(self.surrogate_estimator.residual_variance))
+            if hasattr(self.surrogate_estimator, "residual_variance_") and self.surrogate_estimator.residual_variance_ > 0.0:
+                return float(np.sqrt(self.surrogate_estimator.residual_variance_))
+        return 0.0
+
+    @residual_std_.setter
+    def residual_std_(self, value: float) -> None:
+        self._residual_std = float(value)
+
     def fit_normal(
         self,
         normal_data: pd.DataFrame | np.ndarray,
         **kwargs: Any,
     ) -> StepMAPEstimator:
-        """Fit underlying surrogate estimator if present."""
+        """Fit underlying surrogate estimator if present and calibrate residual std."""
         if self.surrogate_estimator is not None:
-            self.surrogate_estimator.fit_normal(normal_data, **kwargs)
+            if hasattr(self.surrogate_estimator, "fit_normal"):
+                self.surrogate_estimator.fit_normal(normal_data, **kwargs)
+            elif hasattr(self.surrogate_estimator, "fit"):
+                if not getattr(self.surrogate_estimator, "is_fitted", False):
+                    if isinstance(normal_data, pd.DataFrame):
+                        self.surrogate_estimator.fit(normal_data, **kwargs)
+            if hasattr(self.surrogate_estimator, "residual_std_") and self.surrogate_estimator.residual_std_ > 0.0:
+                self._residual_std = float(self.surrogate_estimator.residual_std_)
+            elif hasattr(self.surrogate_estimator, "residual_variance") and self.surrogate_estimator.residual_variance > 0.0:
+                self._residual_std = float(np.sqrt(self.surrogate_estimator.residual_variance))
+            elif hasattr(self.surrogate_estimator, "residual_variance_") and self.surrogate_estimator.residual_variance_ > 0.0:
+                self._residual_std = float(np.sqrt(self.surrogate_estimator.residual_variance_))
         return self
 
     def reconstruct(
@@ -117,7 +148,8 @@ class StepMAPEstimator(BaseDeltaEstimator):
 
         n = len(y)
 
-        # 2. Extract surrogate clean prediction
+        # 2. Extract surrogate clean prediction and uncertainty scale
+        surr_unc = self.residual_std_
         if surrogate_x is not None:
             x_surr = np.asarray(surrogate_x, dtype=np.float64)
             if len(x_surr) != n:
@@ -125,8 +157,13 @@ class StepMAPEstimator(BaseDeltaEstimator):
         elif self.surrogate_estimator is not None:
             surr_res = self.surrogate_estimator.reconstruct(observed, **kwargs)
             x_surr = surr_res.x_hat
+            if surr_unc == 0.0 and surr_res.pointwise_uncertainty is not None and len(surr_res.pointwise_uncertainty) > 0:
+                surr_unc = float(np.mean(surr_res.pointwise_uncertainty))
         else:
             x_surr = y.copy()
+
+        if surr_unc == 0.0 and "residual_std" in kwargs:
+            surr_unc = float(kwargs["residual_std"])
 
         # 3. Determine box bounds on delta: y - x_max <= delta <= y - x_min
         x_min, x_max = self.bounds
@@ -177,13 +214,17 @@ class StepMAPEstimator(BaseDeltaEstimator):
             "bounds": self.bounds,
             "iterations": iters,
             "objective_loss": exact_loss,
+            "residual_std": surr_unc,
         }
+
+        unc_arr = np.full(n, surr_unc, dtype=np.float64)
+        var_arr = np.full(n, surr_unc**2, dtype=np.float64)
 
         return ReconstructionResult(
             x_hat=x_hat,
             delta_hat=delta_hat,
-            pointwise_uncertainty=np.zeros(n, dtype=np.float64),
-            pointwise_variance=np.zeros(n, dtype=np.float64),
+            pointwise_uncertainty=unc_arr,
+            pointwise_variance=var_arr,
             objective_loss=exact_loss,
             ambiguity_flag=False,
             provenance=prov,
