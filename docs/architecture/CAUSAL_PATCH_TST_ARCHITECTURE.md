@@ -23,41 +23,91 @@ While the champion Dilated Temporal Convolutional Network (TCN) models linear an
 
 ---
 
-## 2. Core Architectural Pillars
+## 2. Intuitive Architecture & Loss Mechanics
+
+### 2.1 The Two-Stage Loss Framework
+
+The architecture uses two decoupled loss functions: one for training normal physics, and one for inverse attack recovery.
 
 ```mermaid
 flowchart TD
-    A["Raw SCADA Telemetry (Lookback L, C Companion Channels)"] --> B["Subseries Unfold Layer (P=16, S=8)"]
-    B --> C["Linear Patch Projection (d_model=64)"]
-    C --> D["Learnable 1D Temporal Positional Encoding"]
-    D --> E["Channel-Independent Flattening (B * C, Num_Patches, d_model)"]
-    E --> F["Transformer Encoder (Strict Upper-Triangular -inf Mask)"]
-    F --> G["Latest Context Slicing (Final Patch Representation)"]
-    G --> H["Cross-Channel Fusion Head (Linear -> SiLU -> Linear)"]
-    H --> I["Target Clean State Prediction (x_hat_t)"]
+    subgraph Loss1["Stage 1: Offline Training Loss (Clean Normal Dynamics)"]
+        direction TB
+        L1A["Companion Sensor History"] --> L1B["CausalPatchTST f_theta"]
+        L1B --> L1C["Predicted Target State x_hat"]
+        L1D["True Target State x (Clean)"] --> L1E["MSE Loss: ||x - x_hat||^2"]
+        L1C --> L1E
+        L1E --> L1F["Calibrated Residual Variance sigma_epsilon^2"]
+    end
+
+    subgraph Loss2["Stage 2: Inference Inverse Objective (ADMM Convex Solver)"]
+        direction TB
+        L2A["Corrupted Observation y = x + delta"] --> L2B["Surrogate Residual: y - delta - x_hat"]
+        L2B --> L2C["Data Fidelity Term: (1 / 2*sigma^2) * ||y - delta - x_hat||^2"]
+        L2D["Attack Structural Priors"] --> L2E["Regularizers: lambda0*||delta||_1 + lambda1*||D1*delta||_1 + lambda2*||D2*delta||_1"]
+        L2C --> L2F["Total Inverse Loss min_delta L(delta)"]
+        L2E --> L2F
+        L2G["Physical Tank Bounds: x_min <= y - delta <= x_max"] --> L2F
+    end
 ```
 
-### 2.1 Subseries Patching (`_extract_patches`)
-- **Problem with Point-wise Attention**: Point-wise time-series transformers treat individual timesteps as tokens. Single SCADA sensor readings carry high-frequency noise and lack semantic shape. Furthermore, full attention over $L=48\,\text{h}$ lookback has quadratic complexity $O(L^2)$.
-- **Patch Extraction**: Consecutive timesteps are grouped into overlapping subseries patches:
-  $$\mathbf{p}_{c, i} = \mathbf{x}_{c, [i \cdot S : i \cdot S + P]} \in \mathbb{R}^P$$
-  where $P$ is patch length (default 16) and $S$ is stride (default 8).
-- **Complexity Reduction**: Reduces token count from $L$ to $N = \lfloor (L - P)/S \rfloor + 1$. Quadratic attention complexity drops from $O(L^2)$ to $O(N^2)$, cutting memory and compute by $(P/S)^2 \approx 4\times$ to $16\times$.
+1. **Stage 1 Training Loss (Mean Squared Error)**:
+   Measures how accurately the surrogate predicts clean target telemetry from companion sensors during normal plant operations:
+   $$\mathcal{L}_{\text{train}}(\boldsymbol{\theta}) = \frac{1}{B} \sum_{b=1}^B \left( x_{\text{target}, b} - f_{\boldsymbol{\theta}}(\mathbf{x}_{\text{comp}, b}) \right)^2$$
+   The resulting residuals on held-out validation data directly calibrate the measurement noise variance $\sigma_\epsilon^2 \approx (0.0418\,\text{m})^2$.
 
-### 2.2 Strict Causal Masking (`encode_patches`)
-Standard vision and language transformers allow bidirectional attention. In industrial attack recovery, conditioning on future timesteps ($t > t_0$) causes catastrophic information leakage (absorbing future attack offsets into the clean prediction).
+2. **Stage 2 Inverse Recovery Loss (ADMM Objective)**:
+   A multi-objective convex loss solved dynamically at test time:
+   $$\mathcal{L}_{\text{inverse}}(\boldsymbol{\delta}) = \underbrace{\frac{1}{2\sigma_\epsilon^2} \|\mathbf{y}_{\text{target}} - \boldsymbol{\delta} - \hat{\mathbf{x}}\|_2^2}_{\text{Physics Fidelity (Trust in Surrogate)}} + \underbrace{\lambda_0 \|\boldsymbol{\delta}\|_1}_{\text{Sparsity (Anomaly Bounds)}} + \underbrace{\lambda_1 \|\mathbf{D}^1\boldsymbol{\delta}\|_1}_{\text{Step Recovery (TV1)}} + \underbrace{\lambda_2 \|\mathbf{D}^2\boldsymbol{\delta}\|_1}_{\text{Smooth Ramp/Drift (TV2)}}$$
+   Subject to strict operational capacity limits: $x_{\min} \le y_t - \delta_t \le x_{\max}$.
 
-`CausalPatchTST` enforces an exact causal attention mask:
-$$\mathbf{M}_{i, j} = \begin{cases} 0, & j \le i \\ -\infty, & j > i \end{cases}$$
-$$\text{Attention}(\mathbf{Q}, \mathbf{K}, \mathbf{V}) = \text{softmax}\left(\frac{\mathbf{Q}\mathbf{K}^T}{\sqrt{d_k}} + \mathbf{M}\right)\mathbf{V}$$
+---
 
-Each temporal patch attends **only to current and past patches**, guaranteeing mathematical invariance:
-$$\frac{\partial \hat{x}_t}{\partial x_{t+k}} = 0 \quad \forall k > 0$$
+### 2.2 Visual Neural Dataflow & Attention Heads
 
-### 2.3 Channel-Independent Backbone with Cross-Channel Fusion Head
-- **Channel-Independent Encoder**: Companion channels share a common transformer encoder. The tensor is reshaped to $(B \cdot C, N, d_{\text{model}})$. This prevents parameter explosion when scaling from BATADAL (43 channels) to WADI (123 channels), while forcing the attention heads to learn generalized temporal wavelets.
-- **Cross-Channel Fusion Head**: The latest temporal representations across all companion channels ($c \in \{1, \dots, C\}$) are concatenated at the final patch:
-  $$\mathbf{h}_{\text{fusion}} = \bigoplus_{c=1}^C \mathbf{h}_{c, N} \in \mathbb{R}^{C \cdot d_{\text{model}}}$$
+```mermaid
+flowchart LR
+    subgraph Input["1. SCADA Input"]
+        IN["Lookback L=48h\nC Companion Channels\n(Pumps, Valves, Flows)"]
+    end
+
+    subgraph Patching["2. Subseries Patching"]
+        P1["Patch 1: [t-48 : t-32]"]
+        P2["Patch 2: [t-40 : t-24]"]
+        PN["Patch N: [t-16 : t]"]
+        IN --> P1 & P2 & PN
+    end
+
+    subgraph Attention["3. Causal Multi-Head Attention (No Future Lookahead)"]
+        direction TB
+        H1["Head 1: Diurnal 24h Cycles"]
+        H2["Head 2: High-Frequency Pump Transitions"]
+        H3["Head 3: Pressure Decay & Hydraulic Slopes"]
+        H4["Head 4: Long-Range Baseline Drift"]
+        MASK["Strict Lower-Triangular Mask:\nPatch i attends only to Patch j <= i"]
+        P1 & P2 & PN --> H1 & H2 & H3 & H4
+        H1 & H2 & H3 & H4 -.-> MASK
+    end
+
+    subgraph Fusion["4. Cross-Channel Head"]
+        direction TB
+        CONCAT["Concatenate Final Patch\nAcross All C Channels\n(B, C * d_model)"]
+        MLP["Non-Linear Fusion Head\nLinear -> SiLU -> Linear"]
+        MASK --> CONCAT --> MLP
+    end
+
+    subgraph Output["5. Clean Prediction"]
+        OUT["Predicted Clean Target x_hat_t\n(e.g., Tank 1 Level)"]
+        MLP --> OUT
+    end
+```
+
+#### What Each Attention Head Learns (Intuitive View):
+- **Head 1 (Diurnal Rhythm)**: Tracks daily demand cycles (morning peak consumption vs. nighttime low consumption).
+- **Head 2 (Switching Shocks)**: Detects immediate valve closures and pump starts that produce pressure spikes.
+- **Head 3 (Decay Rates)**: Tracks passive draining and filling gradients across connected reservoir segments.
+- **Head 4 (Long-Range Anchor)**: Preserves steady-state mass balance across the full 48-hour context window.
+- **Causal Mask Guardrail**: The lower-triangular $-\infty$ mask ensures each patch only looks backward in time. No future attack leakage can corrupt clean historical representations.
   Passed through a non-linear MLP with SiLU activations:
   $$\hat{x}_t = \mathbf{W}_2 \cdot \text{SiLU}(\mathbf{W}_1 \mathbf{h}_{\text{fusion}} + \mathbf{b}_1) + b_2$$
   This layer models physical conservation laws (e.g. mass balance: inflow minus outflow equals rate of change of level).

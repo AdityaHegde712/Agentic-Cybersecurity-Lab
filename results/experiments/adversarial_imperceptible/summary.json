@@ -1,0 +1,155 @@
+{
+  "timestamp": "2026-11-14T20:05:30Z",
+  "sigma_eps_m": 0.0418,
+  "imperceptible_tier_results": [
+    {
+      "multiplier": 0.25,
+      "amplitude_m": 0.01045,
+      "family": "step",
+      "delta_nrmse": 7.373742003059989,
+      "estimated_amplitude_m": 0.04870772523506129,
+      "non_zero_fraction": 0.8958333333333334
+    },
+    {
+      "multiplier": 0.25,
+      "amplitude_m": 0.01045,
+      "family": "drift",
+      "delta_nrmse": 7.373989262628823,
+      "estimated_amplitude_m": 0.043499677171037816,
+      "non_zero_fraction": 0.9583333333333334
+    },
+    {
+      "multiplier": 0.5,
+      "amplitude_m": 0.0209,
+      "family": "step",
+      "delta_nrmse": 3.6866236835428183,
+      "estimated_amplitude_m": 0.05909914183198445,
+      "non_zero_fraction": 0.9791666666666666
+    },
+    {
+      "multiplier": 0.5,
+      "amplitude_m": 0.0209,
+      "family": "drift",
+      "delta_nrmse": 3.6871077425263508,
+      "estimated_amplitude_m": 0.04871407086869164,
+      "non_zero_fraction": 0.9375
+    },
+    {
+      "multiplier": 0.75,
+      "amplitude_m": 0.031349999999999996,
+      "family": "step",
+      "delta_nrmse": 2.4585113728492005,
+      "estimated_amplitude_m": 0.06948199454601363,
+      "non_zero_fraction": 1.0
+    },
+    {
+      "multiplier": 0.75,
+      "amplitude_m": 0.031349999999999996,
+      "family": "drift",
+      "delta_nrmse": 2.4591192329884883,
+      "estimated_amplitude_m": 0.053896619951769455,
+      "non_zero_fraction": 0.9791666666666666
+    },
+    {
+      "multiplier": 1.0,
+      "amplitude_m": 0.0418,
+      "family": "step",
+      "delta_nrmse": 1.8439273860291348,
+      "estimated_amplitude_m": 0.07992835446268018,
+      "non_zero_fraction": 0.9583333333333334
+    },
+    {
+      "multiplier": 1.0,
+      "amplitude_m": 0.0418,
+      "family": "drift",
+      "delta_nrmse": 1.844342976961081,
+      "estimated_amplitude_m": 0.059122391967135285,
+      "non_zero_fraction": 0.9583333333333334
+    },
+    {
+      "multiplier": 1.5,
+      "amplitude_m": 0.06269999999999999,
+      "family": "step",
+      "delta_nrmse": 1.2306470000831509,
+      "estimated_amplitude_m": 0.10075560349375091,
+      "non_zero_fraction": 0.9791666666666666
+    },
+    {
+      "multiplier": 1.5,
+      "amplitude_m": 0.06269999999999999,
+      "family": "drift",
+      "delta_nrmse": 1.2310151216240255,
+      "estimated_amplitude_m": 0.06949641669892352,
+      "non_zero_fraction": 0.9583333333333334
+    },
+    {
+      "multiplier": 2.0,
+      "amplitude_m": 0.0836,
+      "family": "step",
+      "delta_nrmse": 0.9232070569083962,
+      "estimated_amplitude_m": 0.12164099246268012,
+      "non_zero_fraction": 1.0
+    },
+    {
+      "multiplier": 2.0,
+      "amplitude_m": 0.0836,
+      "family": "drift",
+      "delta_nrmse": 0.9234442643268174,
+      "estimated_amplitude_m": 0.07993447794526527,
+      "non_zero_fraction": 1.0
+    },
+    {
+      "multiplier": 3.0,
+      "amplitude_m": 0.12539999999999998,
+      "family": "step",
+      "delta_nrmse": 0.6155554024752371,
+      "estimated_amplitude_m": 0.16343371229601342,
+      "non_zero_fraction": 1.0
+    },
+    {
+      "multiplier": 3.0,
+      "amplitude_m": 0.12539999999999998,
+      "family": "drift",
+      "delta_nrmse": 0.6156350254510212,
+      "estimated_amplitude_m": 0.10083756600672884,
+      "non_zero_fraction": 0.9791666666666666
+    }
+  ],
+  "adversarial_pgd_results": [
+    {
+      "epsilon_norm": 0.01,
+      "clean_prediction_m": 4.094917297363281,
+      "adv_prediction_m": 4.220895290374756,
+      "induced_error_m": 0.1259779930114746,
+      "phantom_alarm_triggered": true
+    },
+    {
+      "epsilon_norm": 0.02,
+      "clean_prediction_m": 4.094917297363281,
+      "adv_prediction_m": 4.339182376861572,
+      "induced_error_m": 0.24426507949829102,
+      "phantom_alarm_triggered": true
+    },
+    {
+      "epsilon_norm": 0.05,
+      "clean_prediction_m": 4.094917297363281,
+      "adv_prediction_m": 4.637169361114502,
+      "induced_error_m": 0.5422520637512207,
+      "phantom_alarm_triggered": true
+    },
+    {
+      "epsilon_norm": 0.1,
+      "clean_prediction_m": 4.094917297363281,
+      "adv_prediction_m": 4.976847171783447,
+      "induced_error_m": 0.881929874420166,
+      "phantom_alarm_triggered": true
+    },
+    {
+      "epsilon_norm": 0.2,
+      "clean_prediction_m": 4.094917297363281,
+      "adv_prediction_m": 5.4343085289001465,
+      "induced_error_m": 1.3393912315368652,
+      "phantom_alarm_triggered": true
+    }
+  ]
+}
