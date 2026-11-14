@@ -106,6 +106,11 @@ def parse_args() -> argparse.Namespace:
         default=64,
         help="Hidden dimension / d_model for the surrogate",
     )
+    parser.add_argument(
+        "--smoke",
+        action="store_true",
+        help="Run fast 1-epoch reduced-batch smoke test for pipeline pre-flight validation",
+    )
     return parser.parse_args()
 
 
@@ -150,6 +155,11 @@ def main() -> None:
     # Set seeds
     torch.manual_seed(args.seed)
     np.random.seed(args.seed)
+
+    if args.smoke:
+        args.epochs = 1
+        args.batch_size = 16
+        print("[SMOKE MODE] Configured 1 epoch with batch size 16.")
 
     device = resolve_device(args.device)
     out_dir = Path(args.checkpoint_dir) / f"{args.dataset}_{args.model}"

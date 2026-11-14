@@ -86,6 +86,11 @@ def parse_args() -> argparse.Namespace:
         default=42,
         help="Master seed",
     )
+    parser.add_argument(
+        "--smoke",
+        action="store_true",
+        help="Run fast reduced smoke test (2 scenarios) for pipeline pre-flight validation",
+    )
     return parser.parse_args()
 
 
@@ -125,12 +130,12 @@ def compute_surrogate_predictions(
     model.eval()
     companion_channels = metadata["companion_channels"]
     target_channel = metadata["target_channel"]
-    lookback = metadata.get("lookback", 48)
+    lookback = metadata.get("lookback", metadata.get("context_length", 48))
 
     feature_mean = np.array(metadata["feature_mean"], dtype=np.float32)
     feature_std = np.array(metadata["feature_std"], dtype=np.float32)
-    target_mean = float(metadata["target_mean"])
-    target_std = float(metadata["target_std"])
+    target_mean = float(metadata.get("target_mean", 0.0))
+    target_std = float(metadata.get("target_std", 1.0))
 
     raw_feats = val_df[companion_channels].to_numpy(dtype=np.float32)
     norm_feats = (raw_feats - feature_mean) / feature_std
@@ -284,6 +289,10 @@ def main() -> None:
             n_scenarios=1000,
         )
         scenarios.extend(batch_scens)
+
+    if args.smoke:
+        scenarios = scenarios[:2]
+        print(f"[SMOKE MODE] Truncated evaluation to {len(scenarios)} scenarios.")
 
     print(f"Generated {len(scenarios)} attack scenarios for benchmark evaluation.")
 
