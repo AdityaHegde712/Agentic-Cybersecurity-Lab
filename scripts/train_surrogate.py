@@ -26,8 +26,18 @@ try:
     from tqdm import tqdm
 except ImportError:
 
+    class _DummyTqdm:
+        def __init__(self, iterable, *args, **kwargs):
+            self.iterable = iterable
+
+        def __iter__(self):
+            return iter(self.iterable)
+
+        def set_postfix(self, *args, **kwargs):
+            pass
+
     def tqdm(iterable, *args, **kwargs):
-        return iterable
+        return _DummyTqdm(iterable, *args, **kwargs)
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
