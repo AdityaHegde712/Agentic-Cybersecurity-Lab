@@ -21,6 +21,7 @@ results/lstm_forecaster
 results/old
 results/statistical_baselines
 results/surrogates
+results/surrogate_eval
 scratch
 
 # Rendered/document PDFs are local artifacts; keep source Markdown tracked instead
