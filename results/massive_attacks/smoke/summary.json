@@ -1,0 +1,73 @@
+{
+  "execution_timestamp": "2026-11-14T00:56:40Z",
+  "total_scenarios": 50,
+  "total_execution_time_seconds": 199.181,
+  "total_box_violations": 0,
+  "overall_median_delta_nrmse": 0.21190909860812374,
+  "overall_mean_delta_nrmse": 0.22722857648922953,
+  "overall_sign_accuracy": 1.0,
+  "overall_coverage_90": 0.9665416666666666,
+  "overall_interval_sharpness": 0.46607626790406165,
+  "per_family_stats": {
+    "drift": {
+      "count": 10,
+      "median_delta_nrmse": 0.1899622610832794,
+      "mean_delta_nrmse": 0.19251865749519706,
+      "std_delta_nrmse": 0.0892801842654516,
+      "mean_signed_amplitude_error_std": -0.02194716498452805,
+      "sign_accuracy": 1.0,
+      "support_f1": 0.561474046152723,
+      "coverage_90": 0.9662499999999999,
+      "interval_sharpness": 0.46607626790406165,
+      "box_violations": 0
+    },
+    "periodic": {
+      "count": 10,
+      "median_delta_nrmse": 0.2801440634119763,
+      "mean_delta_nrmse": 0.2845772446194239,
+      "std_delta_nrmse": 0.09621738801524286,
+      "mean_signed_amplitude_error_std": -0.003496104463498789,
+      "sign_accuracy": 1.0,
+      "support_f1": 0.6767589413356871,
+      "coverage_90": 0.9535416666666666,
+      "interval_sharpness": 0.46607626790406165,
+      "box_violations": 0
+    },
+    "pulse": {
+      "count": 10,
+      "median_delta_nrmse": 0.2548104480924841,
+      "mean_delta_nrmse": 0.2332641614181648,
+      "std_delta_nrmse": 0.09255408810506745,
+      "mean_signed_amplitude_error_std": -0.02425593311043965,
+      "sign_accuracy": 1.0,
+      "support_f1": 0.7521888005013764,
+      "coverage_90": 0.9733333333333333,
+      "interval_sharpness": 0.46607626790406165,
+      "box_violations": 0
+    },
+    "ramp": {
+      "count": 10,
+      "median_delta_nrmse": 0.1899622610832794,
+      "mean_delta_nrmse": 0.19251865749519706,
+      "std_delta_nrmse": 0.0892801842654516,
+      "mean_signed_amplitude_error_std": -0.02194716498452805,
+      "sign_accuracy": 1.0,
+      "support_f1": 0.561474046152723,
+      "coverage_90": 0.9662499999999999,
+      "interval_sharpness": 0.46607626790406165,
+      "box_violations": 0
+    },
+    "step": {
+      "count": 10,
+      "median_delta_nrmse": 0.2548104480924841,
+      "mean_delta_nrmse": 0.2332641614181648,
+      "std_delta_nrmse": 0.09255408810506745,
+      "mean_signed_amplitude_error_std": -0.02425593311043965,
+      "sign_accuracy": 1.0,
+      "support_f1": 0.7521888005013764,
+      "coverage_90": 0.9733333333333333,
+      "interval_sharpness": 0.46607626790406165,
+      "box_violations": 0
+    }
+  }
+}
