@@ -190,7 +190,7 @@
 
 - [/] 16. TACC Vista HPC Deployment & Master Slurm Pipeline Execution (Sprint 5 Milestone 4).
   **Acceptance:** Stage repository code, checkpoints, and processed Parquets to Vista `$WORK`/`$SCRATCH`; submit master Slurm job `scripts/hpc/slurm_master_pipeline.sh` (`#SBATCH -p gh -N 1 -t 02:00:00 -A TG-NAIRR260371`); execute the 6-phase sequence (TCN SWaT/WADI training -> PatchTST training on 3 datasets -> 5-family evals -> 10k scenario evals); aggregate results into `results/massive_evals/`.
-  **Status:** Resubmitted to Vista `gh` queue as Job ID `1144267` (Master Pipeline) and Job ID `1144268` (Adversarial Sweep). Monitoring utilities created at `scripts/hpc/{check_queue_rank.sh, check_job_status.sh, tail_job_logs.sh}`. Logs streaming to `logs/slurm_master_1144267.out` and `logs/slurm_adv_1144268.out`.
+  **Status:** Active master pipeline submitted to Vista `gh` queue as Job ID `1144410` (2-hour walltime, tqdm installed, fallback hardened). Secondary adversarial sweep job is `1144268`. Monitoring utilities active at `scripts/hpc/{check_queue_rank.sh, check_job_status.sh, tail_job_logs.sh}`. Logs streaming to `logs/slurm_master_1144410.out`.
   **Requirement:** Explicit owner confirmation before issuing `ssh`, `rsync`, or `sbatch` commands.
 
 - [x] 17. Empirical Investigation: Imperceptible-Tier & Companion TS-PGD Adversarial Attacks.
