@@ -73,8 +73,8 @@ module load nvpl
 ### 4.2 Python Virtual Environment on Compute Nodes
 ```bash
 # Create venv in $SCRATCH or $WORK
-python3 -m venv $SCRATCH/venvs/sengupta_cyber
-source $SCRATCH/venvs/sengupta_cyber/bin/activate
+python3 -m venv $SCRATCH/venvs/agentic_cyber
+source $SCRATCH/venvs/agentic_cyber/bin/activate
 
 # Upgrade pip and install PyTorch with aarch64 CUDA 12.9 wheel
 pip install --upgrade pip
@@ -113,7 +113,7 @@ Always generate scripts with unbuffered logging (`python -u`):
 
 module purge
 module load gcc cuda python3/3.11.8
-source $SCRATCH/venvs/sengupta_cyber/bin/activate
+source $SCRATCH/venvs/agentic_cyber/bin/activate
 
 python -u src/models/train.py --data-dir $WORK/data/processed/swat
 ```

@@ -223,4 +223,4 @@ next pause or phase boundary.
 
 ## Immediate Next Action
 
-Implement `scripts/analyze_delta_reconstruction_distributions.py` (Sprint 4A) to parse `results/narrow_inverse_research/sealed_final_benchmark/summary.json`, compute empirical error metrics ($e_t = \hat{\delta}_t - \delta_{\text{true}, t}$), fit parametric error models, evaluate the null clean distribution $p(\hat{\delta} \mid \delta=0)$, and generate distribution figures in `results/narrow_inverse_research/error_analysis/`.
+Execute Sprint 5 Milestone 4: Seek owner approval to stage repository code, checkpoints, and processed Parquets to TACC Vista `$WORK`/`$SCRATCH` and submit master Slurm job `scripts/hpc/slurm_master_pipeline.sh` on the `gh` Grace-Hopper partition.

@@ -1,5 +1,6 @@
 from datetime import time as dtime
 from pathlib import Path
+import json
 from typing import List, Tuple
 
 import numpy as np
@@ -133,8 +134,15 @@ def build_store() -> Path:
 
 
 def load(split: str) -> pd.DataFrame:
+    wave1 = registry.PROCESSED_DIR / DATASET / f"{split}_wave1.parquet"
+    if wave1.exists():
+        return pd.read_parquet(wave1)
     return registry._load_parquet(DATASET, split)
 
 
 def get_meta() -> dict:
+    wave1_meta = registry.PROCESSED_DIR / DATASET / "meta_wave1.json"
+    if wave1_meta.exists():
+        with open(wave1_meta, encoding="utf-8") as fh:
+            return json.load(fh)
     return registry._read_meta(DATASET)

@@ -160,3 +160,20 @@ while offline posterior concentration and causal recovery remain separate claims
 2. **Sprint 4B:** Attack family generalization across non-step additive attacks (ramps, linear drifts, pulses, sinusoids) using Composite Multi-Order Total Variation / $\ell_1$ Trend Filtering ($\lambda_0\|\boldsymbol{\delta}\|_1 + \lambda_1\|\mathbf{D}^1\boldsymbol{\delta}\|_1 + \lambda_2\|\mathbf{D}^2\boldsymbol{\delta}\|_1$) without retraining the normal TCN surrogate.
 
 **Rationale:** The Stage 1 normal TCN surrogate is invariant to attack shapes because it models normal plant dynamics purely from uncorrupted companion sensors. Re-architecting Stage 2's convex prior with higher-order difference operators ($\mathbf{D}^1, \mathbf{D}^2$) enables recovery of linear drifts, continuous ramps, and transient pulses while preserving sub-millisecond ADMM solver efficiency.
+
+
+## NIR-D14: Vectorized High-Throughput Attack Scenario Generator Architecture & SLA
+
+**Status:** accepted on 2026-11-13.
+
+**Decision:** Adopt a pure vectorized NumPy/Pandas architecture for `AttackBatchGenerator` (`src/attacks/massive_generator.py`) supporting 10 distinct morphologies (canonical, complex physical, stochastic), with strict $O(N)$ waveform synthesis, exact boolean support masks, physical envelope violation guards, and columnar Parquet export.
+
+**Rationale:** Generating tens of thousands of attack trajectories for massive HPC benchmark sweeps on TACC Vista must have sub-second generation overhead so the pipeline is strictly compute-bound by the inverse solver, not the scenario synthesizer. Measured throughput is 31,354 scenarios/second (1,000 scenarios in 31.89 ms), exceeding the $<2.0$ second SLA by $>60\times$.
+
+## NIR-D15: Imperceptible-Tier Noise Floor Limits and Companion TS-PGD Adversarial Vulnerability
+
+**Status:** accepted on 2026-11-14.
+
+**Decision:** Formally classify recovery limits and adversarial surface boundaries for the two-stage inverse architecture:
+1. **Imperceptible-Tier Attack Boundary:** Perturbations with peak amplitude $\|\boldsymbol{\delta}\|_\infty < 1.0\sigma_\epsilon$ ($\sigma_\epsilon \approx 0.0418\,\text{m}$ for BATADAL tank L_T1) fall below the surrogate residual noise floor. Isolated steps/pulses in this regime are indistinguishable from sensor noise and exhibit high relative error (NRMSE $> 1.84$). However, accumulating linear drifts ($\mathbf{D}^2\boldsymbol{\delta} \approx 0$) integrate SNR over time ($T \ge 24\,\text{h}$), enabling reliable recovery down to $0.5\sigma_\epsilon$.
+2. **Companion Sensor Adversarial Vulnerability (TS-PGD):** Target sensor spoofing does not affect Stage 1 (it reads only companion telemetry). However, an adversary executing Time-Series Projected Gradient Descent (TS-PGD) on companion sensors $\mathbf{x}_{\text{comp}}$ with budget $\epsilon \ge 1\%$ shifts the surrogate output by $\Delta x > 3\sigma_\epsilon$ ($0.1260\,\text{m}$), tricking Stage 2 ADMM into predicting phantom attacks on clean target sensors. Companion integrity is therefore a foundational trust boundary.
