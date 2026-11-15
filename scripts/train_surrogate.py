@@ -90,7 +90,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--batch-size",
         type=int,
-        default=64,
+        default=32,
         help="Mini-batch size",
     )
     parser.add_argument(
@@ -323,6 +323,9 @@ def main() -> None:
 
         val_loss = val_loss_sum / max(1, val_batches)
         val_res_std = float(np.std(val_residuals)) * float(metadata["target_std"])
+        del val_residuals
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
         epoch_elapsed = time.perf_counter() - epoch_start
 
         # Record history
