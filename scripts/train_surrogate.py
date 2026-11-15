@@ -71,8 +71,21 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--epochs",
         type=int,
-        default=20,
+        default=150,
         help="Number of training epochs",
+    )
+    parser.add_argument(
+        "--patience",
+        type=int,
+        default=10,
+        help="Early stopping patience (epochs without validation loss improvement)",
+    )
+    parser.add_argument(
+        "--scheduler",
+        type=str,
+        default="onecycle",
+        choices=["onecycle", "cosine"],
+        help="Learning rate scheduler strategy ('onecycle' or 'cosine')",
     )
     parser.add_argument(
         "--batch-size",
@@ -168,8 +181,9 @@ def main() -> None:
 
     if args.smoke:
         args.epochs = 1
+        args.patience = 1
         args.batch_size = 16
-        print("[SMOKE MODE] Configured 1 epoch with batch size 16.")
+        print("[SMOKE MODE] Configured 1 epoch with batch size 16 and patience 1.")
 
     device = resolve_device(args.device)
     out_dir = Path(args.checkpoint_dir) / f"{args.dataset}_{args.model}"
@@ -227,12 +241,30 @@ def main() -> None:
 
     criterion = nn.MSELoss()
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=1e-4)
-    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
-        optimizer, T_max=max(1, args.epochs), eta_min=1e-6
-    )
+
+    steps_per_epoch = max(1, len(train_loader))
+    total_steps = max(1, args.epochs * steps_per_epoch)
+    if args.scheduler == "onecycle":
+        scheduler: torch.optim.lr_scheduler.LRScheduler = (
+            torch.optim.lr_scheduler.OneCycleLR(
+                optimizer,
+                max_lr=args.lr,
+                total_steps=total_steps,
+                pct_start=0.3,
+                div_factor=25.0,
+                final_div_factor=1000.0,
+            )
+        )
+    elif args.scheduler == "cosine":
+        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+            optimizer, T_max=max(1, args.epochs), eta_min=1e-6
+        )
+    else:
+        raise ValueError(f"Unknown scheduler: {args.scheduler}")
 
     history: list[dict[str, Any]] = []
     best_val_loss = float("inf")
+    epochs_without_improvement = 0
     best_checkpoint_path = out_dir / "checkpoint_best.pt"
 
     t_total_start = time.perf_counter()
@@ -260,13 +292,16 @@ def main() -> None:
             loss.backward()
             nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
             optimizer.step()
+            if args.scheduler == "onecycle":
+                scheduler.step()
 
             loss_val = float(loss.item())
             train_loss_sum += loss_val
             train_batches += 1
             pbar.set_postfix({"loss": f"{loss_val:.4f}"})
 
-        scheduler.step()
+        if args.scheduler == "cosine":
+            scheduler.step()
         train_loss = train_loss_sum / max(1, train_batches)
 
         # Validation phase
@@ -310,6 +345,7 @@ def main() -> None:
         # Checkpoint persistence for best model
         if val_loss < best_val_loss:
             best_val_loss = val_loss
+            epochs_without_improvement = 0
             torch.save(
                 {
                     "model_type": model.__class__.__name__,
@@ -330,6 +366,14 @@ def main() -> None:
                 },
                 best_checkpoint_path,
             )
+        else:
+            epochs_without_improvement += 1
+            if epochs_without_improvement >= args.patience:
+                print(
+                    f"Early stopping triggered: no improvement for {args.patience} "
+                    f"consecutive epochs (best val loss: {best_val_loss:.6f})."
+                )
+                break
 
     total_time = time.perf_counter() - t_total_start
     print("=" * 80)
