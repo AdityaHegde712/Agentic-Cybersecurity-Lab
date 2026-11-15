@@ -18,6 +18,24 @@ import numpy as np
 import pandas as pd
 import torch
 
+try:
+    from tqdm import tqdm
+except ImportError:
+
+    class _DummyTqdm:
+        def __init__(self, iterable, *args, **kwargs):
+            self.iterable = iterable
+
+        def __iter__(self):
+            return iter(self.iterable)
+
+        def set_postfix(self, *args, **kwargs):
+            pass
+
+    def tqdm(iterable, *args, **kwargs):
+        return _DummyTqdm(iterable, *args, **kwargs)
+
+
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
@@ -125,11 +143,18 @@ def compute_surrogate_predictions(
     val_df: pd.DataFrame,
     metadata: dict[str, Any],
     device: torch.device,
+    target_sensor: str | None = None,
 ) -> tuple[np.ndarray, float]:
     """Compute surrogate predictions across val_df and estimate residual uncertainty."""
     model.eval()
-    companion_channels = metadata["companion_channels"]
-    target_channel = metadata["target_channel"]
+    companion_channels = metadata.get("companion_channels", [])
+    target_channel = target_sensor or metadata.get("target_channel")
+    if target_channel not in val_df.columns:
+        sensor_cols = [
+            c for c in val_df.columns if c not in ("timestamp", "label", "attack_id")
+        ]
+        target_channel = sensor_cols[0] if sensor_cols else val_df.columns[0]
+
     lookback = metadata.get("lookback", metadata.get("context_length", 48))
 
     feature_mean = np.array(metadata["feature_mean"], dtype=np.float32)
@@ -137,7 +162,23 @@ def compute_surrogate_predictions(
     target_mean = float(metadata.get("target_mean", 0.0))
     target_std = float(metadata.get("target_std", 1.0))
 
-    raw_feats = val_df[companion_channels].to_numpy(dtype=np.float32)
+    missing = [c for c in companion_channels if c not in val_df.columns]
+    if missing or len(companion_channels) == 0:
+        val_sensor_cols = [
+            c
+            for c in val_df.columns
+            if c not in ("timestamp", "label", "attack_id") and c != target_channel
+        ]
+        n_comp = len(feature_mean)
+        raw_feats = np.zeros((len(val_df), n_comp), dtype=np.float32)
+        cols_avail = val_sensor_cols[:n_comp]
+        if cols_avail:
+            raw_feats[:, : len(cols_avail)] = val_df[cols_avail].to_numpy(
+                dtype=np.float32
+            )
+    else:
+        raw_feats = val_df[companion_channels].to_numpy(dtype=np.float32)
+
     norm_feats = (raw_feats - feature_mean) / feature_std
     n_steps = len(val_df)
 
@@ -230,7 +271,7 @@ def main() -> None:
 
     # 3. Compute baseline surrogate predictions
     clean_surrogate_x, surrogate_unc = compute_surrogate_predictions(
-        model, val_df, ckpt, device
+        model, val_df, ckpt, device, target_sensor=target_sensor
     )
     print(f"Baseline Surrogate Residual Uncertainty: {surrogate_unc:.4f}")
 
@@ -322,11 +363,34 @@ def main() -> None:
     t0_eval = time.perf_counter()
     records: list[dict[str, Any]] = []
 
-    for scen in scenarios:
-        delta_true = scen.delta[:, target_idx]
-        attacked_y = clean_x + delta_true
+    pbar = tqdm(
+        scenarios,
+        desc=f"Evaluating {args.dataset.upper()} ({args.eval_mode})",
+        mininterval=0.5,
+    )
+    for scen in pbar:
+        if len(val_df) > 960:
+            attack_mid = (scen.onset_step + scen.onset_step + scen.duration_steps) // 2
+            half_w = 480
+            win_start = max(0, min(attack_mid - half_w, len(val_df) - 960))
+            win_end = win_start + 960
+            delta_true = scen.delta[win_start:win_end, target_idx]
+            x_true_win = clean_x[win_start:win_end]
+            surrogate_x_win = clean_surrogate_x[win_start:win_end]
+            onset_local = scen.onset_step - win_start
+            offset_local = (scen.onset_step + scen.duration_steps) - win_start
+        else:
+            win_start = 0
+            win_end = len(val_df)
+            delta_true = scen.delta[:, target_idx]
+            x_true_win = clean_x
+            surrogate_x_win = clean_surrogate_x
+            onset_local = scen.onset_step
+            offset_local = scen.onset_step + scen.duration_steps
 
-        recon = estimator.reconstruct(attacked_y, surrogate_x=clean_surrogate_x)
+        attacked_y = x_true_win + delta_true
+
+        recon = estimator.reconstruct(attacked_y, surrogate_x=surrogate_x_win)
         box_violations = int(
             np.sum((recon.x_hat < b_min - 1e-4) | (recon.x_hat > b_max + 1e-4))
         )
@@ -335,9 +399,9 @@ def main() -> None:
             delta_hat=recon.delta_hat,
             delta_true=delta_true,
             x_hat=recon.x_hat,
-            x_true=clean_x,
-            onset=scen.onset_step,
-            offset=scen.onset_step + scen.duration_steps,
+            x_true=x_true_win,
+            onset=onset_local,
+            offset=offset_local,
             injected_amplitude=scen.amplitude,
             train_std=train_std,
             pointwise_uncertainty=recon.pointwise_uncertainty,
@@ -347,6 +411,13 @@ def main() -> None:
         metrics["family"] = scen.family
         metrics["box_violations"] = box_violations
         records.append(metrics)
+        pbar.set_postfix(
+            {
+                "scen": scen.scenario_id,
+                "fam": scen.family,
+                "nrmse": f"{metrics['delta_nrmse']:.3f}",
+            }
+        )
 
     eval_time = time.perf_counter() - t0_eval
     print(
