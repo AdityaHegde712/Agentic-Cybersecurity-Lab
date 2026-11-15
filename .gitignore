@@ -21,6 +21,12 @@ results/lstm_forecaster
 results/old
 results/statistical_baselines
 results/surrogates
+results/surrogate_eval
+scratch
+
+# Archives
+*.zip
+*.tar.gz
 
 # Rendered/document PDFs are local artifacts; keep source Markdown tracked instead
 *.pdf
