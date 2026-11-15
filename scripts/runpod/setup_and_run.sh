@@ -17,6 +17,36 @@
 
 set -euo pipefail
 
+# Parse optional arguments
+# Usage:
+#   bash scripts/runpod/setup_and_run.sh [--from-stage <1-6>] [--skip-smoke]
+START_STAGE=1
+SKIP_SMOKE=0
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --from-stage)
+            START_STAGE="$2"
+            shift 2
+            ;;
+        --skip-smoke)
+            SKIP_SMOKE=1
+            shift
+            ;;
+        -h|--help)
+            echo "Usage: $0 [--from-stage <1-6>] [--skip-smoke]"
+            echo "  --from-stage <N> : Start execution directly from stage N (1-6). Default: 1."
+            echo "  --skip-smoke     : Skip the 1-epoch pre-flight smoke tests."
+            exit 0
+            ;;
+        *)
+            echo "Unknown argument: $1" >&2
+            echo "Usage: $0 [--from-stage <1-6>] [--skip-smoke]" >&2
+            exit 1
+            ;;
+    esac
+done
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 cd "${PROJECT_ROOT}"
@@ -95,134 +125,158 @@ fi
 # ------------------------------------------------------------------------------
 # PRE-FLIGHT SMOKE TEST
 # ------------------------------------------------------------------------------
-print_banner "PRE-FLIGHT SMOKE TEST: SWaT & WADI PIPELINE CHECK"
-echo "Running fast 1-epoch reduced-batch smoke training on SWaT..."
-python scripts/train_surrogate.py --dataset swat --model tcn --smoke --device cuda
+if [ "$START_STAGE" -le 1 ] && [ "$SKIP_SMOKE" -eq 0 ]; then
+    print_banner "PRE-FLIGHT SMOKE TEST: SWaT & WADI PIPELINE CHECK"
+    echo "Running fast 1-epoch reduced-batch smoke training on SWaT..."
+    python scripts/train_surrogate.py --dataset swat --model tcn --smoke --device cuda
 
-echo "Running fast 1-epoch reduced-batch smoke training on WADI..."
-python scripts/train_surrogate.py --dataset wadi --model tcn --smoke --device cuda
+    echo "Running fast 1-epoch reduced-batch smoke training on WADI..."
+    python scripts/train_surrogate.py --dataset wadi --model tcn --smoke --device cuda
 
-echo "Running fast evaluator smoke check on SWaT..."
-python scripts/run_surrogate_eval.py --dataset swat --model tcn --checkpoint results/surrogates/swat_tcn/checkpoint_best.pt --smoke --device cuda
+    echo "Running fast evaluator smoke check on SWaT..."
+    python scripts/run_surrogate_eval.py --dataset swat --model tcn --checkpoint results/surrogates/swat_tcn/checkpoint_best.pt --smoke --device cuda
 
-echo "Pre-flight smoke tests passed successfully."
+    echo "Pre-flight smoke tests passed successfully."
+else
+    echo "Skipping pre-flight smoke tests (start stage: $START_STAGE, skip smoke: $SKIP_SMOKE)."
+fi
 
 # ------------------------------------------------------------------------------
 # STEP 1: TRAIN CAUSALTCN ON SWAT
 # ------------------------------------------------------------------------------
-print_banner "STEP 1/6: TRAIN CAUSALTCN ON SWAT (150 Epochs, Patience 10, OneCycleLR)"
 SWAT_CKPT="results/surrogates/swat_tcn/checkpoint_best.pt"
+if [ "$START_STAGE" -le 1 ]; then
+    print_banner "STEP 1/6: TRAIN CAUSALTCN ON SWAT (150 Epochs, Patience 10, OneCycleLR)"
 
-if [ -f "$SWAT_CKPT" ] && [ -f "results/surrogates/swat_tcn/training_history.json" ]; then
-    # Check if this was a smoke run (1 epoch) or full run
-    EPOCH_COUNT=$(python -c "import json; h=json.load(open('results/surrogates/swat_tcn/training_history.json')); print(len(h))" 2>/dev/null || echo "0")
-    if [ "$EPOCH_COUNT" -gt 1 ]; then
-        echo "[SKIPPED] SWaT CausalTCN training already completed ($EPOCH_COUNT epochs)."
+    if [ -f "$SWAT_CKPT" ] && [ -f "results/surrogates/swat_tcn/training_history.json" ]; then
+        # Check if this was a smoke run (1 epoch) or full run
+        EPOCH_COUNT=$(python -c "import json; h=json.load(open('results/surrogates/swat_tcn/training_history.json')); print(len(h))" 2>/dev/null || echo "0")
+        if [ "$EPOCH_COUNT" -gt 1 ]; then
+            echo "[SKIPPED] SWaT CausalTCN training already completed ($EPOCH_COUNT epochs)."
+        else
+            echo "Overwriting previous smoke checkpoint with full 150-epoch training run..."
+            python scripts/train_surrogate.py --dataset swat --model tcn --epochs 150 --patience 10 --scheduler onecycle --device cuda
+        fi
     else
-        echo "Overwriting previous smoke checkpoint with full 150-epoch training run..."
         python scripts/train_surrogate.py --dataset swat --model tcn --epochs 150 --patience 10 --scheduler onecycle --device cuda
     fi
 else
-    python scripts/train_surrogate.py --dataset swat --model tcn --epochs 150 --patience 10 --scheduler onecycle --device cuda
+    echo "[SKIPPED] STEP 1/6 (Start stage is $START_STAGE > 1)."
 fi
 
 # ------------------------------------------------------------------------------
 # STEP 2: EVALUATE CAUSALTCN ON SWAT (5-FAMILY BENCHMARK)
 # ------------------------------------------------------------------------------
-print_banner "STEP 2/6: EVALUATE CAUSALTCN ON SWAT (5-FAMILY BENCHMARK)"
 SWAT_5FAM_SUMMARY="results/surrogate_eval/swat_tcn_5family/summary.json"
+if [ "$START_STAGE" -le 2 ]; then
+    print_banner "STEP 2/6: EVALUATE CAUSALTCN ON SWAT (5-FAMILY BENCHMARK)"
 
-if [ -f "$SWAT_5FAM_SUMMARY" ]; then
-    SCENARIO_COUNT=$(python -c "import json; s=json.load(open('$SWAT_5FAM_SUMMARY')); print(s.get('n_scenarios', 0))" 2>/dev/null || echo "0")
-    if [ "$SCENARIO_COUNT" -ge 50 ]; then
-        echo "[SKIPPED] SWaT 5-family evaluation already completed ($SCENARIO_COUNT scenarios)."
+    if [ -f "$SWAT_5FAM_SUMMARY" ]; then
+        SCENARIO_COUNT=$(python -c "import json; s=json.load(open('$SWAT_5FAM_SUMMARY')); print(s.get('n_scenarios', 0))" 2>/dev/null || echo "0")
+        if [ "$SCENARIO_COUNT" -ge 50 ]; then
+            echo "[SKIPPED] SWaT 5-family evaluation already completed ($SCENARIO_COUNT scenarios)."
+        else
+            echo "Re-running SWaT 5-family benchmark across full 50 scenarios..."
+            python scripts/run_surrogate_eval.py --dataset swat --model tcn --checkpoint "$SWAT_CKPT" --eval-mode 5family --device cuda
+        fi
     else
-        echo "Re-running SWaT 5-family benchmark across full 50 scenarios..."
         python scripts/run_surrogate_eval.py --dataset swat --model tcn --checkpoint "$SWAT_CKPT" --eval-mode 5family --device cuda
     fi
 else
-    python scripts/run_surrogate_eval.py --dataset swat --model tcn --checkpoint "$SWAT_CKPT" --eval-mode 5family --device cuda
+    echo "[SKIPPED] STEP 2/6 (Start stage is $START_STAGE > 2)."
 fi
 
 # ------------------------------------------------------------------------------
 # STEP 3: TRAIN CAUSALTCN ON WADI
 # ------------------------------------------------------------------------------
-print_banner "STEP 3/6: TRAIN CAUSALTCN ON WADI (150 Epochs, Patience 10, OneCycleLR)"
 WADI_CKPT="results/surrogates/wadi_tcn/checkpoint_best.pt"
+if [ "$START_STAGE" -le 3 ]; then
+    print_banner "STEP 3/6: TRAIN CAUSALTCN ON WADI (150 Epochs, Patience 10, OneCycleLR)"
 
-if [ -f "$WADI_CKPT" ] && [ -f "results/surrogates/wadi_tcn/training_history.json" ]; then
-    EPOCH_COUNT=$(python -c "import json; h=json.load(open('results/surrogates/wadi_tcn/training_history.json')); print(len(h))" 2>/dev/null || echo "0")
-    if [ "$EPOCH_COUNT" -gt 1 ]; then
-        echo "[SKIPPED] WADI CausalTCN training already completed ($EPOCH_COUNT epochs)."
+    if [ -f "$WADI_CKPT" ] && [ -f "results/surrogates/wadi_tcn/training_history.json" ]; then
+        EPOCH_COUNT=$(python -c "import json; h=json.load(open('results/surrogates/wadi_tcn/training_history.json')); print(len(h))" 2>/dev/null || echo "0")
+        if [ "$EPOCH_COUNT" -gt 1 ]; then
+            echo "[SKIPPED] WADI CausalTCN training already completed ($EPOCH_COUNT epochs)."
+        else
+            echo "Overwriting previous smoke checkpoint with full 150-epoch training run..."
+            python scripts/train_surrogate.py --dataset wadi --model tcn --epochs 150 --patience 10 --scheduler onecycle --device cuda
+        fi
     else
-        echo "Overwriting previous smoke checkpoint with full 150-epoch training run..."
         python scripts/train_surrogate.py --dataset wadi --model tcn --epochs 150 --patience 10 --scheduler onecycle --device cuda
     fi
 else
-    python scripts/train_surrogate.py --dataset wadi --model tcn --epochs 150 --patience 10 --scheduler onecycle --device cuda
+    echo "[SKIPPED] STEP 3/6 (Start stage is $START_STAGE > 3)."
 fi
 
 # ------------------------------------------------------------------------------
 # STEP 4: EVALUATE CAUSALTCN ON WADI (5-FAMILY BENCHMARK)
 # ------------------------------------------------------------------------------
-print_banner "STEP 4/6: EVALUATE CAUSALTCN ON WADI (5-FAMILY BENCHMARK)"
 WADI_5FAM_SUMMARY="results/surrogate_eval/wadi_tcn_5family/summary.json"
+if [ "$START_STAGE" -le 4 ]; then
+    print_banner "STEP 4/6: EVALUATE CAUSALTCN ON WADI (5-FAMILY BENCHMARK)"
 
-if [ -f "$WADI_5FAM_SUMMARY" ]; then
-    SCENARIO_COUNT=$(python -c "import json; s=json.load(open('$WADI_5FAM_SUMMARY')); print(s.get('n_scenarios', 0))" 2>/dev/null || echo "0")
-    if [ "$SCENARIO_COUNT" -ge 50 ]; then
-        echo "[SKIPPED] WADI 5-family evaluation already completed ($SCENARIO_COUNT scenarios)."
+    if [ -f "$WADI_5FAM_SUMMARY" ]; then
+        SCENARIO_COUNT=$(python -c "import json; s=json.load(open('$WADI_5FAM_SUMMARY')); print(s.get('n_scenarios', 0))" 2>/dev/null || echo "0")
+        if [ "$SCENARIO_COUNT" -ge 50 ]; then
+            echo "[SKIPPED] WADI 5-family evaluation already completed ($SCENARIO_COUNT scenarios)."
+        else
+            echo "Re-running WADI 5-family benchmark across full 50 scenarios..."
+            python scripts/run_surrogate_eval.py --dataset wadi --model tcn --checkpoint "$WADI_CKPT" --eval-mode 5family --device cuda
+        fi
     else
-        echo "Re-running WADI 5-family benchmark across full 50 scenarios..."
         python scripts/run_surrogate_eval.py --dataset wadi --model tcn --checkpoint "$WADI_CKPT" --eval-mode 5family --device cuda
     fi
 else
-    python scripts/run_surrogate_eval.py --dataset wadi --model tcn --checkpoint "$WADI_CKPT" --eval-mode 5family --device cuda
+    echo "[SKIPPED] STEP 4/6 (Start stage is $START_STAGE > 4)."
 fi
 
 # ------------------------------------------------------------------------------
 # STEP 5: 10,000-SCENARIO HIGH-THROUGHPUT EVALUATION ACROSS BATADAL, SWAT, WADI
 # ------------------------------------------------------------------------------
-print_banner "STEP 5/6: 10,000-SCENARIO HIGH-THROUGHPUT EVALUATION"
+if [ "$START_STAGE" -le 5 ]; then
+    print_banner "STEP 5/6: 10,000-SCENARIO HIGH-THROUGHPUT EVALUATION"
 
-# Ensure BATADAL champion checkpoint is present
-BATADAL_CKPT="results/surrogates/batadal_tcn/checkpoint_best.pt"
-if [ ! -f "$BATADAL_CKPT" ]; then
-    if [ -f "results/surrogates/vista_tcn_48h_150ep/tcn.pt" ]; then
-        mkdir -p results/surrogates/batadal_tcn
-        cp "results/surrogates/vista_tcn_48h_150ep/tcn.pt" "$BATADAL_CKPT"
-        echo "Copied BATADAL champion checkpoint to $BATADAL_CKPT"
-    else
-        echo "Training BATADAL CausalTCN surrogate (150 epochs, patience 10)..."
-        python scripts/train_surrogate.py --dataset batadal --model tcn --epochs 150 --patience 10 --scheduler onecycle --device cuda
+    # Ensure BATADAL champion checkpoint is present
+    BATADAL_CKPT="results/surrogates/batadal_tcn/checkpoint_best.pt"
+    if [ ! -f "$BATADAL_CKPT" ]; then
+        if [ -f "results/surrogates/vista_tcn_48h_150ep/tcn.pt" ]; then
+            mkdir -p results/surrogates/batadal_tcn
+            cp "results/surrogates/vista_tcn_48h_150ep/tcn.pt" "$BATADAL_CKPT"
+            echo "Copied BATADAL champion checkpoint to $BATADAL_CKPT"
+        else
+            echo "Training BATADAL CausalTCN surrogate (150 epochs, patience 10)..."
+            python scripts/train_surrogate.py --dataset batadal --model tcn --epochs 150 --patience 10 --scheduler onecycle --device cuda
+        fi
     fi
-fi
 
-# 5A: BATADAL 10k
-BATADAL_10K_SUMMARY="results/surrogate_eval/batadal_tcn_10k/summary.json"
-if [ -f "$BATADAL_10K_SUMMARY" ]; then
-    echo "[SKIPPED] BATADAL 10,000 evaluation already completed."
-else
-    echo "Running 10,000-scenario evaluation on BATADAL..."
-    python scripts/run_surrogate_eval.py --dataset batadal --model tcn --checkpoint "$BATADAL_CKPT" --eval-mode 10k --device cuda
-fi
+    # 5A: BATADAL 10k
+    BATADAL_10K_SUMMARY="results/surrogate_eval/batadal_tcn_10k/summary.json"
+    if [ -f "$BATADAL_10K_SUMMARY" ]; then
+        echo "[SKIPPED] BATADAL 10,000 evaluation already completed."
+    else
+        echo "Running 10,000-scenario evaluation on BATADAL..."
+        python scripts/run_surrogate_eval.py --dataset batadal --model tcn --checkpoint "$BATADAL_CKPT" --eval-mode 10k --device cuda
+    fi
 
-# 5B: SWaT 10k
-SWAT_10K_SUMMARY="results/surrogate_eval/swat_tcn_10k/summary.json"
-if [ -f "$SWAT_10K_SUMMARY" ]; then
-    echo "[SKIPPED] SWaT 10,000 evaluation already completed."
-else
-    echo "Running 10,000-scenario evaluation on SWaT..."
-    python scripts/run_surrogate_eval.py --dataset swat --model tcn --checkpoint "$SWAT_CKPT" --eval-mode 10k --device cuda
-fi
+    # 5B: SWaT 10k
+    SWAT_10K_SUMMARY="results/surrogate_eval/swat_tcn_10k/summary.json"
+    if [ -f "$SWAT_10K_SUMMARY" ]; then
+        echo "[SKIPPED] SWaT 10,000 evaluation already completed."
+    else
+        echo "Running 10,000-scenario evaluation on SWaT..."
+        python scripts/run_surrogate_eval.py --dataset swat --model tcn --checkpoint "$SWAT_CKPT" --eval-mode 10k --device cuda
+    fi
 
-# 5C: WADI 10k
-WADI_10K_SUMMARY="results/surrogate_eval/wadi_tcn_10k/summary.json"
-if [ -f "$WADI_10K_SUMMARY" ]; then
-    echo "[SKIPPED] WADI 10,000 evaluation already completed."
+    # 5C: WADI 10k
+    WADI_10K_SUMMARY="results/surrogate_eval/wadi_tcn_10k/summary.json"
+    if [ -f "$WADI_10K_SUMMARY" ]; then
+        echo "[SKIPPED] WADI 10,000 evaluation already completed."
+    else
+        echo "Running 10,000-scenario evaluation on WADI..."
+        python scripts/run_surrogate_eval.py --dataset wadi --model tcn --checkpoint "$WADI_CKPT" --eval-mode 10k --device cuda
+    fi
 else
-    echo "Running 10,000-scenario evaluation on WADI..."
-    python scripts/run_surrogate_eval.py --dataset wadi --model tcn --checkpoint "$WADI_CKPT" --eval-mode 10k --device cuda
+    echo "[SKIPPED] STEP 5/6 (Start stage is $START_STAGE > 5)."
 fi
 
 # ------------------------------------------------------------------------------
