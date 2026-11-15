@@ -187,10 +187,15 @@ print_banner "STEP 5/6: 10,000-SCENARIO HIGH-THROUGHPUT EVALUATION"
 
 # Ensure BATADAL champion checkpoint is present
 BATADAL_CKPT="results/surrogates/batadal_tcn/checkpoint_best.pt"
-if [ ! -f "$BATADAL_CKPT" ] && [ -f "results/surrogates/vista_tcn_48h_150ep/tcn.pt" ]; then
-    mkdir -p results/surrogates/batadal_tcn
-    cp "results/surrogates/vista_tcn_48h_150ep/tcn.pt" "$BATADAL_CKPT"
-    echo "Copied BATADAL champion checkpoint to $BATADAL_CKPT"
+if [ ! -f "$BATADAL_CKPT" ]; then
+    if [ -f "results/surrogates/vista_tcn_48h_150ep/tcn.pt" ]; then
+        mkdir -p results/surrogates/batadal_tcn
+        cp "results/surrogates/vista_tcn_48h_150ep/tcn.pt" "$BATADAL_CKPT"
+        echo "Copied BATADAL champion checkpoint to $BATADAL_CKPT"
+    else
+        echo "Training BATADAL CausalTCN surrogate (150 epochs, patience 10)..."
+        python scripts/train_surrogate.py --dataset batadal --model tcn --epochs 150 --patience 10 --scheduler onecycle --device cuda
+    fi
 fi
 
 # 5A: BATADAL 10k
