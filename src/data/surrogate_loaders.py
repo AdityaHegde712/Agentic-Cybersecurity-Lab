@@ -134,19 +134,21 @@ def get_surrogate_loaders(
 
     feature_mean = np.mean(raw_train_feats, axis=0)
     feature_std = np.std(raw_train_feats, axis=0)
-    feature_std = np.where(feature_std < 1e-6, 1.0, feature_std)
+    feature_std = np.where(feature_std < 1e-3, 1.0, feature_std)
 
     raw_train_target = train_df[target_ch].to_numpy(dtype=np.float64)
     raw_val_target = val_df[target_ch].to_numpy(dtype=np.float64)
 
     target_mean = float(np.mean(raw_train_target))
     target_std = float(np.std(raw_train_target))
-    if target_std < 1e-6:
+    if target_std < 1e-3:
         target_std = 1.0
 
-    # Normalize training and validation sets
-    norm_train_feats = (raw_train_feats - feature_mean) / feature_std
-    norm_val_feats = (raw_val_feats - feature_mean) / feature_std
+    # Normalize training and validation sets with robust z-score clipping [-10.0, 10.0]
+    norm_train_feats = np.clip(
+        (raw_train_feats - feature_mean) / feature_std, -10.0, 10.0
+    )
+    norm_val_feats = np.clip((raw_val_feats - feature_mean) / feature_std, -10.0, 10.0)
 
     norm_train_target = (raw_train_target - target_mean) / target_std
     norm_val_target = (raw_val_target - target_mean) / target_std

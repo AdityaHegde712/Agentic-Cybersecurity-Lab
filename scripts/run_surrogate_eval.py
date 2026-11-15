@@ -179,7 +179,7 @@ def compute_surrogate_predictions(
     else:
         raw_feats = val_df[companion_channels].to_numpy(dtype=np.float32)
 
-    norm_feats = (raw_feats - feature_mean) / feature_std
+    norm_feats = np.clip((raw_feats - feature_mean) / feature_std, -10.0, 10.0)
     n_steps = len(val_df)
 
     clean_x_hat = np.zeros(n_steps, dtype=np.float64)
