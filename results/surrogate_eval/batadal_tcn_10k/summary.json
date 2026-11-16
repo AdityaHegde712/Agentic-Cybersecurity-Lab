@@ -1,0 +1,60 @@
+{
+  "dataset": "batadal",
+  "model": "tcn",
+  "eval_mode": "10k",
+  "checkpoint": "results/surrogates/batadal_tcn/checkpoint_best.pt",
+  "total_scenarios": 1000,
+  "total_eval_time_seconds": 6578.349,
+  "total_box_violations": 0,
+  "overall_median_delta_nrmse": 0.14205429105295636,
+  "overall_mean_delta_nrmse": 0.16879328598977703,
+  "overall_sign_accuracy": 0.896,
+  "overall_coverage_90": 0.9260000000000002,
+  "per_family_stats": {
+    "brownian": {
+      "count": 200,
+      "median_delta_nrmse": 0.14205429105295636,
+      "mean_delta_nrmse": 0.1842222370427897,
+      "sign_accuracy": 0.48,
+      "support_f1": 0.45420969731801947,
+      "coverage_90": 0.9227083333333335,
+      "box_violations": 0
+    },
+    "periodic": {
+      "count": 200,
+      "median_delta_nrmse": 0.22947354476316517,
+      "mean_delta_nrmse": 0.22947354476316525,
+      "sign_accuracy": 1.0,
+      "support_f1": 0.5342730094806611,
+      "coverage_90": 0.9187500000000002,
+      "box_violations": 0
+    },
+    "ramp": {
+      "count": 200,
+      "median_delta_nrmse": 0.1144271661540312,
+      "mean_delta_nrmse": 0.11442716615403122,
+      "sign_accuracy": 1.0,
+      "support_f1": 0.47914727238875426,
+      "coverage_90": 0.9302083333333337,
+      "box_violations": 0
+    },
+    "step": {
+      "count": 200,
+      "median_delta_nrmse": 0.15426990523674466,
+      "mean_delta_nrmse": 0.15426990523674466,
+      "sign_accuracy": 1.0,
+      "support_f1": 0.5756213211249183,
+      "coverage_90": 0.9270833333333335,
+      "box_violations": 0
+    },
+    "trapezoid": {
+      "count": 200,
+      "median_delta_nrmse": 0.1615735767521543,
+      "mean_delta_nrmse": 0.1615735767521543,
+      "sign_accuracy": 1.0,
+      "support_f1": 0.5456645344705047,
+      "coverage_90": 0.9312500000000002,
+      "box_violations": 0
+    }
+  }
+}
