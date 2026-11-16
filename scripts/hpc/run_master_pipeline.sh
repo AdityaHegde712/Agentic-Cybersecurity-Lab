@@ -65,6 +65,9 @@ if [ ! -f "data/processed/swat/train.parquet" ] || [ ! -f "data/processed/wadi/t
     python scripts/prepare_swat_wadi_parquets.py || true
 fi
 
+EPOCHS=${EPOCHS:-150}
+PATIENCE=${PATIENCE:-10}
+
 # ------------------------------------------------------------------------------
 # STEP 1: BATADAL CausalTCN (Train & Eval)
 # ------------------------------------------------------------------------------
@@ -83,8 +86,8 @@ if [ -f "$STEP1_SUMMARY" ]; then
     echo "[SKIPPED] Step 1 already completed: $STEP1_SUMMARY exists."
 else
     if [ ! -f "$STEP1_CKPT" ]; then
-        echo "Training CausalTCN on BATADAL (30 epochs)..."
-        python scripts/train_surrogate.py --dataset batadal --model tcn --epochs 30 --device cuda
+        echo "Training CausalTCN on BATADAL ($EPOCHS epochs, patience $PATIENCE, onecycle)..."
+        python scripts/train_surrogate.py --dataset batadal --model tcn --epochs "$EPOCHS" --patience "$PATIENCE" --scheduler onecycle --device cuda
     fi
     echo "Evaluating CausalTCN on BATADAL (5-family benchmark)..."
     python scripts/run_surrogate_eval.py --dataset batadal --model tcn --checkpoint "$STEP1_CKPT" --eval-mode 5family --device cuda
@@ -101,8 +104,8 @@ if [ -f "$STEP2_SUMMARY" ]; then
     echo "[SKIPPED] Step 2 already completed: $STEP2_SUMMARY exists."
 else
     if [ ! -f "$STEP2_CKPT" ]; then
-        echo "Training CausalPatchTST on BATADAL (30 epochs)..."
-        python scripts/train_surrogate.py --dataset batadal --model patch_tst --epochs 30 --device cuda
+        echo "Training CausalPatchTST on BATADAL ($EPOCHS epochs, patience $PATIENCE, onecycle)..."
+        python scripts/train_surrogate.py --dataset batadal --model patch_tst --epochs "$EPOCHS" --patience "$PATIENCE" --scheduler onecycle --device cuda
     fi
     echo "Evaluating CausalPatchTST on BATADAL (5-family benchmark)..."
     python scripts/run_surrogate_eval.py --dataset batadal --model patch_tst --checkpoint "$STEP2_CKPT" --eval-mode 5family --device cuda
@@ -119,8 +122,8 @@ if [ -f "$STEP3_SUMMARY" ]; then
     echo "[SKIPPED] Step 3 already completed: $STEP3_SUMMARY exists."
 else
     if [ ! -f "$STEP3_CKPT" ]; then
-        echo "Training CausalTCN on SWaT (30 epochs)..."
-        python scripts/train_surrogate.py --dataset swat --model tcn --epochs 30 --device cuda
+        echo "Training CausalTCN on SWaT ($EPOCHS epochs, patience $PATIENCE, onecycle)..."
+        python scripts/train_surrogate.py --dataset swat --model tcn --epochs "$EPOCHS" --patience "$PATIENCE" --scheduler onecycle --device cuda
     fi
     echo "Evaluating CausalTCN on SWaT (5-family benchmark)..."
     python scripts/run_surrogate_eval.py --dataset swat --model tcn --checkpoint "$STEP3_CKPT" --eval-mode 5family --device cuda
@@ -137,8 +140,8 @@ if [ -f "$STEP4_SUMMARY" ]; then
     echo "[SKIPPED] Step 4 already completed: $STEP4_SUMMARY exists."
 else
     if [ ! -f "$STEP4_CKPT" ]; then
-        echo "Training CausalPatchTST on SWaT (30 epochs)..."
-        python scripts/train_surrogate.py --dataset swat --model patch_tst --epochs 30 --device cuda
+        echo "Training CausalPatchTST on SWaT ($EPOCHS epochs, patience $PATIENCE, onecycle)..."
+        python scripts/train_surrogate.py --dataset swat --model patch_tst --epochs "$EPOCHS" --patience "$PATIENCE" --scheduler onecycle --device cuda
     fi
     echo "Evaluating CausalPatchTST on SWaT (5-family benchmark)..."
     python scripts/run_surrogate_eval.py --dataset swat --model patch_tst --checkpoint "$STEP4_CKPT" --eval-mode 5family --device cuda
@@ -155,8 +158,8 @@ if [ -f "$STEP5_SUMMARY" ]; then
     echo "[SKIPPED] Step 5 already completed: $STEP5_SUMMARY exists."
 else
     if [ ! -f "$STEP5_CKPT" ]; then
-        echo "Training CausalTCN on WADI (30 epochs)..."
-        python scripts/train_surrogate.py --dataset wadi --model tcn --epochs 30 --device cuda
+        echo "Training CausalTCN on WADI ($EPOCHS epochs, patience $PATIENCE, onecycle)..."
+        python scripts/train_surrogate.py --dataset wadi --model tcn --epochs "$EPOCHS" --patience "$PATIENCE" --scheduler onecycle --device cuda
     fi
     echo "Evaluating CausalTCN on WADI (5-family benchmark)..."
     python scripts/run_surrogate_eval.py --dataset wadi --model tcn --checkpoint "$STEP5_CKPT" --eval-mode 5family --device cuda
@@ -173,8 +176,8 @@ if [ -f "$STEP6_SUMMARY" ]; then
     echo "[SKIPPED] Step 6 already completed: $STEP6_SUMMARY exists."
 else
     if [ ! -f "$STEP6_CKPT" ]; then
-        echo "Training CausalPatchTST on WADI (30 epochs)..."
-        python scripts/train_surrogate.py --dataset wadi --model patch_tst --epochs 30 --device cuda
+        echo "Training CausalPatchTST on WADI ($EPOCHS epochs, patience $PATIENCE, onecycle)..."
+        python scripts/train_surrogate.py --dataset wadi --model patch_tst --epochs "$EPOCHS" --patience "$PATIENCE" --scheduler onecycle --device cuda
     fi
     echo "Evaluating CausalPatchTST on WADI (5-family benchmark)..."
     python scripts/run_surrogate_eval.py --dataset wadi --model patch_tst --checkpoint "$STEP6_CKPT" --eval-mode 5family --device cuda
