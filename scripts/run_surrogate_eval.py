@@ -190,10 +190,16 @@ def compute_surrogate_predictions(
         windows.append(norm_feats[t - lookback : t])
 
     if windows:
-        windows_arr = np.stack(windows, axis=0)
-        x_tensor = torch.from_numpy(windows_arr).to(device)
+        batch_size = 4096
+        preds_list: list[np.ndarray] = []
         with torch.no_grad():
-            preds_norm = model(x_tensor).cpu().numpy().flatten()
+            for i in range(0, len(windows), batch_size):
+                batch_arr = np.stack(windows[i : i + batch_size], axis=0)
+                batch_tensor = torch.from_numpy(batch_arr).to(device)
+                pred_batch = model(batch_tensor).cpu().numpy().flatten()
+                preds_list.append(pred_batch)
+                del batch_tensor
+        preds_norm = np.concatenate(preds_list)
         preds_denorm = preds_norm * target_std + target_mean
         clean_x_hat[lookback - 1 :] = preds_denorm
         clean_x_hat[: lookback - 1] = preds_denorm[0]
