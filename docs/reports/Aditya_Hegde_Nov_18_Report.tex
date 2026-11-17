@@ -34,17 +34,17 @@
 \vspace{-0.5em}
 
 \section{Problem Formulation \& Causal Filter Failure}
-In industrial Cyber-Physical Systems (CPS), adversarial additive spoofing corrupts sensor telemetry at discrete timesteps $t \in \{1, \dots, T\}$ according to $y_t = x_t + \delta_t$, where $x_t \in \mathbb{R}$ is the unobserved physical plant state and $\delta_t \in \mathbb{R}$ is the unknown attack perturbation ($\delta_t = 0$ during clean operations). Recovering both trajectories from telemetry $y$ alone is non-identifiable without side information or structural priors. Standard causal estimators (Persistence, Seasonal Naive) fail under sustained spoofing because corrupted measurements directly contaminate their autoregressive states, driving severe divergence (Persistence median NRMSE $0.8616$; Seasonal Naive $1.4802$).
+In industrial Cyber-Physical Systems (CPS) \cite{cps_survey}, adversarial additive spoofing corrupts sensor telemetry at discrete timesteps $t \in \{1, \dots, T\}$ according to $y_t = x_t + \delta_t$, where $x_t \in \mathbb{R}$ is the unobserved physical plant state and $\delta_t \in \mathbb{R}$ is the unknown attack perturbation ($\delta_t = 0$ during clean operations). Recovering both trajectories from telemetry $y$ alone is non-identifiable without side information or structural priors. Standard causal estimators (Persistence, Seasonal Naive) fail under sustained spoofing because corrupted measurements directly contaminate their autoregressive states, driving severe divergence (Persistence median NRMSE $0.8616$; Seasonal Naive $1.4802$).
 
 \section{Decoupled Inversion via Multi-Order Trend Filtering}
-To restore identifiability without ground truth at test time, we decouple the attacked channel from its corrupted history using uncompromised companion channels $z_t \in \mathbb{R}^d$ (flows, valve positions, adjacent pressures). A causal neural surrogate yields clean state estimates $\hat{x}_{\text{surr}, t} = f_\theta(z_{t-W:t-1})$ with residual variance $\sigma_\epsilon^2 = \mathbb{E}[(x_t - \hat{x}_{\text{surr}, t})^2]$. To recover complex, continuous attack profiles (steps, ramps, physical drift), we formulate a box-constrained Multi-Order Trend Filter solved via the Alternating Direction Method of Multipliers (ADMM):
+To restore identifiability without ground truth at test time, we decouple the attacked channel from its corrupted history using uncompromised companion channels $z_t \in \mathbb{R}^d$ (flows, valve positions, adjacent pressures). A causal neural surrogate \cite{tcn} yields clean state estimates $\hat{x}_{\text{surr}, t} = f_\theta(z_{t-W:t-1})$ with residual variance $\sigma_\epsilon^2 = \mathbb{E}[(x_t - \hat{x}_{\text{surr}, t})^2]$. To recover complex, continuous attack profiles (steps, ramps, physical drift), we formulate a box-constrained Multi-Order Trend Filter \cite{trend,fused} solved via the Alternating Direction Method of Multipliers (ADMM) \cite{admm}:
 \begin{equation}
 \min_{\delta \in \mathbb{R}^T} \;\; \frac{1}{2\sigma_\epsilon^2} \| y - \hat{x}_{\text{surr}} - \delta \|_2^2 + \lambda_0 \|\delta\|_1 + \lambda_1 \|\mathbf{D}^{(1)}\delta\|_1 + \lambda_2 \|\mathbf{D}^{(2)}\delta\|_1 \quad \text{s.t.} \quad y - \delta \in [x_{\min}, x_{\max}]
 \end{equation}
 The $\ell_1$ penalty enforces temporal sparsity; $\mathbf{D}^{(1)}$ penalizes abrupt step/ramp transitions; and $\mathbf{D}^{(2)}$ tracks smooth physical drift, while physical box constraints guarantee zero envelope violations.
 
 \section{Multi-Testbed Empirical Benchmarks}
-Scaling beyond our initial single-tank BATADAL prototype, we evaluated the framework across three industrial testbeds: BATADAL (43 channels), SWaT (51 channels), and WADI (122 channels). Multi-channel CausalTCN surrogates (trained on TACC Vista GH200 nodes; 100k parameters, OneCycleLR) compressed residual standard deviations to $0.0867\,\text{m}$ (BATADAL \texttt{L\_T1}), $9.5677\,\text{mm}$ (SWaT \texttt{LIT101}), and $5.7187\,\text{mm}$ (WADI \texttt{1\_LT\_001\_PV}). We benchmarked 5 canonical attack families (step, ramp, drift, pulse, periodic across 50 scenarios per dataset) and evaluated high-throughput stress sweeps across 3,000 randomized scenarios (1,000 per dataset).
+Scaling beyond our initial single-tank BATADAL prototype, we evaluated the framework across three industrial testbeds: BATADAL \cite{batadal} (43 channels), SWaT \cite{swat} (51 channels), and WADI \cite{wadi} (122 channels). Multi-channel CausalTCN surrogates (trained on TACC Vista GH200 nodes; 100k parameters, OneCycleLR) compressed residual standard deviations to $0.0867\,\text{m}$ (BATADAL \texttt{L\_T1}), $9.5677\,\text{mm}$ (SWaT \texttt{LIT101}), and $5.7187\,\text{mm}$ (WADI \texttt{1\_LT\_001\_PV}). We benchmarked 5 canonical attack families (step, ramp, drift, pulse, periodic across 50 scenarios per dataset) and evaluated high-throughput stress sweeps across 3,000 randomized scenarios (1,000 per dataset).
 
 \vspace{0.2em}
 \begin{table}[htbp]
@@ -65,18 +65,22 @@ Scaling beyond our initial single-tank BATADAL prototype, we evaluated the frame
 An isolated 5-pass determinism audit confirmed bitwise zero divergence ($|\Delta| = 0.00\times 10^0$) across sequential evaluations, ensuring exact reproducibility. Across all 3,150 evaluated scenarios, physical box constraints maintained a strictly 0.0\% violation rate.
 
 \section{Deliverables \& Open Science Release}
-Fulfilling our August NAIRR proposal commitments, all trained PyTorch model checkpoints, ADMM solver libraries, synthetic attack scenario generators, and benchmark logs are released publicly on GitHub under the MIT License at \url{https://github.com/AdityaHegde712/Agentic-Cybersecurity-Lab}.
+Fulfilling our August NAIRR proposal commitments, all trained PyTorch model checkpoints, ADMM solver libraries, synthetic attack scenario generators, and benchmark logs are released publicly on GitHub under the MIT License at \url{https://github.com/sjsu-micosys-lab/LAD-TS.git}.
 
 \section{Acknowledgement}
 The authors acknowledge the National Artificial Intelligence Research Resource (NAIRR) Pilot and the Texas Advanced Computing Center (TACC) Vista system for contributing to this research result.
 
 \vspace{-0.5em}
 {\footnotesize
-\begin{thebibliography}{9}\setlength{\itemsep}{0pt}
+\begin{thebibliography}{8}\setlength{\itemsep}{0pt}
+\bibitem{cps_survey} A.~A.~Giraldo \emph{et al.}, ``A Survey of Physics-Based Attack Detection in Cyber-Physical Systems,'' \emph{ACM Comput.\ Surv.}, 51(4):1--36, 2018.
 \bibitem{fused} R.~Tibshirani \emph{et al.}, ``Sparsity and Smoothness via the Fused Lasso,'' \emph{J.\ R.\ Stat.\ Soc.\ B}, 67(1):91--108, 2005.
 \bibitem{trend} S.-J.~Kim \emph{et al.}, ``$\ell_1$ Trend Filtering,'' \emph{SIAM Review}, 51(2):339--360, 2009.
+\bibitem{admm} S.~Boyd \emph{et al.}, ``Distributed Optimization and Statistical Learning via ADMM,'' \emph{Found.\ Trends Mach.\ Learn.}, 3(1):1--122, 2011.
+\bibitem{tcn} S.~Bai, J.~Z.~Kolter, V.~Koltun, ``Generic Convolutional and Recurrent Networks for Sequence Modeling,'' \emph{arXiv:1803.01271}, 2018.
 \bibitem{batadal} R.~Taormina \emph{et al.}, ``Battle of the Attack Detection Algorithms,'' \emph{J.\ Water Resour.\ Plann.\ Manage.}, 144(8):04018048, 2018.
 \bibitem{swat} J.~Goh \emph{et al.}, ``A Dataset to Support Research in the Design of Secure Water Treatment Systems,'' \emph{CRITIS}, pp.~88--99, 2016.
+\bibitem{wadi} C.~M.~Ahmed \emph{et al.}, ``WADI: A Water Distribution Testbed for Research in the Design of Secure Cyber Physical Systems,'' \emph{CyberPnP}, pp.~25--28, 2017.
 \end{thebibliography}}
 
 \end{document}
