@@ -50,11 +50,11 @@ Reconstruction amplitude errors $e_{A, i} = \hat{A}_i - A_{\text{true}, i} = \te
 
 ### 2.2 Distribution Fit Diagnostic Plot
 The empirical density histograms and overlaid theoretical models are displayed below:
-![Parametric Distribution Fits](file:///C:/Users/hifia/Projects/Sengupta_Research/results/narrow_inverse_research/error_analysis/error_distribution_fits.png)
+![Parametric Distribution Fits](error_distribution_fits.png)
 
 ### 2.3 Quantile-Quantile (Q-Q) Diagnostics
 The Q-Q plots below illustrate the deviation of empirical residuals from theoretical quantiles:
-![Q-Q Plots](file:///C:/Users/hifia/Projects/Sengupta_Research/results/narrow_inverse_research/error_analysis/qq_plots.png)
+![Q-Q Plots](qq_plots.png)
 
 ---
 
@@ -75,7 +75,7 @@ Reconstruction error stability was evaluated across the three benchmark amplitud
 
 ### 3.2 Regime and Sign Invariance
 Reconstruction errors exhibit near-perfect zero-mean symmetry across positive ($+0.007\,\text{m}$) and negative ($-0.005\,\text{m}$) injections, and are uniform across hydraulic dynamics regimes (`low_dynamics`: $0.004\,\text{m}$, `medium_dynamics`: $0.008\,\text{m}$, `high_dynamics`: $0.007\,\text{m}$).
-![Error vs Amplitude and Regime](file:///C:/Users/hifia/Projects/Sengupta_Research/results/narrow_inverse_research/error_analysis/error_vs_amplitude_regime.png)
+![Error vs Amplitude and Regime](error_vs_amplitude_regime.png)
 
 ---
 
@@ -98,7 +98,7 @@ Under normal plant conditions without attack ($H_0: \boldsymbol{\delta} = \mathb
 | **FAR at $\tau = 0.1254\,\text{m}$ ($3\sigma_\epsilon$)** | **0.0000** | **0.0000** | $0.5896$ |
 
 ### 4.2 Null Envelope Plot
-![Null Clean Distribution](file:///C:/Users/hifia/Projects/Sengupta_Research/results/narrow_inverse_research/error_analysis/null_distribution_clean.png)
+![Null Clean Distribution](null_distribution_clean.png)
 
 ---
 
@@ -118,7 +118,7 @@ For an intrusion detection rule triggering when reconstructed magnitude $|\hat{\
 | **Nominal Conformal ($3\sigma_\epsilon = 0.1254\,\text{m}$)** | $0.125400\,\text{m}$ | $0.125400\,\text{m}$ | **0.00%** | **100.0%** |
 
 ### 5.2 ROC Trade-off Plot
-![Operational ROC Curves](file:///C:/Users/hifia/Projects/Sengupta_Research/results/narrow_inverse_research/error_analysis/roc_curves_by_amplitude.png)
+![Operational ROC Curves](roc_curves_by_amplitude.png)
 
 ---
 

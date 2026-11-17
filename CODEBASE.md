@@ -93,7 +93,7 @@ python scripts/validate_processed.py
 
 - **67/67 contract tests PASS** (27 locked spec tests + 40 processed data store tests).
 - **44/44 processed store validation checks PASS**.
-- **HPC migration guide complete**: [docs/operations/hpc-usage-guide.md](file:///c:/Users/hifia/Projects/Sengupta_Research/docs/operations/hpc-usage-guide.md).
+- **HPC migration guide complete**: [docs/operations/hpc-usage-guide.md](docs/operations/hpc-usage-guide.md).
 - **Archiving complete**: Deprecated proposal drafts and early surveys moved to `docs/archive/`.
 - **Documentation index**: [docs/README.md](docs/README.md) maps current architecture, research, operations, and archive authorities.
 - **Current inverse benchmark**: BATADAL observation-only single-sensor bounded step attack; coupling and broader attack families remain deferred.

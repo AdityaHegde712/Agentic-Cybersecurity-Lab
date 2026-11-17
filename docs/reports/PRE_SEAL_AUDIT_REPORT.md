@@ -75,21 +75,21 @@ Comparison of the four core configurations against causal and linear companion b
 
 ### 4.1 Estimation NRMSE Comparison
 
-<img src="C:/Users/hifia/Projects/Sengupta_Research/results/narrow_inverse_research/pre_seal_audit/plots/pre_seal_nrmse_comparison.png" width="900" alt="NRMSE Comparison">
+<img src="../../results/narrow_inverse_research/pre_seal_audit/plots/pre_seal_nrmse_comparison.png" width="900" alt="NRMSE Comparison">
 
 - **Finding:** Both offline and causal rolling TCN Step-MAP estimators significantly outperform the naive causal baseline (0.8616) and linear companion regression (0.3087).
 - **Improvement:** `CausalStepMAP_TCN` achieves a 71.87% error reduction in declared mode and 71.87% in undeclared mode, comfortably exceeding the 20.0% acceptance threshold.
 
 ### 4.2 Causal Online Filter vs. Offline Batch by Duration
 
-<img src="C:/Users/hifia/Projects/Sengupta_Research/results/narrow_inverse_research/pre_seal_audit/plots/pre_seal_causal_vs_offline_by_duration.png" width="900" alt="Causal vs Offline by Duration">
+<img src="../../results/narrow_inverse_research/pre_seal_audit/plots/pre_seal_causal_vs_offline_by_duration.png" width="900" alt="Causal vs Offline by Duration">
 
 - **Finding:** The strictly causal rolling estimator tracks the offline batch estimator closely across all attack durations (6h to 48h).
 - **Stability:** Even under 48-hour prolonged step disruptions, the causal lookback window prevents recursive error propagation.
 
 ### 4.3 Uncertainty Coverage and Sharpness
 
-<img src="C:/Users/hifia/Projects/Sengupta_Research/results/narrow_inverse_research/pre_seal_audit/plots/pre_seal_coverage_sharpness.png" width="900" alt="Coverage and Sharpness">
+<img src="../../results/narrow_inverse_research/pre_seal_audit/plots/pre_seal_coverage_sharpness.png" width="900" alt="Coverage and Sharpness">
 
 - **Finding:** All four Step-MAP configurations achieve empirical 90% confidence interval coverage between 95.7% and 96.2%, safely exceeding the 85.0% floor.
 - **Sharpness:** Interval widths remain ultra-tight at 0.1375 m, which is well below the 0.25 m ceiling (< 2.8% of the 5.0 m tank range).

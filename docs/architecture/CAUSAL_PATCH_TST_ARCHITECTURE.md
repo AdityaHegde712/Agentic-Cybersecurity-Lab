@@ -151,7 +151,7 @@ Measured on BATADAL development telemetry (`data/processed/batadal/train.parquet
 
 ## 5. Verification & Unit Testing
 
-The implementation is verified by the locked unit test suite in [tests/spec/test_surrogate_models.py](file:///C:/Users/hifia/Projects/Sengupta_Research/tests/spec/test_surrogate_models.py):
+The implementation is verified by the locked unit test suite in [tests/spec/test_surrogate_models.py](../../tests/spec/test_surrogate_models.py):
 
 1. **`test_base_surrogate_interface_enforcement`**: Verifies ABC instantiation and abstract method contracts.
 2. **`test_tcn_output_shape_and_receptive_field`**: Verifies TCN output dimensions $[B, 1]$ and $R \ge 48$.

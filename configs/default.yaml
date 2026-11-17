@@ -1,4 +1,4 @@
-# Global configuration for Agentic Cybersecurity Lab
+# Global configuration for Sensor Attack Inversion in Time-Series CPS
 # Precedence: CLI args > Environment variables > configs/default.yaml > Code defaults
 
 data:
@@ -10,8 +10,8 @@ data:
 hpc:
   allocation_id: "TG-NAIRR260371"
   system: "vista"
-  work_base: "/work/11784/adityahegde712/vista/Agentic-Cybersecurity-Lab"
-  scratch_base: "/scratch/11784/adityahegde712/vista"
+  work_base: "$WORK/inverse-time-series-cps"
+  scratch_base: "$SCRATCH/venvs"
   queues:
     gpu_prod: "gh"
     gpu_dev: "gh-dev"

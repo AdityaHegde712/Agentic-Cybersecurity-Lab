@@ -62,9 +62,9 @@ This report presents the first empirical inverse recovery results on the sealed 
 
 ## Artifact Inventory
 
-- Summary CSV: [`summary.csv`](file:///C:/Users/hifia/Projects/Sengupta_Research/results/narrow_inverse_research/development_benchmark/summary.csv)
-- Summary JSON: [`summary.json`](file:///C:/Users/hifia/Projects/Sengupta_Research/results/narrow_inverse_research/development_benchmark/summary.json)
-- Comparison Plots: [`plots/`](file:///C:/Users/hifia/Projects/Sengupta_Research/results/narrow_inverse_research/development_benchmark/plots/)
+- Summary CSV: [`summary.csv`](summary.csv)
+- Summary JSON: [`summary.json`](summary.json)
+- Comparison Plots: [`plots/`](plots/)
   - `comparison_low_dynamics.png`
   - `comparison_medium_dynamics.png`
   - `comparison_high_dynamics.png`

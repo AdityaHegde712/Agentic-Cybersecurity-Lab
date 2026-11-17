@@ -9,7 +9,7 @@ Quick operational cheatsheet for daily development, connecting, copying files, a
 ### Connect to Vista
 ```bash
 # Add to ~/.bashrc:
-alias vistaconnect='ssh adityahegde712@vista.tacc.utexas.edu'
+alias vistaconnect='ssh <TACC_USERNAME>@vista.tacc.utexas.edu'
 
 # Connect:
 vistaconnect
@@ -21,7 +21,7 @@ vistaconnect
 vistacopy() {
     local source=""
     local destination=""
-    local remote_base="adityahegde712@vista.tacc.utexas.edu:/work/11784/adityahegde712/vista/Agentic-Cybersecurity-Lab"
+    local remote_base="<TACC_USERNAME>@vista.tacc.utexas.edu:/work/<PROJECT_ID>/<TACC_USERNAME>/vista/inverse-time-series-cps"
 
     while [[ $# -gt 0 ]]; do
         case "$1" in
@@ -53,9 +53,9 @@ vistacopy --source configs/default.yaml --destination configs/
 
 | Target Directory | Quick Command | Full Path | Quota / Purge |
 |---|---|---|---|
-| **Repository Root** | `cd $WORK/Agentic-Cybersecurity-Lab` | `/work/11784/adityahegde712/vista/Agentic-Cybersecurity-Lab` | 1 TB (Persistent) |
-| **Virtual Environments** | `cd $SCRATCH/venvs` | `/scratch/11784/adityahegde712/vista/venvs` | Fast Flash (10-day purge) |
-| **Home Directory** | `cd $HOME` | `/home1/11784/adityahegde712` | 23 GB (Backed up) |
+| **Repository Root** | `cd $WORK/inverse-time-series-cps` | `$WORK/inverse-time-series-cps` | 1 TB (Persistent) |
+| **Virtual Environments** | `cd $SCRATCH/venvs` | `$SCRATCH/venvs` | Fast Flash (10-day purge) |
+| **Home Directory** | `cd $HOME` | `$HOME` | 23 GB (Backed up) |
 
 ---
 
