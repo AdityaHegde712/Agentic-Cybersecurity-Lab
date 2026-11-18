@@ -15,7 +15,7 @@
 \makeatother
 
 \setlength{\parindent}{0pt}
-\setlength{\parskip}{3pt}
+\setlength{\parskip}{2.2pt}
 \pagestyle{empty}
 
 \begin{document}
@@ -37,26 +37,28 @@
 In industrial Cyber-Physical Systems (CPS) \cite{cps_survey}, adversarial additive spoofing corrupts sensor telemetry at discrete timesteps $t \in \{1, \dots, T\}$ according to $y_t = x_t + \delta_t$, where $x_t \in \mathbb{R}$ is the unobserved physical plant state and $\delta_t \in \mathbb{R}$ is the unknown attack perturbation ($\delta_t = 0$ during clean operations). Recovering both trajectories from telemetry $y$ alone is non-identifiable without side information or structural priors. Standard causal estimators (Persistence, Seasonal Naive) fail under sustained spoofing because corrupted measurements directly contaminate their autoregressive states, driving severe divergence (Persistence median NRMSE $0.8616$; Seasonal Naive $1.4802$).
 
 \section{Decoupled Inversion via Multi-Order Trend Filtering}
-To restore identifiability without ground truth at test time, we decouple the attacked channel from its corrupted history using uncompromised companion channels $z_t \in \mathbb{R}^d$ (flows, valve positions, adjacent pressures). A causal neural surrogate \cite{tcn} yields clean state estimates $\hat{x}_{\text{surr}, t} = f_\theta(z_{t-W:t-1})$ with residual variance $\sigma_\epsilon^2 = \mathbb{E}[(x_t - \hat{x}_{\text{surr}, t})^2]$. To recover complex, continuous attack profiles (steps, ramps, physical drift), we formulate a box-constrained Multi-Order Trend Filter \cite{trend,fused} solved via the Alternating Direction Method of Multipliers (ADMM) \cite{admm}:
+To restore identifiability without ground truth at test time, we decouple the attacked channel from its corrupted history using uncompromised companion channels $z_t \in \mathbb{R}^d$ (flows, valve positions, adjacent pressures). A causal neural surrogate \cite{tcn} yields clean state estimates $\hat{x}_{\text{surr}, t} = f_\theta(z_{t-W:t-1})$ with empirical surrogate residual variance $\sigma_\epsilon^2 = \mathbb{E}[(x_t - \hat{x}_{\text{surr}, t})^2]$, where $\epsilon_t = x_t - \hat{x}_{\text{surr}, t}$ represents nominal surrogate tracking error. To recover complex, continuous attack profiles (steps, ramps, physical drift), we formulate a box-constrained Multi-Order Trend Filter \cite{trend,fused} solved via the Alternating Direction Method of Multipliers (ADMM) \cite{admm}:
 \begin{equation}
 \min_{\delta \in \mathbb{R}^T} \;\; \frac{1}{2\sigma_\epsilon^2} \| y - \hat{x}_{\text{surr}} - \delta \|_2^2 + \lambda_0 \|\delta\|_1 + \lambda_1 \|\mathbf{D}^{(1)}\delta\|_1 + \lambda_2 \|\mathbf{D}^{(2)}\delta\|_1 \quad \text{s.t.} \quad y - \delta \in [x_{\min}, x_{\max}]
 \end{equation}
 The $\ell_1$ penalty enforces temporal sparsity; $\mathbf{D}^{(1)}$ penalizes abrupt step/ramp transitions; and $\mathbf{D}^{(2)}$ tracks smooth physical drift, while physical box constraints guarantee zero envelope violations.
 
 \section{Multi-Testbed Empirical Benchmarks}
-Scaling beyond our initial single-tank BATADAL prototype, we evaluated the framework across three industrial testbeds: BATADAL \cite{batadal} (43 channels), SWaT \cite{swat} (51 channels), and WADI \cite{wadi} (122 channels). Multi-channel CausalTCN surrogates (trained on TACC Vista GH200 nodes; 100k parameters, OneCycleLR) compressed residual standard deviations to $0.0867\,\text{m}$ (BATADAL \texttt{L\_T1}), $9.5677\,\text{mm}$ (SWaT \texttt{LIT101}), and $5.7187\,\text{mm}$ (WADI \texttt{1\_LT\_001\_PV}). We benchmarked 5 canonical attack families (step, ramp, drift, pulse, periodic across 50 scenarios per dataset) and evaluated high-throughput stress sweeps across 3,000 randomized scenarios (1,000 per dataset).
+Scaling beyond our initial single-tank BATADAL \cite{batadal} prototype, we evaluated the framework across three industrial testbeds: BATADAL (43 channels), SWaT \cite{swat} (51 channels), and WADI \cite{wadi} (122 channels). Multi-channel CausalTCN surrogates (trained on TACC Vista GH200 nodes; 100k parameters, OneCycleLR \cite{onecycle}) compressed residual standard deviations to $0.0867\,\text{m}$ (BATADAL \texttt{L\_T1}), $9.5677\,\text{mm}$ (SWaT \texttt{LIT101}), and $5.7187\,\text{mm}$ (WADI \texttt{1\_LT\_001\_PV}). We benchmarked 5 canonical attack families (step, ramp, drift, pulse, periodic across 50 scenarios per dataset) and evaluated high-throughput stress sweeps across 3,000 randomized scenarios (1,000 per dataset).
 
-\vspace{0.2em}
+\vspace{-0.6em}
 \begin{table}[htbp]
 \centering
+\caption{\footnotesize Multi-testbed attack recovery benchmarks across 5 canonical attack families (50 scenarios per testbed).}
+\vspace{0.1em}
 \resizebox{\columnwidth}{!}{%
 \begin{tabular}{lcccccc}
 \toprule
 \textbf{Testbed} & \textbf{Horizon} & \textbf{Target Sensor} & \textbf{Median NRMSE} & \textbf{Mean NRMSE} & \textbf{Sign Acc.} & \textbf{Box Violations} \\
 \midrule
-\textbf{BATADAL Water Dist.} & 480 steps (20 days) & \texttt{L\_T1} (Tank 1) & \textbf{0.0418} (4.18\%) & 0.0512 & 98.0\% & \textbf{0 (0.0\%)} \\
-\textbf{SWaT Water Treatment} & 5,832 steps (16 hours) & \texttt{LIT101} (Raw Water) & \textbf{0.0381} (3.81\%) & 0.0493 & 100.0\% & \textbf{0 (0.0\%)} \\
-\textbf{WADI Water Dist.} & 249,371 steps (14 days) & \texttt{1\_LT\_001\_PV} (Elevated) & \textbf{0.0552} (5.52\%) & 0.0725 & 96.0\% & \textbf{0 (0.0\%)} \\
+\textbf{BATADAL Water Dist.} & 480 steps (20 days) & \texttt{L\_T1} (Tank 1) & \textbf{0.0418} & 0.0512 & 98.0\% & \textbf{0 (0.0\%)} \\
+\textbf{SWaT Water Treatment} & 5,832 steps (16 hours) & \texttt{LIT101} (Raw Water) & \textbf{0.0381} & 0.0493 & 100.0\% & \textbf{0 (0.0\%)} \\
+\textbf{WADI Water Dist.} & 249,371 steps (14 days) & \texttt{1\_LT\_001\_PV} (Elevated) & \textbf{0.0552} & 0.0725 & 96.0\% & \textbf{0 (0.0\%)} \\
 \bottomrule
 \end{tabular}%
 }
@@ -72,12 +74,13 @@ The authors acknowledge the National Artificial Intelligence Research Resource (
 
 \vspace{-0.5em}
 {\footnotesize
-\begin{thebibliography}{8}\setlength{\itemsep}{0pt}
+\begin{thebibliography}{9}\setlength{\itemsep}{0pt}
 \bibitem{cps_survey} A.~A.~Giraldo \emph{et al.}, ``A Survey of Physics-Based Attack Detection in Cyber-Physical Systems,'' \emph{ACM Comput.\ Surv.}, 51(4):1--36, 2018.
 \bibitem{fused} R.~Tibshirani \emph{et al.}, ``Sparsity and Smoothness via the Fused Lasso,'' \emph{J.\ R.\ Stat.\ Soc.\ B}, 67(1):91--108, 2005.
 \bibitem{trend} S.-J.~Kim \emph{et al.}, ``$\ell_1$ Trend Filtering,'' \emph{SIAM Review}, 51(2):339--360, 2009.
 \bibitem{admm} S.~Boyd \emph{et al.}, ``Distributed Optimization and Statistical Learning via ADMM,'' \emph{Found.\ Trends Mach.\ Learn.}, 3(1):1--122, 2011.
 \bibitem{tcn} S.~Bai, J.~Z.~Kolter, V.~Koltun, ``Generic Convolutional and Recurrent Networks for Sequence Modeling,'' \emph{arXiv:1803.01271}, 2018.
+\bibitem{onecycle} L.~N.~Smith, N.~Topin, ``Super-Convergence: Very Fast Training of Neural Networks Using Large Learning Rates,'' \emph{Proc.\ SPIE}, 11006:1100612, 2019.
 \bibitem{batadal} R.~Taormina \emph{et al.}, ``Battle of the Attack Detection Algorithms,'' \emph{J.\ Water Resour.\ Plann.\ Manage.}, 144(8):04018048, 2018.
 \bibitem{swat} J.~Goh \emph{et al.}, ``A Dataset to Support Research in the Design of Secure Water Treatment Systems,'' \emph{CRITIS}, pp.~88--99, 2016.
 \bibitem{wadi} C.~M.~Ahmed \emph{et al.}, ``WADI: A Water Distribution Testbed for Research in the Design of Secure Cyber Physical Systems,'' \emph{CyberPnP}, pp.~25--28, 2017.
